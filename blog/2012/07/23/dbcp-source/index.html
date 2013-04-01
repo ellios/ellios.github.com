@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>DBCP源码分析 - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="Why 连接池 一般我们进行一个数据库操作时，都要进行下面的步骤 客户端与服务器端建立连接
+执行数据库操作
+释放连接 频繁的数据库的连接和释放会占用大量的时间和资源，于是就有必要重复利用数据库连接，这便要用到连接池技术。 DBCP的使用和配置 DBCP的使用 一个简单的使用示例，但是代码还是有点长 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2012/07/23/dbcp-source">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">DBCP源码分析</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-23T11:39:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Why 连接池</h3>
+
+<p>一般我们进行一个数据库操作时，都要进行下面的步骤</p>
+
+<ol>
+<li>客户端与服务器端建立连接</li>
+<li>执行数据库操作</li>
+<li>释放连接</li>
+</ol>
+
+
+<p>频繁的数据库的连接和释放会占用大量的时间和资源，于是就有必要重复利用数据库连接，这便要用到连接池技术。</p>
+
+<h3>DBCP的使用和配置</h3>
+
+<h5>DBCP的使用</h5>
+
+<p>一个简单的使用示例，但是代码还是有点长，这里放个传送门，有兴趣的可以点进去看看。
+<a href="https://gist.github.com/3161996">DBCPDemo</a></p>
+
+<h5>DBCP的配置</h5>
+
+<p>配置信息看这里把，传送门<a href="http://commons.apache.org/dbcp/configuration.html">DBCP Configuration</a></p>
+
+<h3>DBCP源码分析</h3>
+
+<p>DBCP其实就是一个存储数了据库连接的Object Pool，Object Pool是利用了commons-pool实现的。下面从BasicDataSource开始逐步分析DBCP的代码。
+<img src="/images/bds.png" alt="BasicDataSource类结构图" />
+从上图可以看出，BasicDataSource可以看成是一个Adapter模式的实现，其封装了真正实现连接池pool的PoolingDataSource，而PoolingDataSource实现了获
+取数据库连接的getConnection方法。</p>
+
+<figure class='code'><figcaption><span>getConnection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="n">Connection</span><span class="o">)(</span><span class="n">_pool</span><span class="o">.</span><span class="na">borrowObject</span><span class="o">());</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">conn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PoolGuardConnectionWrapper</span><span class="o">(</span><span class="n">conn</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>_pool就是ObjectPool，其实现是GenericObjectPool，这就是连接池的核心，真正实现Object Pool的地方。PoolGuardConnectionWrapper对Connection做了简单封装，如果通过该连接对数据库进行操作时，连接已经关闭，就会抛出异常。</p>
+
+<p>下面我们重点分析GenericObjectPool的代码，GenericObjectPool的类结构图如下图所示。
+<img src="/images/gop.png" alt="GenericObjectPool类结构图" /></p>
+
+<p>GenericObjectPool有三个内部类，分别是Config，Evictor和Latch.Config类包含了各种默认配置信息，如maxActive，maxWait（单位毫秒）等。Evictor类是清道夫，对于pool里过期的Idle对象会进行清理。Latch封装了真实的对象，这里为什么要对真实的对象进行封装，主要是拿它用来排队的，以保证请求的公平性，先来先拿。PoolableObjectFactory是生成对象的工厂接口，在使用pool前需要将其实现（这里是PoolableConnectionFactory）赋给pool的_factory。</p>
+
+<p>GenericObjectPool主要的接口有两个，分别是borrowObject和returnObject。先看下borrowObject的逻辑，代码太长。这里只贴一些主要的代码，有兴趣的可以自己去看。</p>
+
+<div><script src='https://gist.github.com/3163574.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>再看下returnObject,逻辑简单了好多。</p>
+
+<div><script src='https://gist.github.com/3163684.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>话说DBCP和common-pool的代码好老，最近看了下bonecp，据说比DBCP快了30被，以后分析下他的代码。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-23T11:39:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>Java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/07/23/dbcp-source/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/07/23/dbcp-source/" data-via="" data-counturl="http://ellios.github.com//blog/2012/07/23/dbcp-source/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/06/08/py2exe/" title="Previous Post: python程序打包成exe">&laquo; python程序打包成exe</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/08/03/java-singleton/" title="Next Post: java常用单例">java常用单例 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2012/07/23/dbcp-source/';
+        var disqus_url = 'http://ellios.github.com//blog/2012/07/23/dbcp-source/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

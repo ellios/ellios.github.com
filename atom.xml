@@ -1,100 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>ellios's blog</title>
-  <meta name="author" content="ellios">
-
-  
-  <meta name="description" content="最近忙的一个项目，终于上线了，忙了一个多月，但是心里仍然很没谱。为什么没谱，主要是因为目前的系统缺乏有效的监控，对于机器负载，jvm的运行情况，各接口的调用次数，接口的调用时间。于是痛下决心，利用系统刚上线，空余的一周搭建一套监控系统。 之前做运维的工作很少，对于各种监控系统更是缺乏有效的了解， &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://ellios.github.com/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">ellios's blog</a></h1>
-  
-    <h2>ellios's trivial story.</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:ellios.github.com/" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
-  <li><a href="/slide">Slide</a></li>
-  <li><a href="/about">About</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[ellios's blog]]></title>
+  <link href="http://ellios.github.com//atom.xml" rel="self"/>
+  <link href="http://ellios.github.com//"/>
+  <updated>2013-04-02T00:07:14+08:00</updated>
+  <id>http://ellios.github.com//</id>
+  <author>
+    <name><![CDATA[ellios]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2013/03/12/ganglia/">Ganglia</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2013-03-12T23:38:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2013</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近忙的一个项目，终于上线了，忙了一个多月，但是心里仍然很没谱。为什么没谱，主要是因为目前的系统缺乏有效的监控，对于机器负载，jvm的运行情况，各接口的调用次数，接口的调用时间。于是痛下决心，利用系统刚上线，空余的一周搭建一套监控系统。</p>
+  <entry>
+    <title type="html"><![CDATA[ganglia]]></title>
+    <link href="http://ellios.github.com//blog/2013/03/12/ganglia/"/>
+    <updated>2013-03-12T23:38:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2013/03/12/ganglia</id>
+    <content type="html"><![CDATA[<p>最近忙的一个项目，终于上线了，忙了一个多月，但是心里仍然很没谱。为什么没谱，主要是因为目前的系统缺乏有效的监控，对于机器负载，jvm的运行情况，各接口的调用次数，接口的调用时间。于是痛下决心，利用系统刚上线，空余的一周搭建一套监控系统。</p>
 
 <p>之前做运维的工作很少，对于各种监控系统更是缺乏有效的了解，了解到的一些常用监控系统有catti，zabbix和ganglia，考虑再三选择了ganglia。为什么选择ganglia呢，理由没那么充分，可能之前看过ganglia的一些资料，对他更为熟悉，对于他出身Berkley和支持python，这两点都比较满意，于是就选择它了。</p>
 
@@ -389,41 +313,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="">http://ganglia.info/</a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/14/vrs-hedwig-tutorial/">Vrs Hedwig入门</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-14T21:13:00+08:00" pubdate data-updated="true">Nov 14<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>hedwig（Harry Potter&#8217;s owl. A messager.）是一个分布式服务的框架，用户使用它可以很方便的开发分布式服务，并使用这些服务。它主要有以下功能：</p>
+  <entry>
+    <title type="html"><![CDATA[vrs hedwig入门]]></title>
+    <link href="http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial/"/>
+    <updated>2012-11-14T21:13:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial</id>
+    <content type="html"><![CDATA[<p>hedwig（Harry Potter&#8217;s owl. A messager.）是一个分布式服务的框架，用户使用它可以很方便的开发分布式服务，并使用这些服务。它主要有以下功能：</p>
 
 <ul>
 <li>统一的服务注册中心</li>
@@ -845,41 +743,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 
 
 <p>hedwig.spring.config可不填，默认会从META-INf/spring/下读取所有的配置文件</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/11/zookeeper-tutorial/">Zookeeper入门</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-11T13:39:00+08:00" pubdate data-updated="true">Nov 11<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>What is Zookeeper</h3>
+  <entry>
+    <title type="html"><![CDATA[zookeeper入门]]></title>
+    <link href="http://ellios.github.com//blog/2012/11/11/zookeeper-tutorial/"/>
+    <updated>2012-11-11T13:39:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/11/11/zookeeper-tutorial</id>
+    <content type="html"><![CDATA[<h3>What is Zookeeper</h3>
 
 <p>ZooKeeper is a high-performance <strong>coordination</strong> service for <strong>distributed</strong> applications. It exposes common services - such as <strong>naming</strong>, <strong>configuration management</strong>, <strong>synchronization</strong>, and <strong>group services</strong> - in a simple interface so you don&#8217;t have to write them from scratch. You can use it off-the-shelf to implement <strong>consensus</strong>, <strong>group management</strong>, <strong>leader election</strong>, and <strong>presence protocols</strong>.</p>
 
@@ -983,41 +855,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="http://blog.csdn.net/shenlan211314/article/details/6187040">http://blog.csdn.net/shenlan211314/article/details/6187040</a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/24/thrift-guide/">Thrift入门</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-24T21:59:00+08:00" pubdate data-updated="true">Oct 24<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>前几天介绍了下Protocol Buffer，这次研究下和PB比较类似的Thrift。这两者都定义了代码独立的数据结构描述语法，并且提供了工具将定义的数据结构转化为相应的代码（Java，C++，Python之类的）。但是从使用上来说，Thrift提供的功能要更丰富一些，简单列下对二者区别的认识</p>
+  <entry>
+    <title type="html"><![CDATA[thrift入门]]></title>
+    <link href="http://ellios.github.com//blog/2012/10/24/thrift-guide/"/>
+    <updated>2012-10-24T21:59:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/10/24/thrift-guide</id>
+    <content type="html"><![CDATA[<p>前几天介绍了下Protocol Buffer，这次研究下和PB比较类似的Thrift。这两者都定义了代码独立的数据结构描述语法，并且提供了工具将定义的数据结构转化为相应的代码（Java，C++，Python之类的）。但是从使用上来说，Thrift提供的功能要更丰富一些，简单列下对二者区别的认识</p>
 
 <ul>
 <li>Thrfit从语法上来说，更接近C的语法，对程序员的友好性要更好些</li>
@@ -1411,41 +1257,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="http://stackoverflow.com/questions/69316/biggest-differences-of-thrift-vs-protocol-buffers">http://stackoverflow.com/questions/69316/biggest-differences-of-thrift-vs-protocol-buffers</a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-24T16:54:00+08:00" pubdate data-updated="true">Oct 24<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>折腾了半天的<a href="http://www.reviewboard.org/">Review Board</a>，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。</p>
+  <entry>
+    <title type="html"><![CDATA[艰难的reviewboard折腾]]></title>
+    <link href="http://ellios.github.com//blog/2012/10/24/reviewboard/"/>
+    <updated>2012-10-24T16:54:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/10/24/reviewboard</id>
+    <content type="html"><![CDATA[<p>折腾了半天的<a href="http://www.reviewboard.org/">Review Board</a>，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。</p>
 
 <p>因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件<a href="http://code.taobao.org/p/tao-reviewboard/wiki/index/">tao-reviewboard</a>，安装和配置都比较简单。因为移到linux和idea的开发环境已经好久了，所以我只能自己折腾了。</p>
 
@@ -1507,41 +1327,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 
 
 <p>试了下，终于OK了。post-review的那些参数太繁琐而且又长，以后有时间写个程序自己定制下。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/19/pb-tutorial/">Protocol Buffer入门</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-19T16:52:00+08:00" pubdate data-updated="true">Oct 19<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>是啥</h2>
+  <entry>
+    <title type="html"><![CDATA[Protocol Buffer入门]]></title>
+    <link href="http://ellios.github.com//blog/2012/10/19/pb-tutorial/"/>
+    <updated>2012-10-19T16:52:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/10/19/pb-tutorial</id>
+    <content type="html"><![CDATA[<h2>是啥</h2>
 
 <blockquote><p>Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that are compiled against the &#8220;old&#8221; format.</p><footer><strong>Google, Developer Guide,</strong> <cite><a href='https://developers.google.com/protocol-buffers/docs/overview'>developers.google.com/docs/&hellip;</a></cite></footer></blockquote>
 
@@ -1597,7 +1391,7 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 
 <p>下图列出了PB所支持的Scalar的类型</p>
 
-<p><img src="/images/proto-scalar.png" alt="&quot;PB Scalar&quot;" /></p>
+<p><img src="http://ellios.github.com//images/proto-scalar.png" alt="&quot;PB Scalar&quot;" /></p>
 
 <h4>enum</h4>
 
@@ -1964,41 +1758,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="https://developers.google.com/protocol-buffers/docs/proto">https://developers.google.com/protocol-buffers/docs/proto</a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/09/01/jdk7-fork-join/">Jdk7-fork-join</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-01T23:10:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>占坑&#8230;</em></p>
+  <entry>
+    <title type="html"><![CDATA[jdk7-fork-join]]></title>
+    <link href="http://ellios.github.com//blog/2012/09/01/jdk7-fork-join/"/>
+    <updated>2012-09-01T23:10:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/09/01/jdk7-fork-join</id>
+    <content type="html"><![CDATA[<p><em>占坑&#8230;</em></p>
 
 <h3>参考资料</h3>
 
@@ -2006,41 +1774,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="http://gee.cs.oswego.edu/dl/papers/fj.pdf"> fork/join framework article </a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/23/jdk7-transferqueue/">JDK7-TransferQueue</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-23T09:11:00+08:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>继续研究jdk7对concurrency的增强。这次研究下<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/TransferQueue.html">TransferQueue</a>，在jdk7里的实现是<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/LinkedTransferQueue.html">LinkedTransferQueue</a>。它实现了BlockingQueue的接口，并且提供了类似<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronizeQueue</a>的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销，性能相对与其他的队列实现有了很大的提升。其内部的实现是一个FiFo的<a href="http://www.cs.rice.edu/~wns1/papers/2004-DISC-DDS.pdf">Dual Quque</a>。很多开源的项目，在jdk7之前，就早早的用上了这个东东，比如<a href="https://netty.io/">netty</a>，<a href="http://jolbox.com/">bonecp</a>，<a href="https://github.com/killme2008/xmemcached">xmemcached</a>&#8230;</p>
+  <entry>
+    <title type="html"><![CDATA[JDK7-TransferQueue]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/"/>
+    <updated>2012-08-23T09:11:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue</id>
+    <content type="html"><![CDATA[<p>继续研究jdk7对concurrency的增强。这次研究下<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/TransferQueue.html">TransferQueue</a>，在jdk7里的实现是<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/LinkedTransferQueue.html">LinkedTransferQueue</a>。它实现了BlockingQueue的接口，并且提供了类似<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronizeQueue</a>的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销，性能相对与其他的队列实现有了很大的提升。其内部的实现是一个FiFo的<a href="http://www.cs.rice.edu/~wns1/papers/2004-DISC-DDS.pdf">Dual Quque</a>。很多开源的项目，在jdk7之前，就早早的用上了这个东东，比如<a href="https://netty.io/">netty</a>，<a href="http://jolbox.com/">bonecp</a>，<a href="https://github.com/killme2008/xmemcached">xmemcached</a>&#8230;</p>
 
 <p>TransferQueue的基本使用和BlockingQueue差不多，有点特殊的就是它的transfer接口。</p>
 
@@ -2051,41 +1793,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html">http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html</a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/23/java-sort/">JDK排序算法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-23T09:10:00+08:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>中午吃饭的时候和同事讨论了下JDK的排序算法的实现，同事坚持认为是简单的插入排序，觉得JDK应该不会这么弱，看了下JDK的源码，发现JDK针对排序是做了大量的优化的。</p>
+  <entry>
+    <title type="html"><![CDATA[JDK排序算法]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/23/java-sort/"/>
+    <updated>2012-08-23T09:10:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/23/java-sort</id>
+    <content type="html"><![CDATA[<p>中午吃饭的时候和同事讨论了下JDK的排序算法的实现，同事坚持认为是简单的插入排序，觉得JDK应该不会这么弱，看了下JDK的源码，发现JDK针对排序是做了大量的优化的。</p>
 
 <p>JDK对排序的实现在Arrays的sort方法里，Arrays里面有大量的重载的sort方法。而JDK7和JDK6的排序算法又有一些不同。</p>
 
@@ -2351,41 +2067,15 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="http://yangdong.iteye.com/blog/1170214">http://yangdong.iteye.com/blog/1170214</a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/14/jdk7-concurrency-phaser/">JDK7 Concurrency Phaser</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-14T16:51:00+08:00" pubdate data-updated="true">Aug 14<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>继续研究Jdk7的新特性，这次看看jdk7对Concurrency的增强。concurrency这次新增了3个新元素。</p>
+  <entry>
+    <title type="html"><![CDATA[JDK7 Concurrency Phaser]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser/"/>
+    <updated>2012-08-14T16:51:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser</id>
+    <content type="html"><![CDATA[<p>继续研究Jdk7的新特性，这次看看jdk7对Concurrency的增强。concurrency这次新增了3个新元素。</p>
 
 <ol>
 <li>Phaser,类似于CountDownLatch和CyclicBarrier</li>
@@ -2430,167 +2120,1053 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="http://www.blogjava.net/xylz/archive/2010/07/09/325612.html">CountDownLatch的源码分析</a></li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[coffeescript语法篇]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/09/coffeescript-language-ref/"/>
+    <updated>2012-08-09T01:18:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/09/coffeescript-language-ref</id>
+    <content type="html"><![CDATA[<p>上一篇简单分析了下CoffeeScript的源码，这篇开始介绍CoffeeScript的语法。CoffeeScript的语法相比JavaScript要清爽好多，如果有Python，Ruby的经验的话，基本上半天就差不多了。CoffeeScript最终还是会被编译为JavaScript，所以基本的数据类型和JavaScript是一样，学习的时候和编译的JavaScript对应起来会更容易理解。</p>
+
+<h3>Examples</h3>
+
+<p>先睹为快，给个二分查找的例子。</p>
+
+<figure class='code'><figcaption><span>二分查找例子 binary_search.coffee   </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="o">[</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">]</span> <span class="o">=</span> <span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">list</span><span class="o">.</span><span class="n">length</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">while</span> <span class="n">low</span> <span class="o">&lt;</span> <span class="n">high</span>
+</span><span class='line'>    <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">low</span> <span class="o">+</span> <span class="n">high</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="n">val</span> <span class="o">=</span> <span class="n">list</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mid</span> <span class="k">if</span> <span class="n">val</span> <span class="n">is</span> <span class="n">target</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="n">target</span> <span class="k">then</span> <span class="n">low</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">high</span> <span class="o">=</span> <span class="n">mid</span>
+</span><span class='line'>  <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">console</span><span class="o">.</span><span class="n">log</span> <span class="mi">2</span> <span class="n">is</span> <span class="n">index</span> <span class="o">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="o">]</span><span class="p">,</span> <span class="mi">30</span>
+</span><span class='line'><span class="n">console</span><span class="o">.</span><span class="n">log</span> <span class="mi">4</span> <span class="n">is</span> <span class="n">index</span> <span class="o">[-</span><span class="mi">97</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">1200</span><span class="o">]</span><span class="p">,</span> <span class="mi">1200</span>
+</span><span class='line'><span class="n">console</span><span class="o">.</span><span class="n">log</span> <span class="mi">0</span> <span class="n">is</span> <span class="n">index</span> <span class="o">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">70</span><span class="o">]</span><span class="p">,</span> <span class="mi">0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编译后的js代码如下</p>
+
+<figure class='code'><figcaption><span>编译后的JS binary_search.js  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">index</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">index</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">list</span><span class="p">,</span> <span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">high</span><span class="p">,</span> <span class="nx">low</span><span class="p">,</span> <span class="nx">mid</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">_ref</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">_ref</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">],</span> <span class="nx">low</span> <span class="o">=</span> <span class="nx">_ref</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">high</span> <span class="o">=</span> <span class="nx">_ref</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span><span class="nx">low</span> <span class="o">&lt;</span> <span class="nx">high</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">mid</span> <span class="o">=</span> <span class="p">(</span><span class="nx">low</span> <span class="o">+</span> <span class="nx">high</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">val</span> <span class="o">=</span> <span class="nx">list</span><span class="p">[</span><span class="nx">mid</span><span class="p">];</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">val</span> <span class="o">===</span> <span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">mid</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">val</span> <span class="o">&lt;</span> <span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">low</span> <span class="o">=</span> <span class="nx">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">high</span> <span class="o">=</span> <span class="nx">mid</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">===</span> <span class="nx">index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="mi">30</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">4</span> <span class="o">===</span> <span class="nx">index</span><span class="p">([</span><span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">1200</span><span class="p">],</span> <span class="mi">1200</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">0</span> <span class="o">===</span> <span class="nx">index</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">70</span><span class="p">],</span> <span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>后面会介绍CoffeeScript的各个语法点。</p>
+
+<h3>Functions</h3>
+
+<figure class='code'><figcaption><span>coffee函数</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#匿名函数</span>
+</span><span class='line'><span class="n">console</span><span class="o">.</span><span class="n">log</span> <span class="k">do</span> <span class="o">-&gt;</span> <span class="s2">&quot;Hello World&quot;</span>
+</span><span class='line'><span class="c1">#非匿名函数，函数隐式返回最后一个表达式的值</span>
+</span><span class='line'><span class="n">square</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span>
+</span><span class='line'>  <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>
+</span><span class='line'><span class="c1">#调用函数</span>
+</span><span class='line'><span class="n">cube</span>   <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span>
+</span><span class='line'><span class="c1">#函数可以有默认参数</span>
+</span><span class='line'><span class="n">fill</span> <span class="o">=</span> <span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="n">liquid</span> <span class="o">=</span> <span class="s2">&quot;coffee&quot;</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>  <span class="n">console</span><span class="o">.</span><span class="n">log</span> <span class="s2">&quot;Filling the </span><span class="si">#{</span><span class="n">container</span><span class="si">}</span><span class="s2"> with </span><span class="si">#{</span><span class="n">liquid</span><span class="si">}</span><span class="s2">...&quot;</span>
+</span><span class='line'><span class="c1">#函数绑定</span>
+</span><span class='line'><span class="n">setName</span> <span class="o">=</span> <span class="p">(</span><span class="nb">name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>编译后</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">cube</span><span class="p">,</span> <span class="nx">fill</span><span class="p">,</span> <span class="nx">setName</span><span class="p">,</span> <span class="nx">square</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">((</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">})());</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">square</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="mi">2</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">cube</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">square</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">fill</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">container</span><span class="p">,</span> <span class="nx">liquid</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">liquid</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">liquid</span> <span class="o">=</span> <span class="s2">&quot;coffee&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Filling the &quot;</span> <span class="o">+</span> <span class="nx">container</span> <span class="o">+</span> <span class="s2">&quot; with &quot;</span> <span class="o">+</span> <span class="nx">liquid</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">setName</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[coffeescript源码篇]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/09/coffeescript-source-code/"/>
+    <updated>2012-08-09T01:17:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/09/coffeescript-source-code</id>
+    <content type="html"><![CDATA[<p>最近为了凑运费，买了本《深入浅出CoffeeScript》，本来只打算随便翻翻的，不过看了以后发现<a href="http://coffeescript.org/">CoffeeScript</a>还是满有意思的，于是决定好好研究下，这里分享下自己的学习过程。</p>
+
+<h4>Install</h4>
+
+<p>装之前需要提前装好node和npm(具体怎么装google之吧)，node和npm装好后，执行下面的命令，就可以开始体验CoffeeScript了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>npm install -g coffee-script
+</span></code></pre></td></tr></table></div></figure>
 
 
-    </article>
+<hr />
+
+<h4>Compile</h4>
+
+<p>简单的体验下后，对于它把那么灵活的语法转化为比较工整的JS语法有点小好奇，于是把它的源码clone出来，简单的研究了下。</p>
+
+<p>先试着编译它的源码，编译的操作过程如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git clone git://github.com/jashkenas/coffee-script.git
+</span><span class='line'><span class="nb">cd </span>coffee-script
+</span><span class='line'>bin/cake build:full
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OK，编译很迅速，大家可以对源码做各种折腾了。</p>
+
+<hr />
+
+<h4>Jison</h4>
+
+<p>CoffeeScript的核心是一个编译器，它把符合CoffeeScript语法规则的文件转化为JS语法。而CoffeeScript又是利用<a href="http://zaach.github.com/jison/">Jison</a>实现词法和语法的解析。CoffeeScript将语法规则都写到grammar.js文件里，然后利用Jison生成符合该语法规则的编译器。</p>
+
+<p>只要写个简单的语法规则，就可以实现一个编译器，这东西太高级了，于是开始折腾Jison。它的网站上有很多例子，其中有一个生成计算程序的例子，我把它稍微缩减下，让+做-，-做+。</p>
+
+<figure class='code'><figcaption><span>simple_cal.jison</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">/*</span> <span class="n">lexical</span> <span class="n">grammar</span> <span class="o">*/</span>
+</span><span class='line'><span class="o">%</span><span class="n">lex</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%%</span>
+</span><span class='line'>\<span class="n">s</span><span class="o">+</span>                   <span class="o">/*</span> <span class="n">skip</span> <span class="n">whitespace</span> <span class="o">*/</span>
+</span><span class='line'><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">)</span><span class="err">?</span>\<span class="n">b</span>  <span class="k">return</span> <span class="s">&#39;NUMBER&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="s">&quot;-&quot;</span>                   <span class="k">return</span> <span class="s">&#39;-&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="s">&quot;+&quot;</span>                   <span class="k">return</span> <span class="s">&#39;+&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;&lt;</span><span class="n">EOF</span><span class="o">&gt;&gt;</span>               <span class="k">return</span> <span class="s">&#39;EOF&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">/</span><span class="n">lex</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">/*</span> <span class="n">operator</span> <span class="n">associations</span> <span class="ow">and</span> <span class="n">precedence</span> <span class="o">*/</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%</span><span class="n">left</span> <span class="s">&#39;+&#39;</span> <span class="s">&#39;-&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%</span><span class="n">start</span> <span class="n">expressions</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%%</span> <span class="o">/*</span> <span class="n">language</span> <span class="n">grammar</span> <span class="o">*/</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">expressions</span>
+</span><span class='line'>    <span class="p">:</span> <span class="n">e</span> <span class="n">EOF</span>
+</span><span class='line'>        <span class="p">{</span><span class="n">typeof</span> <span class="n">console</span> <span class="o">!==</span> <span class="s">&#39;undefined&#39;</span> <span class="err">?</span> <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="err">$</span><span class="mi">1</span><span class="p">)</span> <span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="err">$</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>         <span class="k">return</span> <span class="err">$</span><span class="mi">1</span><span class="p">;}</span>
+</span><span class='line'>    <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">e</span>
+</span><span class='line'>    <span class="p">:</span> <span class="n">e</span> <span class="s">&#39;+&#39;</span> <span class="n">e</span>
+</span><span class='line'>        <span class="p">{</span><span class="err">$$</span> <span class="o">=</span> <span class="err">$</span><span class="mi">1</span><span class="o">-</span><span class="err">$</span><span class="mi">3</span><span class="p">;}</span>
+</span><span class='line'>    <span class="o">|</span> <span class="n">e</span> <span class="s">&#39;-&#39;</span> <span class="n">e</span>
+</span><span class='line'>        <span class="p">{</span><span class="err">$$</span> <span class="o">=</span> <span class="err">$</span><span class="mi">1</span><span class="o">+</span><span class="err">$</span><span class="mi">3</span><span class="p">;}</span>
+</span><span class='line'>    <span class="o">|</span> <span class="n">NUMBER</span>
+</span><span class='line'>        <span class="p">{</span><span class="err">$$</span> <span class="o">=</span> <span class="n">Number</span><span class="p">(</span><span class="n">yytext</span><span class="p">);}</span>
+</span><span class='line'>    <span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>体验下效果把，当执行7-3时，返回的却是10。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>&gt;&gt; jison simple_cal.jison <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;7-3&quot;</span> &gt; 2 <span class="o">&amp;&amp;</span> node simple_cal.js 2
+</span><span class='line'>&gt;&gt; 10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再深入的原理，就要涉及编译原理的内容，那个东西偶学得可烂的，以后有时间再研究下把。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://coffeescript.org/">http://coffeescript.org/</a></li>
+<li><a href="http://zaach.github.com/jison/">http://zaach.github.com/jison/</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
+  <entry>
+    <title type="html"><![CDATA[HotSpot各种GC的输出]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/06/java-gc-output/"/>
+    <updated>2012-08-06T18:50:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/06/java-gc-output</id>
+    <content type="html"><![CDATA[<p>闲着无事体验下jdk7的一些新特性，先体验下G1，顺手把其他的GC方式也复习下。</p>
+
+<p>用来测试的程序</p>
+
+<figure class='code'><figcaption><span>测试程序  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">gc</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HeapOOM</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">OOMObject</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">OOMObject</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">OOMObject</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">OOMObject</span><span class="o">());</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>SerialGC</h3>
+
+<p>执行命令如下：</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseSerialGC gc.HeapOOM
+</code></pre>
+
+<p>输出如下</p>
+
+<pre><code>[GC [DefNew: 6919K-&gt;1023K(9216K), 0.0184790 secs] 6919K-&gt;4907K(19456K), 0.0185330 secs] [Times: user=0.02 sys=0.00, real=0.01 secs] 
+[GC [DefNew: 9215K-&gt;1024K(9216K), 0.0220750 secs] 13099K-&gt;10753K(19456K), 0.0221190 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
+[GC [DefNew: 8510K-&gt;8510K(9216K), 0.0000280 secs][Tenured: 9729K-&gt;7736K(10240K), 0.0590890 secs] 18240K-&gt;16044K(19456K), [Perm : 2364K-&gt;2364K(21248K)], 0.0592060 secs] [Times: user=0.05 sys=0.00, real=0.05 secs] 
+[Full GC [Tenured: 7736K-&gt;7730K(10240K), 0.0548170 secs] 16044K-&gt;16038K(19456K), [Perm : 2364K-&gt;2362K(21248K)], 0.0548950 secs] [Times: user=0.06 sys=0.00, real=0.06 secs]
+</code></pre>
+
+<h3>Parallel GC</h3>
+
+<p>执行命令如下：</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseParallelGC gc.HeapOOM
+</code></pre>
+
+<p>输出如下：</p>
+
+<pre><code>[GC [PSYoungGen: 6893K-&gt;1017K(9216K)] 6893K-&gt;4937K(19456K), 0.0185000 secs] [Times: user=0.03 sys=0.00, real=0.02 secs] 
+[GC [PSYoungGen: 9209K-&gt;1008K(9216K)] 13129K-&gt;10470K(19456K), 0.0256190 secs] [Times: user=0.03 sys=0.01, real=0.02 secs] 
+[Full GC [PSYoungGen: 1008K-&gt;187K(9216K)] [ParOldGen: 9462K-&gt;10237K(10240K)] 10470K-&gt;10425K(19456K) [PSPermGen: 2367K-&gt;2365K(21248K)], 0.2739010 secs] [Times: user=0.34 sys=0.00, real=0.28 secs] 
+</code></pre>
+
+<h3>Concurrent Mark Sweep</h3>
+
+<p>执行命令如下:</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC gc.HeapOOM
+</code></pre>
+
+<p>输出如下：</p>
+
+<pre><code>[GC [ParNew: 6904K-&gt;1024K(9216K), 0.1083590 secs] 6904K-&gt;6785K(19456K), 0.1084710 secs] [Times: user=0.15 sys=0.01, real=0.11 secs] 
+[GC [ParNew: 9216K-&gt;9216K(9216K), 0.0000500 secs][CMS: 5761K-&gt;8649K(10240K), 0.0645400 secs] 14977K-&gt;13591K(19456K), [CMS Perm : 2365K-&gt;2363K(21248K)], 0.0647080 secs] [Times: user=0.06 sys=0.00, real=0.06 secs] 
+[GC [1 CMS-initial-mark: 8649K(10240K)] 13708K(19456K), 0.0081840 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
+[Full GC [CMS[CMS-concurrent-mark: 0.023/0.023 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
+ (concurrent mode failure): 8649K-&gt;8649K(10240K), 0.0681890 secs] 13708K-&gt;13606K(19456K), [CMS Perm : 2363K-&gt;2363K(21248K)], 0.0682770 secs] [Times: user=0.07 sys=0.00, real=0.07 secs] 
+[Full GC [CMS: 10239K-&gt;10240K(10240K), 0.0688260 secs] 19455K-&gt;17275K(19456K), [CMS Perm : 2366K-&gt;2366K(21248K)], 0.0689230 secs] [Times: user=0.07 sys=0.00, real=0.07 secs] 
+[GC [1 CMS-initial-mark: 10240K(10240K)] 17430K(19456K), 0.0111890 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
+[CMS-concurrent-mark: 0.027/0.027 secs] [Times: user=0.05 sys=0.00, real=0.03 secs] 
+[Full GC [CMS[CMS-concurrent-preclean: 0.025/0.025 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
+ (concurrent mode failure): 10240K-&gt;10240K(10240K), 0.0884470 secs] 19412K-&gt;19412K(19456K), [CMS Perm : 2366K-&gt;2366K(21248K)], 0.0885610 secs] [Times: user=0.09 sys=0.00, real=0.09 secs]
+</code></pre>
+
+<h3>G1</h3>
+
+<p>执行命令如下：</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -XX:+PrintGCDetails -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC gc.HeapOOM
+</code></pre>
+
+<p>G1的输出好大一坨,这里就主要描述它的各个阶段，详细的内容就略过了,有兴趣的话，自己测把。</p>
+
+<pre><code>[GC pause (young), 0.07679200 secs]
+   [Parallel Time:  76.4 ms]
+      [GC Worker Start (ms):  126.0  126.1
+       Avg: 126.1, Min: 126.0, Max: 126.1, Diff:   0.1]
+      [Ext Root Scanning (ms):  0.8  0.7
+       Avg:   0.8, Min:   0.7, Max:   0.8, Diff:   0.1]
+      [Update RS (ms):  7.6  8.0
+       Avg:   7.8, Min:   7.6, Max:   8.0, Diff:   0.4]
+         [Processed Buffers : 3 10
+          Sum: 13, Avg: 6, Min: 3, Max: 10, Diff: 7]
+      [Scan RS (ms):  18.0  11.1
+       Avg:  14.5, Min:  11.1, Max:  18.0, Diff:   6.9]
+      [Object Copy (ms):  49.9  56.5
+       Avg:  53.2, Min:  49.9, Max:  56.5, Diff:   6.6]
+      [Termination (ms):  0.0  0.0
+       Avg:   0.0, Min:   0.0, Max:   0.0, Diff:   0.0]
+         [Termination Attempts : 1 1
+          Sum: 2, Avg: 1, Min: 1, Max: 1, Diff: 0]
+      [GC Worker End (ms):  202.4  202.4
+       Avg: 202.4, Min: 202.4, Max: 202.4, Diff:   0.0]
+      [GC Worker (ms):  76.3  76.2
+       Avg:  76.3, Min:  76.2, Max:  76.3, Diff:   0.1]
+      [GC Worker Other (ms):  0.1  0.2
+       Avg:   0.1, Min:   0.1, Max:   0.2, Diff:   0.1]
+   [Clear CT:   0.1 ms]
+   [Other:   0.3 ms]
+      [Choose CSet:   0.0 ms]
+      [Ref Proc:   0.1 ms]
+      [Ref Enq:   0.0 ms]
+      [Free CSet:   0.0 ms]
+   [Eden: 7168K(7168K)-&gt;0B(3072K) Survivors: 0B-&gt;1024K Heap: 10138K(20M)-&gt;8858K(20M)]
+ [Times: user=0.11 sys=0.00, real=0.08 secs] 
+[GC pause (young) (initial-mark), 0.05340800 secs] 
+[GC concurrent-root-region-scan-start]
+[GC concurrent-root-region-scan-end, 0.0015220]
+[GC concurrent-mark-start]
+[GC pause (young), 0.04182800 secs]
+[Full GC 13M-&gt;10M(20M), 0.0579320 secs]
+ [Times: user=0.07 sys=0.00, real=0.06 secs] 
+[GC concurrent-mark-abort]
+[GC pause (young) (to-space overflow), 0.18594400 secs]
+[GC pause (young) (initial-mark), 0.02209700 secs]
+[GC concurrent-root-region-scan-start]
+[GC concurrent-root-region-scan-end, 0.0000130]
+[GC concurrent-mark-start]
+[Full GC 17M-&gt;15M(20M), 0.0831100 secs]
+ [Times: user=0.09 sys=0.01, real=0.08 secs] 
+[GC pause (young), 0.00407500 secs]
+[GC concurrent-mark-abort]
+[Full GC 15M-&gt;15M(20M), 0.0741120 secs]
+ [Times: user=0.08 sys=0.00, real=0.07 secs] 
+[Full GC 15M-&gt;15M(20M), 0.0801960 secs]
+ [Times: user=0.08 sys=0.00, real=0.08 secs] 
+</code></pre>
+
+<h3>参考资料</h3>
+
+<p><a href="http://blog.csdn.net/firecoder/article/details/7225654">http://blog.csdn.net/firecoder/article/details/7225654</a></p>
+]]></content>
+  </entry>
   
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
-      </li>
-    
-  </ul>
-</section>
-<section>
-  <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
-</section>
+  <entry>
+    <title type="html"><![CDATA[java常用单例]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/03/java-singleton/"/>
+    <updated>2012-08-03T23:55:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/03/java-singleton</id>
+    <content type="html"><![CDATA[<p>单例是最常用到的一个设计模式，java的单例实现方式还是挺多的，总结下遇到的一些单例的实现</p>
 
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
+<p>一. 最简单的单例</p>
+
+<figure class='code'><figcaption><span>最简单的单例  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种有并发问题，为了避免并发问题需要在判断的时候加锁。于是有了下面的实现。</p>
+
+<p>二. 加同步的单例</p>
+
+<figure class='code'><figcaption><span>加同步的单例  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种方式在每次获取对象的时候都要先获取锁，如果多次获取对象的话，会造成一些性能开销。考虑到只有在第一次创建对象时才存在并发问题，于是便有了双重判断的实现方式。</p>
+
+<p>三. 双重判断的同步的单例</p>
+
+<figure class='code'><figcaption><span>双重判断的同步的单例  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="kd">synchronized</span><span class="o">(</span><span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
+</span><span class='line'>                  <span class="k">if</span><span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+</span><span class='line'>                      <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
+</span><span class='line'>              <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>java的同步有很多陷阱，考虑到JMM的指令重排问题，instance被声明为volatile，这能够避免一部分问题，但是仍然会有一些并发的陷阱，比如CPU内部流水线也会做些指令的重排，这可不是受JVM指令控制的。如果我们创建一个非常大的单例对象，有可能会出现这种小概率事件。于是，干脆将同步问题扼杀在摇篮里。</p>
+
+<p>四. 典型饥饿模式的单例</p>
+
+<figure class='code'><figcaption><span>典型饥饿模式的单例  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JVM在对类做初始化时，会做同步处理，以保证一个类只被初始化一次。一般，饥饿模式的单例已经能满足大多数的需求，如果你非常渴望延迟加载，而又不想自己去做同步的话。可以试试第5种方式。</p>
+
+<p>五. 非同步延迟单例</p>
+
+<figure class='code'><figcaption><span>非同步延迟单例  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">SingletonHolder</span><span class="o">{</span>
+</span><span class='line'>          <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">SingletonHolder</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种方式利用JVM初始化的机制来达到延迟加载的目的，个人比较喜欢这种单例实现。不过具体实现的时候还是可能会有各种问题。比如构造类的时候可能出现异常，或者在初始化的时候出现死锁等问题。
+最近看到有人用枚举来实现单例，也挺巧妙的。</p>
+
+<p>六. 枚举单例</p>
+
+<figure class='code'><figcaption><span>枚举单例  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">enum</span> <span class="n">Singleton</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">INSTANCE</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">(){</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>觉得这种方式比较容易引起歧义，没太想好它的应用场景。不过保证单例是没啥问题。</p>
+
+<p>最近看python的一些设计模式，看到一些观点，认为其实各种单例的实现方式或多或少都有些问题，主张大家少用单例。如果要达到单例的效果，可以把对象提前构造出来，弄成一个类似全局变量的东东来用。个人还是比较赞同的，纯天然的总比再加工的更让人放心点。</p>
+
+<h3>参考资料</h3>
+
+<p><a href="http://www.blogjava.net/xylz/archive/2009/12/18/306622.html">http://www.blogjava.net/xylz/archive/2009/12/18/306622.html</a></p>
+]]></content>
+  </entry>
   
-  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  <entry>
+    <title type="html"><![CDATA[DBCP源码分析]]></title>
+    <link href="http://ellios.github.com//blog/2012/07/23/dbcp-source/"/>
+    <updated>2012-07-23T11:39:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/07/23/dbcp-source</id>
+    <content type="html"><![CDATA[<h3>Why 连接池</h3>
+
+<p>一般我们进行一个数据库操作时，都要进行下面的步骤</p>
+
+<ol>
+<li>客户端与服务器端建立连接</li>
+<li>执行数据库操作</li>
+<li>释放连接</li>
+</ol>
+
+
+<p>频繁的数据库的连接和释放会占用大量的时间和资源，于是就有必要重复利用数据库连接，这便要用到连接池技术。</p>
+
+<h3>DBCP的使用和配置</h3>
+
+<h5>DBCP的使用</h5>
+
+<p>一个简单的使用示例，但是代码还是有点长，这里放个传送门，有兴趣的可以点进去看看。
+<a href="https://gist.github.com/3161996">DBCPDemo</a></p>
+
+<h5>DBCP的配置</h5>
+
+<p>配置信息看这里把，传送门<a href="http://commons.apache.org/dbcp/configuration.html">DBCP Configuration</a></p>
+
+<h3>DBCP源码分析</h3>
+
+<p>DBCP其实就是一个存储数了据库连接的Object Pool，Object Pool是利用了commons-pool实现的。下面从BasicDataSource开始逐步分析DBCP的代码。
+<img src="http://ellios.github.com//images/bds.png" alt="BasicDataSource类结构图" />
+从上图可以看出，BasicDataSource可以看成是一个Adapter模式的实现，其封装了真正实现连接池pool的PoolingDataSource，而PoolingDataSource实现了获
+取数据库连接的getConnection方法。</p>
+
+<figure class='code'><figcaption><span>getConnection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="n">Connection</span><span class="o">)(</span><span class="n">_pool</span><span class="o">.</span><span class="na">borrowObject</span><span class="o">());</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">conn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PoolGuardConnectionWrapper</span><span class="o">(</span><span class="n">conn</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>_pool就是ObjectPool，其实现是GenericObjectPool，这就是连接池的核心，真正实现Object Pool的地方。PoolGuardConnectionWrapper对Connection做了简单封装，如果通过该连接对数据库进行操作时，连接已经关闭，就会抛出异常。</p>
+
+<p>下面我们重点分析GenericObjectPool的代码，GenericObjectPool的类结构图如下图所示。
+<img src="http://ellios.github.com//images/gop.png" alt="GenericObjectPool类结构图" /></p>
+
+<p>GenericObjectPool有三个内部类，分别是Config，Evictor和Latch.Config类包含了各种默认配置信息，如maxActive，maxWait（单位毫秒）等。Evictor类是清道夫，对于pool里过期的Idle对象会进行清理。Latch封装了真实的对象，这里为什么要对真实的对象进行封装，主要是拿它用来排队的，以保证请求的公平性，先来先拿。PoolableObjectFactory是生成对象的工厂接口，在使用pool前需要将其实现（这里是PoolableConnectionFactory）赋给pool的_factory。</p>
+
+<p>GenericObjectPool主要的接口有两个，分别是borrowObject和returnObject。先看下borrowObject的逻辑，代码太长。这里只贴一些主要的代码，有兴趣的可以自己去看。</p>
+
+<div><script src='https://gist.github.com/3163574.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>再看下returnObject,逻辑简单了好多。</p>
+
+<div><script src='https://gist.github.com/3163684.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>话说DBCP和common-pool的代码好老，最近看了下bonecp，据说比DBCP快了30被，以后分析下他的代码。</p>
+]]></content>
+  </entry>
   
-  <script type="text/javascript">
-    $.domReady(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
+  <entry>
+    <title type="html"><![CDATA[python程序打包成exe]]></title>
+    <link href="http://ellios.github.com//blog/2012/06/08/py2exe/"/>
+    <updated>2012-06-08T22:14:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/06/08/py2exe</id>
+    <content type="html"><![CDATA[<p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。</p>
 
-        github.showRepos({
-            user: 'ellios',
-            count: 1,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-<section>
-  <h1>新浪微博</h1>
-  <ul id="weibo">
-    <li>
-      <iframe 
-        width="100%" 
-        height="100" 
-        class="share_self" 
-        frameborder="0" 
-        scrolling="no" 
-        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
-      </iframe>
-    </li>
-  </ul>
-</section>
-
-
+<figure class='code'><figcaption><span>setup.py  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
+</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
+</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/*.*&#39;</span><span class="p">))]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">setup</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
+</span><span class='line'>      <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<section class="googleplus">
-  <h1>
-    <a href="https://plus.google.com/116522806634244035442?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
-</section>
+<p>我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
 
+<pre><code>python setup.py py2exe
+</code></pre>
 
+<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
 
+<h3>参考资料</h3>
+
+<ul>
+<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
+<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
-</aside>
+  <entry>
+    <title type="html"><![CDATA[java版Berkeley db安装]]></title>
+    <link href="http://ellios.github.com//blog/2012/06/08/bdb-install/"/>
+    <updated>2012-06-08T22:10:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/06/08/bdb-install</id>
+    <content type="html"><![CDATA[<p>下载源码包<a title="db-4.5.20.tar.gz" href="http://download.oracle.com/berkeley-db/db-4.5.20.tar.gz">db-4.5.20.tar.gz</a> 执行下面的命令，编译源码</p>
 
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - ellios -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
 
-</footer>
+<pre>tar -xzf db-4.5.20.tar.gz
+cd db-4.5.20/build_unix
+../dist/configure --prefix=/opt/apps/berkeleydb --enable-java
+make &amp;&amp; make install
+</pre>
+
+
+<p>将动态库加到系统查找路径</p>
+
+
+<pre>echo &lsquo;/usr/local/berkeleydb/lib/&rsquo; &gt;&gt; /etc/ld.so.conf
+ldconfig
+</pre>
+
+
+<p>或者</p>
+
+
+<pre>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/apps/berkeleydb/lib</pre>
+
+
+<p>顺便提下windows下的安装 下载<a title="db-4.5.20.msi" href="http://download.oracle.com/berkeley-db/db-4.5.20.msi">db-4.5.20.msi</a>，安装。 将安装目录下的bin/libdb_java45.dll，bin/libdb45.dll和bin/msvcp71.dll拷贝到系统的system32目录下。  <span style="color: grey;">db.jar是java的接口类库，可以通过他来访问dbd</span></p>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li> <a title="berkeley db" href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index.html">berkeley db</a> </li>
+</ul>
+
+
+
+]]></content>
+  </entry>
   
-
-<script type="text/javascript">
-      var disqus_shortname = 'ellios';
-      
-        
-        var disqus_script = 'count.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
+  <entry>
+    <title type="html"><![CDATA[jnotify]]></title>
+    <link href="http://ellios.github.com//blog/2012/06/08/jnotify/"/>
+    <updated>2012-06-08T11:38:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/06/08/jnotify</id>
+    <content type="html"><![CDATA[<p>eclipse装了aptana，结果报</p>
 
 
+<blockquote>JNotifyAdapterLinux.registerToSubTree : warning, failed to register /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base :Error watching /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base : No space left on device</blockquote>
+
+
+<p>查了下，aptana使用了jnotify，而jnotify使inotify的java封装，inotify对每个进程能够观察的文件数使是有限制的。可以把限制加大一些来解决这个问题。</p>
+
+
+<pre>su
+echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
+</pre>
+
+
+<p>顺便发掘了下jnotify，对文件的增删改等事件进行监听的java库，使用也很简单。  </p>
+
+
+<h3>参考文档</h3>
+
+<ul>
+<li> jnotify <a title="http://jnotify.sourceforge.net/" href="http://jnotify.sourceforge.net/">http://jnotify.sourceforge.net/</a> </li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[硬盘安装ubuntu11.04]]></title>
+    <link href="http://ellios.github.com//blog/2012/06/08/ying-pan-an-zhuang-ubuntu11-dot-04/"/>
+    <updated>2012-06-08T11:19:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/06/08/ying-pan-an-zhuang-ubuntu11-dot-04</id>
+    <content type="html"><![CDATA[<p>每次重装系统，都要查一堆的文章，常用的几个命令以及一些常见的问题就是记不住。实在有必要写一下备忘了。</p>
+
+
+<p>现有的系统winxp, win7，要装的系统是ubuntu 11.04.</p>
+
+
+<!--more-->
+
+
+<h3>一些准备工作</h3>
+
+<ul>
+<li><a href="http://sourceforge.net/projects/grub4dos/">grub4dos</a></li>
+<li><a href="http://www.ubuntu.com/download/ubuntu/download">ubuntu-11.04-XXX.iso</a>（系统的镜像文件）</li>
+<li><a href="http://www.ipauly.com/bbs/dispbbs.asp?boardid=2&amp;Id=1">bootice</a>(这个工具不是很必要，我用它来修复一些mbr的问题)</li>
+</ul>
+
+
+<h3>设置启动引导</h3>
+
+<ul>
+<li>解压grub4dos，将目录中的grldr，grldr.mbr，grub.exe三个文件复制到C盘根目录下</li>
+<li>打开ubuntu-11.04-XXX.iso，将casper目录下vmlinuz、initrd.lz两个文件提取到C盘根目录下</li>
+<li>C 盘根目录下建立menu.lst 文件，内容如下</li>
+<pre>color blue/green yellow/red white/magenta white/magenta
+timeout 30
+default /default
+
+title Ubuntu Oneiric
+root (hd0,7)
+find /boot/grub/core.img
+kernel /boot/grub/core.img
+boot
+
+title Install Ubuntu
+find --set-root /ubuntu-11.04-desktop-i386.iso
+kernel /vmlinuz boot=casper iso-scan/filename=/ubuntu-11.04-desktop-i386.iso locale=zh_CN.UTF-8
+initrd /initrd.lz
+
+title Windows 7  
+acpi  
+fallback 1  
+root (hd0,0)  
+chainloader /bootmgr  
+</pre>
+<li>设置windows引导项                 
+<ul>
+<li style="list-style-type: lower-roman;">如果是winxp的，修改隐藏的boot.ini文件，我的boot.ini内容如下</li>
+<pre style="margin-left: -20px;">[boot loader]
+timeout=30
+default=c:\grldr
+[operating systems]
+multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="Microsoft Windows XP Professional" /noexecute=optin /fastdetect
+c:\grldr="install ubuntu"
+</pre>
+<li style="list-style-type: lower-roman;">如果是win7的话，以管理员身份运行cmd，并执行一下命令。（id是create时生成的一长串字母）</li>
+</ul>
+<ul>
+<pre style="margin-left: -20px;">bcdedit /create /d "grub4dos" /application bootsector
+bcdedit /set {id} device partition=c: 
+bcdedit /set {id} path \grldr.mbr 
+bcdedit /displayorder {id} /addlast 
+</pre> 
+</ul>
+</li>
+</ul>
+
+
+<p>引导设置好后，重启系统，选择install ubuntu就进入安装界面了，安装界面还是很友好的，基本上照提示一步步来就好了，这里记录下几个碰到的小问题</p>
+
+<ul>
+<li>到分区的时候很慢，一度以为是不是有啥毛病了，耐心点就好</li>
+<li>有时候会提示卸载不了/iosdevice, 执行 sudo umount -l /iosdevice</li>
+</ul>
+
+
+<p>装好ubuntu后，grub引导可能会覆盖之前的windows引导，运行bootice恢复下windows引导，再在menu.lst中加上对ubuntu的引导就可以了</p>
+
+<h3>参考文档</h3>
+
+<ul>
+<li><a href="http://chinageek.sinaapp.com/archives/83">win7使用grub安装ubuntu11.10</a></li>
+<li><a href="http://guge1616.blog.51cto.com/327785/247174">Windows7/Vista下如何将grub加入开机菜单</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress]]></title>
+    <link href="http://ellios.github.com//blog/2012/05/02/octopress/"/>
+    <updated>2012-05-02T19:15:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/05/02/octopress</id>
+    <content type="html"><![CDATA[<p>第一篇octopress日志！</p>
+
+<!--more-->
 
 
 
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
+
+<figure class='code'><figcaption><span>Discover if a number is prime</span><a href='http://www.noulakaz.net/weblog/2007/03/18/a-regular-expression-to-check-for-prime-numbers/'>Source Article</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Fixnum</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">prime?</span>
+</span><span class='line'>    <span class="p">(</span><span class="s1">&#39;1&#39;</span> <span class="o">*</span> <span class="nb">self</span><span class="p">)</span> <span class="o">!~</span> <span class="sr">/^1?$|^(11+?)\1+$/</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><video width='640' height='320' preload='none' controls poster='http://s3.imathis.com/video/zero-to-fancy-buttons.png'><source src='http://s3.imathis.com/video/zero-to-fancy-buttons.mp4' type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'></video></p>
+
+<p><img class="right" src="http://placekitten.com/300/500" width="150" height="250" title="Place Kitten #4" alt="An image of a very cute kitten"></p>
+
+<div><script src='https://gist.github.com/996818.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
 
 
 
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+]]></content>
+  </entry>
+  
+</feed>

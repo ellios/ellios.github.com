@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JDK7 Concurrency Phaser - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="继续研究Jdk7的新特性，这次看看jdk7对Concurrency的增强。concurrency这次新增了3个新元素。 Phaser,类似于CountDownLatch和CyclicBarrier
+TransferQueue, 比SynchronousQueue更加高效的队列
+Fork-Join &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JDK7 Concurrency Phaser</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-14T16:51:00+08:00" pubdate data-updated="true">Aug 14<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>继续研究Jdk7的新特性，这次看看jdk7对Concurrency的增强。concurrency这次新增了3个新元素。</p>
+
+<ol>
+<li>Phaser,类似于CountDownLatch和CyclicBarrier</li>
+<li>TransferQueue, 比SynchronousQueue更加高效的队列</li>
+<li>Fork-Join, 类似与MapReduce的东东</li>
+</ol>
+
+
+<p>体验下Phaser, 这个东东和CountDownLatch,CyclicBarrier的功能比较类似，但是要更加灵活，提供了更多的控制。</p>
+
+<p>先来回顾下CountDownLatch, CyclicBarrier。下面这段程序每次同时执行一组任务，然后当这一组任务执行完后，再执行下一组。用CyclicBarrier对每组的各个任务的执行时机进行控制，用CountDownLatch对各组任务的执行时机进行控制。</p>
+
+<div><script src='https://gist.github.com/3361796.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>复习完毕，下面来把Phaser好好弄清楚。这个东东究竟是个啥，为啥能比CountDownLatch，CyclicBarrier更灵活呢。Phaser类的注释里对Phaser做了充分的描述，我们这里简单整理下。</p>
+
+<p>Phaser是一个可重用的同步Barrier，类似与CountDownLatch和CyclicBarrier，但是要更加灵活</p>
+
+<ol>
+<li><p><em>Registration</em>. Phaser支持通过register()和bulkRegister(int parties)方法来动态调整注册任务的数量，此外也支持通过其构造函数进行指定初始数量。在适当的时机，Phaser支持减少注册任务的数量，例如 arriveAndDeregister()。单个Phaser实例允许的注册任务数的上限是65535。</p></li>
+<li><p><em>Arrival</em>. 正如Phaser类的名字所暗示，每个Phaser实例都会维护一个phase number，初始值为0。每当所有注册的任务都到达Phaser时，phase number累加，并在超过Integer.MAX_VALUE后清零。arrive()和arriveAndDeregister()方法用于记录到 达，arriveAndAwaitAdvance()方法用于记录到达，并且等待其它未到达的任务。</p></li>
+<li><p><em>Termination</em>.Phaser支持终止。Phaser终止之后，调用register()和bulkRegister(int parties)方法没有任何效果，arriveAndAwaitAdvance()方法也会立即返回。触发终止的时机是在protected boolean onAdvance(int phase, int registeredParties)方法返回时，如果该方法返回true，那么Phaser会被终止。默认实现是在注册任务数为0时返回true（即 return registeredParties == 0;）。此外，forceTermination()方法用于强制终止，isTerminated()方法用于判断是否已经终止。</p></li>
+<li><p><em>Tiering</em>. Phaser支持层次结构，即通过构造函数Phaser(Phaser parent)和Phaser(Phaser parent, int parties)构造一个树形结构。这有助于减轻因在单个的Phaser上注册过多的任务而导致的竞争，从而提升吞吐量，代价是增加单个操作的开销。</p></li>
+</ol>
+
+
+<p>描述已经好清楚了，下面我们用Phaser实现上面类似功能的程序。</p>
+
+<div><script src='https://gist.github.com/3371555.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://puredanger.com/tech/2009/11/15/jsr-166-concurrency-updates-hit-jdk-7/">http://puredanger.com/tech/2009/11/15/jsr-166-concurrency-updates-hit-jdk-7/</a></li>
+<li><a href="http://tech.puredanger.com/2009/02/28/java-7-transferqueue/">http://tech.puredanger.com/2009/02/28/java-7-transferqueue/</a></li>
+<li><a href="http://yaofeng928.iteye.com/blog/1136648">http://yaofeng928.iteye.com/blog/1136648</a></li>
+<li><a href="http://whitesock.iteye.com/blog/1135457">http://whitesock.iteye.com/blog/1135457</a></li>
+<li><a href="http://www.blogjava.net/xylz/archive/2010/07/09/325612.html">CountDownLatch的源码分析</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-14T16:51:00+08:00" pubdate data-updated="true">Aug 14<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>Java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser/" data-via="" data-counturl="http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/09/coffeescript-language-ref/" title="Previous Post: coffeescript语法篇">&laquo; coffeescript语法篇</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/08/23/java-sort/" title="Next Post: JDK排序算法">JDK排序算法 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser/';
+        var disqus_url = 'http://ellios.github.com//blog/2012/08/14/jdk7-concurrency-phaser/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

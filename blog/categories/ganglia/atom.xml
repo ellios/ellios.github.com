@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ganglia | ellios's blog]]></title>
+  <link href="http://ellios.github.com//blog/categories/ganglia/atom.xml" rel="self"/>
+  <link href="http://ellios.github.com//"/>
+  <updated>2013-04-02T00:07:14+08:00</updated>
+  <id>http://ellios.github.com//</id>
+  <author>
+    <name><![CDATA[ellios]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ganglia]]></title>
+    <link href="http://ellios.github.com//blog/2013/03/12/ganglia/"/>
+    <updated>2013-03-12T23:38:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2013/03/12/ganglia</id>
+    <content type="html"><![CDATA[<p>最近忙的一个项目，终于上线了，忙了一个多月，但是心里仍然很没谱。为什么没谱，主要是因为目前的系统缺乏有效的监控，对于机器负载，jvm的运行情况，各接口的调用次数，接口的调用时间。于是痛下决心，利用系统刚上线，空余的一周搭建一套监控系统。</p>
+
+<p>之前做运维的工作很少，对于各种监控系统更是缺乏有效的了解，了解到的一些常用监控系统有catti，zabbix和ganglia，考虑再三选择了ganglia。为什么选择ganglia呢，理由没那么充分，可能之前看过ganglia的一些资料，对他更为熟悉，对于他出身Berkley和支持python，这两点都比较满意，于是就选择它了。</p>
+
+<p>选型之后就开始折腾了，相关的资料不多，很多的配置都是试着来，期间走了很多的弯路，本来预计两天搞定的事情，其实用了一周多。直接导致本周计划的持续集成环境的搭建没时间搞了。这里简单记录下安装过程。</p>
+
+<h3>相关简介</h3>
+
+<p><a href="http://ganglia.info/">Ganglia</a>是UC Berkley发起的一个开源项目，可以用来监控数以千记的服务器集群，具有很好的扩展性。Ganglia主要包括三个部分
+1. Gmond，运行在每台目标机器节点上，用于获取节点的监控数据，gmond不仅能够收集本节点的数据，还能接收其他节点发来的数据，对数据做汇集后发送到gmetad，这样就可以保证整个监控系统的可扩展性；
+2. Gemtad，将各gmond的数据收集到一起，用rrdtool将数据保存到硬盘上
+3. Web Front， 将rrdtool生成的数据输出可视化的图片</p>
+
+<p>简单介绍下rrdtool（Round Robin Database Tool）
+rrdtool是一种环状结构的数据库，非常适合处理时间序列的数据，能够非常高效的绘制时间序列的图片。ganglia的数据存储和可视化都是通过rrdtool实现的。</p>
+
+<h3>安装</h3>
+
+<h4>Ubuntu安装</h4>
+
+<p>Ubuntu下用apt-get会自动把相关的依赖都给安装上，执行下面的命令</p>
+
+<pre><code>```sh
+sudo apt-get install ganglia-monitor ganglia-webfrontend
+```
+</code></pre>
+
+<h4>rh5编译安装</h4>
+
+<ol>
+<li>安装依赖的库</li>
+</ol>
+
+
+<p>先用yum把相关的依赖都安装上
+<code>sh
+yum -y install apr-devel apr-util check-devel cairo-devel pango-devel \
+libxml2-devel rpmbuild glib2-devel dbus-devel freetype-devel fontconfig-devel \
+gcc-c++ expat-devel python-devel libXrender-devel libconfuse
+</code>
+虽然列出来好多，但是绝大多数都是一些常见的基础包，需要注意的就是expat和libconfuse</p>
+
+<ol>
+<li><p>编译安装rrdtool，执行下面的命令
+<code>sh
+wget http://oss.oetiker.ch/rrdtool/pub/rrdtool.tar.gz
+tar zxvf rrdtool*
+cd rrdtool-*
+./configure --prefix=/data/apps/rrdtool
+make
+make install
+</code></p></li>
+<li><p>编译安装ganglia
+<code>sh
+export CPPFLAGS="$CPPFLAGS -I/opt/apps/rrdtool"
+export LDFLAGS="$LDFLAGS -L/opt/apps/rrdtool"
+tar –zxvf ganglia-3.1.2.tar.gz
+cd ganglia-3.1.2.tar.gz
+./configure --prefix=/data/apps/ganglia --with-gmetad
+make
+make install
+</code></p></li>
+</ol>
+
+
+<p>4.将编译好的ganglia发布到客户端
+首先在目标机器上建立ssh信任，然后执行下面的脚本
+```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<p>GANGLIA_BIN=/data/apps/ganglia/bin
+GANGLIA_SBIN=/data/apps/ganglia/sbin
+GANGLIA_LIB=/data/apps/ganglia/lib64
+i=$1
+ssh $i mkdir -p $GANGLIA_BIN
+ssh $i mkdir -p $GANGLIA_SBIN
+scp $GANGLIA_BIN/gmetric $i:$GANGLIA_BIN
+scp ${GANGLIA_SBIN}/gmond $i:${GANGLIA_SBIN}/gmond
+ssh $i ln -fs $GANGLIA_SBIN/gmond /usr/sbin/gmond
+scp -r $GANGLIA_LIB $i:$GANGLIA_LIB
+ssh $i mkdir -p /etc/ganglia/
+scp gmond.conf $i:/etc/ganglia/gmond.conf
+scp /etc/init.d/gmond $i:/etc/init.d/
+scp /lib64/libexpat.so.0 $i:/lib64/
+scp /usr/lib64/libconfuse.so.0 $i:/usr/lib64/
+scp /usr/lib64/libapr-1.so.0 $i:/usr/lib64/
+ssh $i chkconfig --add gmond
+ssh $i chkconfig gmond on
+ssh $i service gmond start
+```</p>
+
+<p>5.搭建Http Server
+ganglia的Web界面是用php写的，所以支持php的http server是必须的。这个没啥好说的，php和各种http Server集成的方法还是
+挺多的，我用的最经典的Apache+php_module的方式。</p>
+
+<h3>配置</h3>
+
+<p>对应于组成ganglia的三种组件，ganglia的配置也需要对这三种组件分别做配置</p>
+
+<ol>
+<li><p>Web Front的配置
+Web Front的配置文件是web项目下的conf.php文件，新版的web项目可能没有这个文件，自己建一个就好了，默认是先从conf.php加载不到，如果
+没有的话，就从conf_default.php加载。可以通过这个文件对web项目做些简单的定制。下面是我的配置文件。
+<code>php
+$conf['gmetad_root'] = "/data/appdata/ganglia";
+$conf['rrds'] = "${conf['gmetad_root']}/rrds";
+</code></p></li>
+<li><p>Gmetad的配置
+Gmetad的配置文件默认是/etc/ganglia/gmetad.conf，编译的时候可以自己指定配置文件的位置在configure加--sysconfdir=xx.这个文件里面
+最重要的配置项是data_source，下面是我的一个简要的配置
+<code>php
+data_source "monitor" xx.xx.xx.xx:8649
+data_source "test" xx.xx.xx.xx:8649
+rrd_rootdir "/data/appdata/ganglia/rrds"
+</code></p></li>
+<li><p>Gmond的配置
+Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低级错误。Gmond的默认数据收集的方式有组播和单播两种，默认是组播，组播的好处是配置非常简单，
+但是对网络的可适应要差些。我们的机器由于有跨机房的问题，所以用的是单播的方式。</p></li>
+</ol>
+
+
+<p>生成默认的gmond配置文件
+<code>sh
+gmond --default_config &gt; /etc/ganglia/gmond.conf
+</code></p>
+
+<p>我的配置文件的示例
+```php
+globals {
+  daemonize = yes
+  setuid = yes
+  user = nobody
+  debug_level = 0
+  max_udp_msg_len = 1472
+  mute = no
+  deaf = no
+  allow_extra_data = yes
+  host_dmax = 86400 /<em>secs. Expires (removes from web interface) hosts in 1 day </em>/
+  host_tmax = 20 /<em>secs </em>/
+  cleanup_threshold = 300 /<em>secs </em>/
+  gexec = no
+  send_metadata_interval = 120 /<em>secs </em>/
+}</p>
+
+<p>cluster {
+  name = "cluster" /<em>这个字段是集群的名称，对应gmetad的data_source的名称 </em>/
+  owner = ""
+  latlong = "unspecified"
+  url = ""
+}</p>
+
+<p>host {
+  location = "unspecified"
+}</p>
+
+<p>udp_send_channel {
+  host = xx.xx.xx.xx
+  port = 7649
+  ttl = 1
+}</p>
+
+<p>udp_recv_channel {
+  port = 7649
+  bind = yy.yy.yy.yy
+}</p>
+
+<p>tcp_accept_channel {
+  port = 7649
+}
+```</p>
+
+<h3>遇到的一些问题</h3>
+
+<ol>
+<li>gmond会把一些错误日志打到系统日志里面，如果有问题可以关注下系统日志</li>
+<li>gmond -d 10可以打出debug信息</li>
+</ol>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://www.imxylz.info/wiki/Ganglia/Ganglia">http://www.imxylz.info/wiki/Ganglia/Ganglia</a></li>
+<li><a href="http://www.howtocn.org/ganglia_how_to">http://www.howtocn.org/ganglia_how_to</a></li>
+<li><a href="http://sourceforge.net/apps/trac/ganglia/wiki">http://sourceforge.net/apps/trac/ganglia/wiki</a></li>
+<li><a href="">http://ganglia.info/</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

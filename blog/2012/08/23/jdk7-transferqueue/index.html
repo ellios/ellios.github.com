@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JDK7-TransferQueue - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="继续研究jdk7对concurrency的增强。这次研究下TransferQueue，在jdk7里的实现是LinkedTransferQueue。它实现了BlockingQueue的接口，并且提供了类似SynchronizeQueue的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JDK7-TransferQueue</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-23T09:11:00+08:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>继续研究jdk7对concurrency的增强。这次研究下<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/TransferQueue.html">TransferQueue</a>，在jdk7里的实现是<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/LinkedTransferQueue.html">LinkedTransferQueue</a>。它实现了BlockingQueue的接口，并且提供了类似<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronizeQueue</a>的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销，性能相对与其他的队列实现有了很大的提升。其内部的实现是一个FiFo的<a href="http://www.cs.rice.edu/~wns1/papers/2004-DISC-DDS.pdf">Dual Quque</a>。很多开源的项目，在jdk7之前，就早早的用上了这个东东，比如<a href="https://netty.io/">netty</a>，<a href="http://jolbox.com/">bonecp</a>，<a href="https://github.com/killme2008/xmemcached">xmemcached</a>&#8230;</p>
+
+<p>TransferQueue的基本使用和BlockingQueue差不多，有点特殊的就是它的transfer接口。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://tech.puredanger.com/2009/02/28/java-7-transferqueue/">http://tech.puredanger.com/2009/02/28/java-7-transferqueue/</a></li>
+<li><a href="http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html">http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-23T09:11:00+08:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>Java</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/" data-via="" data-counturl="http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/23/java-sort/" title="Previous Post: JDK排序算法">&laquo; JDK排序算法</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/09/01/jdk7-fork-join/" title="Next Post: jdk7-fork-join">jdk7-fork-join &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/';
+        var disqus_url = 'http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

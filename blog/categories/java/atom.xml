@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Java | ellios's blog]]></title>
+  <link href="http://ellios.github.com//blog/categories/java/atom.xml" rel="self"/>
+  <link href="http://ellios.github.com//"/>
+  <updated>2013-04-02T00:07:14+08:00</updated>
+  <id>http://ellios.github.com//</id>
+  <author>
+    <name><![CDATA[ellios]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[zookeeper入门]]></title>
+    <link href="http://ellios.github.com//blog/2012/11/11/zookeeper-tutorial/"/>
+    <updated>2012-11-11T13:39:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/11/11/zookeeper-tutorial</id>
+    <content type="html"><![CDATA[<h3>What is Zookeeper</h3>
+
+<p>ZooKeeper is a high-performance <strong>coordination</strong> service for <strong>distributed</strong> applications. It exposes common services - such as <strong>naming</strong>, <strong>configuration management</strong>, <strong>synchronization</strong>, and <strong>group services</strong> - in a simple interface so you don't have to write them from scratch. You can use it off-the-shelf to implement <strong>consensus</strong>, <strong>group management</strong>, <strong>leader election</strong>, and <strong>presence protocols</strong>.</p>
+
+<p>Zookeeper提供了如下的一致性保证：</p>
+
+<ol>
+<li>顺序一致性。客户端的更新顺序与它们被发送的顺序相一致。</li>
+<li>原子性。更新操作要么成功要么失败，不会更新半拉。</li>
+<li>单系统镜像。无论客户端连接到哪一个服务器，客户端将看到相同的 ZooKeeper 视图。</li>
+<li>可靠性。一旦一个更新操作被应用，那么在客户端再次更新它之前，它的值将不会改变。</li>
+<li>实时性。在特定的一段时间内，客户端能够得到数据变化的通知</li>
+</ol>
+
+
+<h3>Name Space</h3>
+
+<p><img src="http://zookeeper.apache.org/doc/r3.4.4/images/zknamespace.jpg" alt="ZooKeeper's Hierarchical Namespace" /></p>
+
+<p>如图所示，zookeeper的命令空间是一个树状结构，类似于文件系统。树中的每个节点对应一个znode。</p>
+
+<h4>Znode</h4>
+
+<ol>
+<li>znode通过路径来唯一标识</li>
+<li>znode有分为<strong>PERSISTENT</strong>和<strong>EPHEMERAL</strong>(EPHEMERAL的生命周期依赖于client session，对应session close/expire后其znode也会消失)</li>
+<li>znode的数据读写是原子的</li>
+<li>znode的数据数据结构
+
+<ul>
+<li>czxid : The zxid of the change that caused this znode to be created.</li>
+<li>mzxid : The zxid of the change that last modified this znode.</li>
+<li>ctime : The time in milliseconds from epoch when this znode was created.</li>
+<li>mtime : The time in milliseconds from epoch when this znode was last modified.</li>
+<li>version : The number of changes to the data of this znode.</li>
+<li>cversion : The number of changes to the children of this znode.</li>
+<li>aversion : The number of changes to the ACL of this znode.</li>
+<li>ephemeralOwner : The session id of the owner of this znode if the znode is an ephemeral node. If it is not an ephemeral node, it will be zero.</li>
+<li>dataLength : The length of the data field of this znode.</li>
+<li>numChildren : The number of children of this znode.</li>
+</ul>
+</li>
+<li>zonde的数据大小是有限制的，默认最大是1M，可以通过修改环境变量jute.maxbuffer来设置</li>
+</ol>
+
+
+<h3>Zookeeper Cluster</h3>
+
+<p><img src="http://zookeeper.apache.org/doc/r3.4.4/images/zkservice.jpg" alt="Zookeeper Cluster" /></p>
+
+<p>Zookeeper中的每个节点都在内存中有个一份所有数据的副本。</p>
+
+<h4>角色</h4>
+
+<p>Zookeeper集群中，每个节点担任下面的一种角色。</p>
+
+<ul>
+<li>leader：集群的管理者（数据同步，数据更新提议），通过paxos算法选举出来的</li>
+<li>follower：参与投票，在leader出问题时，可以被选举为follower</li>
+<li>observer：定时从leader同步数据，提高系统的读性能
+
+<h4>Paxos</h4>
+
+<p><a href="http://en.wikipedia.org/wiki/Paxos_algorithm">Paxos</a>是一种分布式一致性算法，是zookeeper保证数据一致性的基础。网上关于paxos的内容还挺多的，有兴趣的自行找吧。</p></li>
+</ul>
+
+
+<h3>Zookeeoer的应用</h3>
+
+<ul>
+<li>Leader Election</li>
+<li>Group Membership</li>
+<li>Configuration Management</li>
+<li>Cluster Management</li>
+<li>分布式锁</li>
+<li>分布式队列</li>
+</ul>
+
+
+<h3>实践</h3>
+
+<p>Zookeeper自身提供的接口比较麻烦，网上有很多开源的zookeeper client的封装实现，目前用了netflix出的curator，这里<a href="https://github.com/Netflix/curator/tree/master/curator-examples">examples</a>有一些例子，有兴趣的可以看下。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://zookeeper.apache.org/">http://zookeeper.apache.org/</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/2318">http://rdc.taobao.com/team/jm/archives/2318</a></li>
+<li><a href="http://zookeeper.apache.org/doc/r3.4.4/zookeeperAdmin.html">http://zookeeper.apache.org/doc/r3.4.4/zookeeperAdmin.html</a></li>
+<li><a href="http://www.searchtb.com/2011/01/zookeeper-research.html">http://www.searchtb.com/2011/01/zookeeper-research.html</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Paxos_algorithm">http://en.wikipedia.org/wiki/Paxos_algorithm</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/448">http://rdc.taobao.com/team/jm/archives/448</a></li>
+<li><a href="http://rdc.taobao.com/blog/cs/?p=162">http://rdc.taobao.com/blog/cs/?p=162</a></li>
+<li><a href="http://agapple.iteye.com/blog/1292473">http://agapple.iteye.com/blog/1292473</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/665">http://rdc.taobao.com/team/jm/archives/665</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/947">http://rdc.taobao.com/team/jm/archives/947</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/1070">http://rdc.taobao.com/team/jm/archives/1070</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/1232">http://rdc.taobao.com/team/jm/archives/1232</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/1241">http://rdc.taobao.com/team/jm/archives/1241</a></li>
+<li><a href="http://rdc.taobao.com/team/jm/archives/1384">http://rdc.taobao.com/team/jm/archives/1384</a></li>
+<li><a href="http://www.spnguru.com/2010/08/zookeeper%E5%85%A8%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94paxos%E7%9A%84%E7%81%B5%E9%AD%82/">http://www.spnguru.com/2010/08/zookeeper%E5%85%A8%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94paxos%E7%9A%84%E7%81%B5%E9%AD%82/</a></li>
+<li><a href="http://blog.csdn.net/shenlan211314/article/details/6187040">http://blog.csdn.net/shenlan211314/article/details/6187040</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[thrift入门]]></title>
+    <link href="http://ellios.github.com//blog/2012/10/24/thrift-guide/"/>
+    <updated>2012-10-24T21:59:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/10/24/thrift-guide</id>
+    <content type="html"><![CDATA[<p>前几天介绍了下Protocol Buffer，这次研究下和PB比较类似的Thrift。这两者都定义了代码独立的数据结构描述语法，并且提供了工具将定义的数据结构转化为相应的代码（Java，C++，Python之类的）。但是从使用上来说，Thrift提供的功能要更丰富一些，简单列下对二者区别的认识</p>
+
+<ul>
+<li>Thrfit从语法上来说，更接近C的语法，对程序员的友好性要更好些</li>
+<li>Thrift对rpc的支持比较好，接口的描述语法更类似与通常的接口声明。PB的接口只支持单一的输入参数，如果有多个参数，需要自己定义参数的数据结构，使用起来很别扭。不仅仅是语法上，Thrift对rpc是提供了完整的支持的，用Thrift可以很方便的写出rpc的Server和Client端，PB则要自己写网络层。</li>
+<li>PB对于容器类的数据结构只提供了对list的直接支持，而Thrift还提供了set和map类型，符合通常程序员的使用习惯</li>
+<li>Thrift直接支持的语言比较多，PB只支持Java，C++，Python，不过PB有很多第三方实现的对其他语言的支持</li>
+<li>PB的文档更好些，从发布的节奏上来看PB要更活跃一些。学习Thrift一定要看看源码</li>
+<li>PB的性能要更好些，不过Thrift也不会太差，一般的生产环境下，这点性能提升可以忽略了</li>
+</ul>
+
+
+<h3>使用</h3>
+
+<p>Thrift在使用前同样需要安装，这里给个安装的<a href="http://thrift.apache.org/docs/install/">传送门</a>。Thrift的源码里有些tutorial的代码，里面有各种语言的使用示例，初学thrift的话，把tutorial里的代码看明白，基本就能入门了。</p>
+
+<h4>Types</h4>
+
+<p>先来打点基础，看下thrift支持哪些数据类型：</p>
+
+<ul>
+<li>bool        Boolean, one byte</li>
+<li>byte        Signed byte</li>
+<li>i16         Signed 16-bit integer</li>
+<li>i32         Signed 32-bit integer</li>
+<li>i64         Signed 64-bit integer</li>
+<li>double      64-bit floating point value</li>
+<li>string      String</li>
+<li>binary      Blob (byte array)</li>
+<li>map&lt;t1,t2>  Map from one type to another</li>
+<li>list<t1>    Ordered list of one type</li>
+<li>set<t1>     Set of unique elements of one type</li>
+</ul>
+
+
+<p>相对与pb，thrift多了map,list,set这些容器类型，但是基本的数值类型少了一些，不过我们需要用到的也都有了。</p>
+
+<h4>示例</h4>
+
+<p>基础的内容就介绍这么多了，下面直接上例子，估计看了例子大家对thrift的语法也了解差不多了。</p>
+
+<p>``` python demo.thrift
+/<em>
+* demo.thrift
+* thrift usage demo
+</em>/
+namespace cpp ellios.me
+namespace java ellios.me
+namespace py ellios.me</p>
+
+<p>enum Operation {
+  ADD = 1,
+  SUBTRACT = 2,
+  MULTIPLY = 3,
+  DIVIDE = 4
+}</p>
+
+<p>struct Work {
+  1: i32 num1 = 0,
+  2: i32 num2,
+  3: Operation op,
+  4: optional string comment,
+}</p>
+
+<p>exception InvalidOperation {
+  1: i32 what,
+  2: string why
+}</p>
+
+<p>service Calculator {</p>
+
+<p>   i32 calculate(1:i32 logid, 2:Work w) throws (1:InvalidOperation ouch),</p>
+
+<p>}
+```</p>
+
+<h4>java的例子</h4>
+
+<p>执行下面的命令，会生成相应的java代码。</p>
+
+<p><code>sh
+ thrift --gen java --out . demo.thrift
+</code></p>
+
+<h5>Java Server</h5>
+
+<p>首先实现接口
+``` java CaloculatorServiceImpl.java
+public class CaloculatorServiceImpl  implements Calculator.Iface {</p>
+
+<pre><code>@Override
+public int calculate(int logid, Work work) throws InvalidOperation, TException {
+    System.out.println("calculate(" + logid + ", {" + work.op + "," + work.num1 + "," + work.num2 + "})");
+    int val = 0;
+    switch (work.op) {
+        case ADD:
+            val = work.num1 + work.num2;
+            break;
+        case SUBTRACT:
+            val = work.num1 - work.num2;
+            break;
+        case MULTIPLY:
+            val = work.num1 * work.num2;
+            break;
+        case DIVIDE:
+            if (work.num2 == 0) {
+                InvalidOperation io = new InvalidOperation();
+                io.what = work.op.getValue();
+                io.why = "Cannot divide by 0";
+                throw io;
+            }
+            val = work.num1 / work.num2;
+            break;
+        default:
+            InvalidOperation io = new InvalidOperation();
+            io.what = work.op.getValue();
+            io.why = "Unknown operation";
+            throw io;
+    }
+    return val;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>下面实现一个Server，让人们可以调用服务</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>DemoServer.java  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoServer</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span> <span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">TTransportException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Calculator</span><span class="o">.</span><span class="na">Iface</span> <span class="n">calculatorService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CaloculatorServiceImpl</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Calculator</span><span class="o">.</span><span class="na">Processor</span> <span class="n">processor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">Processor</span><span class="o">(</span><span class="n">calculatorService</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">TServerTransport</span> <span class="n">serverTransport</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TServerSocket</span><span class="o">(</span><span class="mi">8000</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">TServer</span> <span class="n">server</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TThreadPoolServer</span><span class="o">(</span><span class="k">new</span> <span class="n">TThreadPoolServer</span><span class="o">.</span><span class="na">Args</span><span class="o">(</span><span class="n">serverTransport</span><span class="o">).</span><span class="na">processor</span><span class="o">(</span><span class="n">processor</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Starting the simple server...&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">server</span><span class="o">.</span><span class="na">serve</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h5>Java Client</h5>
+
+<p>接下来实现一个客户端，调用服务。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>DemoClient.java  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoClient</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span> <span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">TTransport</span> <span class="n">transport</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TSocket</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">,</span> <span class="mi">8000</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">transport</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">TProtocol</span> <span class="n">protocol</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TBinaryProtocol</span><span class="o">(</span><span class="n">transport</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Calculator</span><span class="o">.</span><span class="na">Iface</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">Client</span><span class="o">(</span><span class="n">protocol</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Work</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Work</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">work</span><span class="o">.</span><span class="na">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="na">DIVIDE</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">work</span><span class="o">.</span><span class="na">num2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">quotient</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">calculate</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Whoa we can divide by 0&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidOperation</span> <span class="n">io</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Invalid operation: &quot;</span> <span class="o">+</span> <span class="n">io</span><span class="o">.</span><span class="na">why</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">work</span><span class="o">.</span><span class="na">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="na">SUBTRACT</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">=</span> <span class="mi">15</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">work</span><span class="o">.</span><span class="na">num2</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">calculate</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;15-10=&quot;</span> <span class="o">+</span> <span class="n">diff</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidOperation</span> <span class="n">io</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Invalid operation: &quot;</span> <span class="o">+</span> <span class="n">io</span><span class="o">.</span><span class="na">why</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">transport</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h4>python示例</h4>
+
+<p>由于前面已经实现了一个Java的Server，这里就只实现一个client了。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>demo_client.py  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="kn">import</span> <span class="nn">sys</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">me.ellios.demo</span> <span class="kn">import</span> <span class="n">Calculator</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">me.ellios.demo.ttypes</span> <span class="kn">import</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">thrift</span> <span class="kn">import</span> <span class="n">Thrift</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">thrift.transport</span> <span class="kn">import</span> <span class="n">TSocket</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">thrift.transport</span> <span class="kn">import</span> <span class="n">TTransport</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">thrift.protocol</span> <span class="kn">import</span> <span class="n">TBinaryProtocol</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="c"># Make socket</span>
+</span><span class='line'>  <span class="n">transport</span> <span class="o">=</span> <span class="n">TSocket</span><span class="o">.</span><span class="n">TSocket</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Buffering is critical. Raw sockets are very slow</span>
+</span><span class='line'>  <span class="n">transport</span> <span class="o">=</span> <span class="n">TTransport</span><span class="o">.</span><span class="n">TBufferedTransport</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Wrap in a protocol</span>
+</span><span class='line'>  <span class="n">protocol</span> <span class="o">=</span> <span class="n">TBinaryProtocol</span><span class="o">.</span><span class="n">TBinaryProtocol</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Create a client to use the protocol encoder</span>
+</span><span class='line'>  <span class="n">client</span> <span class="o">=</span> <span class="n">Calculator</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Connect!</span>
+</span><span class='line'>  <span class="n">transport</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">work</span> <span class="o">=</span> <span class="n">Work</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="n">DIVIDE</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num1</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num2</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">try</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">quotient</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span> <span class="s">&#39;Whoa? You know how to divide by zero?&#39;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">except</span> <span class="n">InvalidOperation</span><span class="p">,</span> <span class="n">io</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">print</span> <span class="s">&#39;InvalidOperation: </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">io</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">work</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="n">SUBTRACT</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num1</span> <span class="o">=</span> <span class="mi">15</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num2</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&#39;15-10=</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Close!</span>
+</span><span class='line'>  <span class="n">transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'><span class="k">except</span> <span class="n">Thrift</span><span class="o">.</span><span class="n">TException</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tx</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://diwakergupta.github.com/thrift-missing-guide/">http://diwakergupta.github.com/thrift-missing-guide/</a></li>
+<li><a href="http://wiki.apache.org/thrift/FrontPage">http://wiki.apache.org/thrift/FrontPage</a></li>
+<li><a href="http://thrift.apache.org">http://thrift.apache.org</a></li>
+<li><a href="http://jnb.ociweb.com/jnb/jnbJun2009.html">http://jnb.ociweb.com/jnb/jnbJun2009.html</a></li>
+<li><a href="http://stackoverflow.com/questions/69316/biggest-differences-of-thrift-vs-protocol-buffers">http://stackoverflow.com/questions/69316/biggest-differences-of-thrift-vs-protocol-buffers</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Protocol Buffer入门]]></title>
+    <link href="http://ellios.github.com//blog/2012/10/19/pb-tutorial/"/>
+    <updated>2012-10-19T16:52:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/10/19/pb-tutorial</id>
+    <content type="html"><![CDATA[<h2>是啥</h2>
+
+<p><blockquote><p>Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that are compiled against the "old" format.</p><footer><strong>Google, Developer Guide,</strong> <cite><a href='https://developers.google.com/protocol-buffers/docs/overview'>developers.google.com/docs/&hellip;</a></cite></footer></blockquote></p>
+
+<p>上面是Google官方文档对Protocol Buffer(简称PB)的定义，简单翻译下。</p>
+
+<ul>
+<li>序列化结构数据的自动化机制，类似XML，但是更小，更快，更简单</li>
+<li>你只需定义你的数据结构，就可以用PB生成的源码去操作结构数据</li>
+<li>支持多种语言</li>
+<li>数据结构向后兼容</li>
+</ul>
+
+
+<h2>性能</h2>
+
+<p>PB的性能，数据大小口碑一直不错，好多公司也都在用。这里有些人们做的<a href="http://code.google.com/p/thrift-protobuf-compare/wiki/BenchmarkingV2">Benchmark</a>数据。相对与未压缩的xml或者json来说是有不小的优势的，官方文档的说法是比xml要小3-10倍，快20-100倍。</p>
+
+<h2>使用</h2>
+
+<p>在使用PB之前要先定义你的数据结构，PB有一套数据结构定义的语法，你需要使用这套语法来定义你的结构。定义结构的代码一般会写到一个以.proto为后缀的文件中（文件后缀好像没有强制）</p>
+
+<h3>语法</h3>
+
+<h4>Message</h4>
+
+<p>Message类似于Java中的对象，C中的struct，是PB中数据封装的基本单元，一般我们在PB中定义的数据结构就是一个个的Message了。</p>
+
+<p><code>python message.proto
+message SearchRequest {
+  required string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3;
+}
+</code>
+上面的代码就定义了一个message</p>
+
+<ul>
+<li>message由field组成，类似对象中的成员变量</li>
+<li>要定义field的类型，类型包括scalar（待会儿说）， enumeration，以及message（支持嵌套哦）</li>
+<li>要定义field的规则，规则有required（值不能为空）,optional（值可以为空），repeated（重复，用来声明列表）</li>
+<li>每个field要分配Tag，tag就是每行最后的那写数字，占位符的意思。数据编码后用tag来对应每个field。tag从1开始，而且是动态编码的，1-16占一个字节，16-2047两个字节，最大是2<sup>29</sup> - 1</li>
+</ul>
+
+
+<h4>Scalar</h4>
+
+<p>下图列出了PB所支持的Scalar的类型</p>
+
+<p><img src="/images/proto-scalar.png" alt="&quot;PB Scalar&quot;" /></p>
+
+<h4>enum</h4>
+
+<p>PB支持枚举类型，对应Java或者C中的枚举类型,下面是一个枚举的例子
+``` python
+ enum Colour {</p>
+
+<pre><code>RED = 0;
+BLACK = 1;
+BLUE = 2;
+</code></pre>
+
+<p>  }<br/>
+```</p>
+
+<h3>使用</h3>
+
+<p>使用之前需要先安装protoc，protoc用于生成对应语言的代码。除了protoc，还需要编译对应语言的库，并且添加到你的依赖路径中。<a href="http://ellios-note.readthedocs.org/en/latest/ice/protobuf.html?t">安装wiki</a></p>
+
+<h4>数据结构</h4>
+
+<p>首先用pb的语法定义数据结构。</p>
+
+<p>``` python tutorial.proto
+package me.ellios.tutorial;</p>
+
+<p>option java_package = "me.ellios.tutorial";
+option java_outer_classname = "AddressBookProtos";</p>
+
+<p>message Person {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+  repeated PhoneNumber phone = 4;</p>
+
+<p>  enum PhoneType {</p>
+
+<pre><code>MOBILE = 0;
+HOME = 1;
+WORK = 2;
+</code></pre>
+
+<p>  }</p>
+
+<p>  message PhoneNumber {</p>
+
+<pre><code>required string number = 1;
+optional PhoneType type = 2 [default = HOME];
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>message AddressBook {
+  repeated Person person = 1;
+}
+```</p>
+
+<ul>
+<li><em>package</em>：声明生成的代码所在的包，貌似是对应cpp的命名空间</li>
+<li><em>option java_package</em>：针对java，声明java代码的包</li>
+<li><em>option java_outer_classname</em>：针对java，声明java代码的类</li>
+</ul>
+
+
+<h4>java的例子</h4>
+
+<p>执行下面的命令，会生成AddressBookProtos.java文件，将它拷到你的工作目录中</p>
+
+<p><code>sh
+protoc --java_out=. tutorial.proto
+</code></p>
+
+<p>下面是一段简单的示例代码，演示怎么创建对象，以及对象的序列化和反序列化。</p>
+
+<p>```java AddressBookExample.java
+package me.ellios.tutorial;</p>
+
+<p>import me.ellios.tutorial.AddressBookProtos.Person;
+import me.ellios.tutorial.AddressBookProtos.AddressBook;
+import java.io.*;
+import java.util.Random;</p>
+
+<p>public class AddressBookExample {</p>
+
+<pre><code>public static void main(String[] args) throws Exception {
+    //要通过builder来构建对象，
+    AddressBook.Builder addressBuiler = AddressBook.newBuilder();
+    Random random = new Random();
+
+    for(int i=0; i&lt;10; i++){
+        Person.Builder personBuilder = Person.newBuilder();
+        personBuilder.setName("ellios" + i); //设置name，不能为空
+        personBuilder.setId(i); //设置id，也不能为空
+        personBuilder.setEmail(""); //email可以为空
+        //创建phone
+        Person.PhoneNumber.Builder phoneBuilder = Person.PhoneNumber.newBuilder();
+        phoneBuilder.setNumber("132222222222");
+        phoneBuilder.setType(Person.PhoneType.values()[random.nextInt(3)]);
+        //将phone添加到person中,              .
+        personBuilder.addPhone(phoneBuilder.build());
+        //将person添加到地址簿的列表中
+        addressBuiler.addPerson(personBuilder);
+    }
+    AddressBook addressBook = addressBuiler.build();
+
+    System.out.println("addressBook : "  + addressBook);
+
+    byte[] serializeBytes = addressBook.toByteArray();
+
+    AddressBook addressBook2 = AddressBook.parseFrom(serializeBytes);
+    System.out.println("addressBook2 equal to addressBook. result is " + addressBook.equals(addressBook2));
+
+    addressBook.writeTo(new FileOutputStream("addressBook"));
+
+    AddressBook.Builder addressBuilder3 = AddressBook.newBuilder();
+    addressBuilder3.mergeFrom(new FileInputStream("addressBook"));
+    System.out.println("addressBook3 equal to addressBook. result is " + addressBook.equals(addressBuilder3.build()));
+}
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<h4>python示例</h4>
+
+<p>执行下面的命令，生成tutorial_pb2.py文件,将它拷到工作目录中。
+<code>sh
+protoc --python_out=. tutorial.proto
+</code></p>
+
+<p>下面是简单的示例代码
+``` python address_book_example.py</p>
+
+<h1>! /usr/bin/python</h1>
+
+<p>import tutorial_pb2</p>
+
+<p>address_book = tutorial_pb2.AddressBook()</p>
+
+<p>for i in range(10):</p>
+
+<pre><code>person = address_book.person.add()
+person.id = i
+person.name = 'ellios%d'%i
+person.email = ''
+phone_number = person.phone.add()
+phone_number.number = "13233333333"
+if i % 3 == 0:
+    phone_number.type = tutorial_pb2.Person.MOBILE
+elif i % 3 == 1:
+    phone_number.type = tutorial_pb2.Person.HOME
+elif i % 3 == 2:
+    phone_number.type = tutorial_pb2.Person.WORK
+</code></pre>
+
+<p>print 'address_book : ', address_book</p>
+
+<p>f = open("address_book", "wb")
+f.write(address_book.SerializeToString())
+f.close()</p>
+
+<p>address_book2 = tutorial_pb2.AddressBook()
+f = open("address_book", "rb")
+address_book2.ParseFromString(f.read())
+f.close()</p>
+
+<p>print "address_book same with address_book2. the result is %d"%(address_book == address_book2)
+```</p>
+
+<h4>cpp示例</h4>
+
+<p>执行下面的命令，生成tutorial.pb.h和tutorial.pb.cc文件，将这两个文件拷到工作目录
+<code>sh
+protoc --cpp_out=. tutorial.proto
+</code>
+下面是一段示例代码
+```cpp address_book_example.cc</p>
+
+<h1>include <iostream></h1>
+
+<h1>include <fstream></h1>
+
+<h1>include <string></h1>
+
+<h1>include "tutorial.pb.h"</h1>
+
+<p>using namespace std;</p>
+
+<p>int main(int argc, char* argv[]) {</p>
+
+<pre><code>// Verify that the version of the library that we linked against is
+// compatible with the version of the headers we compiled against.
+GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+tutorial::AddressBook address_book;
+for (int i = 0; i &lt; 10; i++) {
+    tutorial::Person* person = address_book.add_person();
+    person-&gt;set_id(i);
+    person-&gt;set_name("ellios");
+    person-&gt;set_email("");
+    tutorial::Person::PhoneNumber* phone_number = person-&gt;add_phone();
+    phone_number-&gt;set_number("13333333333");
+    phone_number-&gt;set_type(tutorial::Person::HOME);
+}
+// Write the new address book back to disk.
+fstream output("address_book", ios::out | ios::trunc | ios::binary);
+if (!address_book.SerializeToOstream(&amp;output)) {
+    cerr &lt;&lt; "Failed to write address book." &lt;&lt; endl;
+    return -1;
+}
+
+cout &lt;&lt; "address_book : " &lt;&lt; address_book.person_size() &lt;&lt; endl;
+
+tutorial::AddressBook address_book2;
+fstream input("address_book", ios::in | ios::binary);
+address_book2.ParseFromIstream(&amp;input);
+
+// Optional:  Delete all global objects allocated by libprotobuf.
+google::protobuf::ShutdownProtobufLibrary();
+
+return 0;
+</code></pre>
+
+<p>}
+```</p>
+
+<h2>参考资料</h2>
+
+<ul>
+<li><a href="https://developers.google.com/protocol-buffers/docs/proto">https://developers.google.com/protocol-buffers/docs/proto</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[jdk7-fork-join]]></title>
+    <link href="http://ellios.github.com//blog/2012/09/01/jdk7-fork-join/"/>
+    <updated>2012-09-01T23:10:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/09/01/jdk7-fork-join</id>
+    <content type="html"><![CDATA[<p><em>占坑...</em></p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://gee.cs.oswego.edu/dl/papers/fj.pdf"> fork/join framework article </a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JDK7-TransferQueue]]></title>
+    <link href="http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/"/>
+    <updated>2012-08-23T09:11:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue</id>
+    <content type="html"><![CDATA[<p>继续研究jdk7对concurrency的增强。这次研究下<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/TransferQueue.html">TransferQueue</a>，在jdk7里的实现是<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/LinkedTransferQueue.html">LinkedTransferQueue</a>。它实现了BlockingQueue的接口，并且提供了类似<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronizeQueue</a>的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销，性能相对与其他的队列实现有了很大的提升。其内部的实现是一个FiFo的<a href="http://www.cs.rice.edu/~wns1/papers/2004-DISC-DDS.pdf">Dual Quque</a>。很多开源的项目，在jdk7之前，就早早的用上了这个东东，比如<a href="https://netty.io/">netty</a>，<a href="http://jolbox.com/">bonecp</a>，<a href="https://github.com/killme2008/xmemcached">xmemcached</a>...</p>
+
+<p>TransferQueue的基本使用和BlockingQueue差不多，有点特殊的就是它的transfer接口。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://tech.puredanger.com/2009/02/28/java-7-transferqueue/">http://tech.puredanger.com/2009/02/28/java-7-transferqueue/</a></li>
+<li><a href="http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html">http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Python | ellios's blog]]></title>
+  <link href="http://ellios.github.com//blog/categories/python/atom.xml" rel="self"/>
+  <link href="http://ellios.github.com//"/>
+  <updated>2013-04-02T00:07:14+08:00</updated>
+  <id>http://ellios.github.com//</id>
+  <author>
+    <name><![CDATA[ellios]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[艰难的reviewboard折腾]]></title>
+    <link href="http://ellios.github.com//blog/2012/10/24/reviewboard/"/>
+    <updated>2012-10-24T16:54:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/10/24/reviewboard</id>
+    <content type="html"><![CDATA[<p>折腾了半天的<a href="http://www.reviewboard.org/">Review Board</a>，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。</p>
+
+<p>因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件<a href="http://code.taobao.org/p/tao-reviewboard/wiki/index/">tao-reviewboard</a>，安装和配置都比较简单。因为移到linux和idea的开发环境已经好久了，所以我只能自己折腾了。</p>
+
+<p>google了下，发现有基于idea的reviewboard插件，装上试了下，跟tao-reviewboard比起来，可以说是非常简陋，而且提交review请求的时候，报了一堆的错误。以为是自己的配置有问题，于是看着Review Board的文档，把配置文件~/.reviewboardrc重新检查了下，文件的内容如下
+<code>sh .reviewboardrc
+REVIEWBOARD_URL = "http://reviewboard.xxx.com/"
+USERNAME = "xxx"
+PASSWORD = "xxx"
+HTTP_USERNAME = "xxx"
+HTTP_PASSWORD = "xxx"
+</code>
+配置完之后，继续报错，报的是
+<code>java
+java.net.ProtocolException: Server redirected too many  times
+</code>
+google无结果，简单看了源码，还得了解idea的插件开发的一些知识，暂时没功夫，于是放弃。</p>
+
+<p>试着装了下eclipse，发现tao-reviewboard是依赖于subclipse的，这个东西以前就装过，没有成功，这回试了下，果然还是不成功。同事说需要编译相应版本的svn客户端，觉得单独为个CodeReview再把eclipse折腾半天，不值得，于是放弃。</p>
+
+<p>又去啃Review Board的文档了，Review Board提供了一个命令行的工具post-review，这个工具是python写的，看到是python写的就很有亲切感。安装很简单，执行下面的命令（之前已经有了python的环境，没有的可能还得提前装python和easy_install）
+<code>sh
+easy_install -U RBTools
+</code>
+提交review请求的命令也很简单
+<code>sh
+post-review -p --target-groups=xxx --target-people=xxx --summary=xxx --description=xxx files
+</code>
+执行上面的命令，报了206的错误。提示
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+于是，加上-d参数，打印debug信息，觉得可能repository没加到Review Board Server里面，但是其他人都可以提交review，于是试着进到代码目录，在代码当前目录提交review请求，没想到竟然pass了这个问题，不过马上又报了一个207的错误。提示
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+这个问题，试了好多办法都不行，于是只能调试源码，下了源码，一路输出debug信息，怀疑是diff文件的问题。看了下其他同事提交的diff文件，他们的diff文件里开头，代码文件的路径是相对路径，而我生成的竟然是绝对路径，而造成这一问题的原因就是svn.py下面这一句，把这句注释掉，替换掉RBTools-xxx.egg这个文件里面的相应文件
+<code>python svn.py
+diff = self.convert_to_absolute_paths(diff, repository_info)
+</code>
+试了下，终于OK了。post-review的那些参数太繁琐而且又长，以后有时间写个程序自己定制下。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[python程序打包成exe]]></title>
+    <link href="http://ellios.github.com//blog/2012/06/08/py2exe/"/>
+    <updated>2012-06-08T22:14:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/06/08/py2exe</id>
+    <content type="html"><![CDATA[<p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>setup.py  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
+</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
+</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/&lt;em&gt;.&lt;/em&gt;&#39;</span><span class="p">))]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">setup</span><span class="p">(</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
+
+<pre><code>python setup.py py2exe
+</code></pre>
+
+<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
+<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

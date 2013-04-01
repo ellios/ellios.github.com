@@ -1,0 +1,511 @@
+<!doctype html>  
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+		
+		<title>rest入门与实践</title>
+
+		<meta name="description" content="An easy to use CSS 3D slideshow tool for quickly creating good looking HTML presentations.">
+		<meta name="author" content="ellios">
+		
+		<style>
+			table.etable {
+				font-family: "Trebuchet MS", sans-serif;
+				font-size: 16px;
+				font-weight: bold;
+				line-height: 1.4em;
+				font-style: normal;
+				border-collapse: separate;
+			}
+			
+			.etable thead th {
+				padding: 15px;
+				color: #fff;
+				text-shadow: 1px 1px 1px #568F23;
+				border: 1px solid #93CE37;
+				border-bottom: 3px solid #9ED929;
+				background-color: #9DD929;
+				background: -webkit-gradient(linear, left bottom, left top, color-stop(0.02, rgb(123
+					, 192, 67) ), color-stop(0.51, rgb(139, 198, 66) ),
+					color-stop(0.87, rgb(158, 217, 41) ) );
+				background: -moz-linear-gradient(center bottom, rgb(123, 192, 67) 2%,
+					rgb(139, 198, 66) 51%, rgb(158, 217, 41) 87% );
+				-webkit-border-top-left-radius: 5px;
+				-webkit-border-top-right-radius: 5px;
+				-moz-border-radius: 5px 5px 0px 0px;
+				border-top-left-radius: 5px;
+				border-top-right-radius: 5px;
+			}
+			
+			.etable thead th:empty {
+				background: transparent;
+				border: none;
+			}
+			
+			.etable tbody th {
+				color: #fff;
+				text-shadow: 1px 1px 1px #568F23;
+				background-color: #9DD929;
+				border: 1px solid #93CE37;
+				border-right: 3px solid #9ED929;
+				padding: 0px 10px;
+				background: -webkit-gradient(linear, left bottom, right top, color-stop(0.02, rgb(158
+					, 217, 41) ), color-stop(0.51, rgb(139, 198, 66) ),
+					color-stop(0.87, rgb(123, 192, 67) ) );
+				background: -moz-linear-gradient(left bottom, rgb(158, 217, 41) 2%,
+					rgb(139, 198, 66) 51%, rgb(123, 192, 67) 87% );
+				-moz-border-radius: 5px 0px 0px 5px;
+				-webkit-border-top-left-radius: 5px;
+				-webkit-border-bottom-left-radius: 5px;
+				border-top-left-radius: 5px;
+				border-bottom-left-radius: 5px;
+			}
+			
+			.etable tfoot td {
+				color: #9CD009;
+				font-size: 32px;
+				text-align: center;
+				padding: 10px 0px;
+				text-shadow: 1px 1px 1px #444;
+			}
+			
+			.etable tfoot th {
+				color: #666;
+			}
+			
+			.etable tbody td {
+				padding: 10px;
+				text-align: center;
+				background-color: #DEF3CA;
+				border: 2px solid #E7EFE0;
+				-moz-border-radius: 2px;
+				-webkit-border-radius: 2px;
+				border-radius: 2px;
+				color: #666;
+				text-shadow: 1px 1px 1px #fff;
+			}
+        </style>
+		
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+		
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css">
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+		
+	</head>
+	
+	<body>
+		
+		<div id="reveal">
+			
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>REST入门与实践</h1>
+					<p></p>
+					<h3></h3>
+					<script>
+						// Delicously hacky. Look away.
+						if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+						document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+					</script>
+				</section>
+				
+				<section>
+					<h2>Background</h2>
+					<p>
+					   <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">
+					   《Architect Style and the Design of Network-based Software Architectures》
+					   </a>
+					</p>
+					<p>
+						<a href="http://roy.gbiv.com/">Roy Thomas Fielding</a>
+					</p>
+				</section>
+				
+				<section>
+					<section>
+						<h2>What REST</h2>
+						<br/>
+					    <ul>
+					      <li>Representation State Transfer</li>
+					      <li>Architectural Style(架构风格是一组协作的架构约束,这些约束限制了架构元素的角色和功能,以及在任何一个遵循该风格的架构中允许存在的元素之间的关系)</li>
+					      <li>用于指导WWW(World Wide Web)架构的设计和开发,以满足分布式超媒体的需求。</li>
+					    </ul>
+					</section>
+					<section>
+						<h2>Constraints</h2>
+						<ul>
+						  <li>Client-Server</li>
+						  <li>Stateless</li>
+						  <li>Cache</li>
+						  <li>
+						  Uniform Interface，区别于其他风格的核心约束。
+							  <ul class="square">
+							      <li>identification of resources</li>
+							      <li>manipulation of resources through representations</li>
+							      <li>self-descriptive messages</li>
+							      <li>hypermedia as the engine of application state</li>
+							  </ul>
+						  <li>Layered System</li>
+						  <li>Code-On-Demand，可选</li>
+						  </li>
+						</ul>
+					</section>
+					<section>
+						<h2>REST Architectural Elements</h2>
+						<ul>
+						  <li>Data Elements</li>
+						  <li>Connectors</li>
+						  <li>Components</li>
+						</ul>
+					</section>
+                    <section>
+                        <h2>Data Elements</h2>
+                        <br />
+                        <div align="center">
+						<table class="etable">
+							<thead>
+								<tr>
+									<th scope="col" abbr="Data">Data Element</th>
+									<th scope="col" abbr="Examples">Modern Web Examples</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>resource</td>
+									<td>the intended conceptual target of a hypertext reference</td>
+								</tr>
+                                <tr>
+                                    <td>resource identifier</td>
+                                    <td>URL, URN</td>
+                                </tr>
+                                <tr>
+                                    <td>representation</td>
+                                    <td>HTML document, JPEG image</td>
+                                </tr>
+                                <tr>
+                                    <td>representation metadata</td>
+                                    <td>media type, last-modified time</td>
+                                </tr>
+                                <tr>
+                                    <td>resource metadata</td>
+                                    <td>source link, alternates, vary</td>
+                                </tr>
+                                <tr>
+                                    <td>control data</td>
+                                    <td>if-modified-since, cache-control</td>
+                                </tr>
+							</tbody>
+						</table>
+						</div>
+				    </section>
+	                <section>
+						<h2>Connectors</h2>
+	
+						<div align="center">
+							<table class="etable">
+								<thead>
+									<tr>
+										<th scope="col" abbr="Connector">Connector</th>
+										<th scope="col" abbr="Examples">Modern Web Examples</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>client</td>
+										<td>libwww, libwww-perl</td>
+									</tr>
+									<tr>
+										<td>server</td>
+										<td>libwww, Apache API, NSAPI</td>
+									</tr>
+									<tr>
+										<td>cache</td>
+										<td>browser cache, Akamai cache network</td>
+									</tr>
+									<tr>
+										<td>resolver</td>
+										<td>bind (DNS lookup library)</td>
+									</tr>
+									<tr>
+										<td>tunnel</td>
+										<td>SOCKS, SSL after HTTP CONNECT</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+				    </section>
+                    <section>
+                        <h2>Components</h2>
+                        
+	                    <div align="center">
+	                        <table class="etable">
+	                            <thead>
+	                                <tr>
+	                                    <th scope="col" abbr="Components">Components</th>
+	                                    <th scope="col" abbr="Examples">Modern Web Examples</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                                <tr>
+	                                    <td>origin server</td>
+	                                    <td>Apache httpd, Microsoft IIS</td>
+	                                </tr>
+	                                <tr>
+	                                    <td>gateway</td>
+	                                    <td>Squid, CGI, Reverse Proxy</td>
+	                                </tr>
+	                                <tr>
+	                                    <td>proxy</td>
+	                                    <td>CERN Proxy, Netscape Proxy, Gauntlet</td>
+	                                </tr>
+	                                <tr>
+	                                    <td>user agent</td>
+	                                    <td>Netscape Navigator, Lynx, MOMspider</td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+                    </section>
+				</section>
+				
+				
+                <section>
+                    <h2>Why REST</h2>
+                    <ul>
+                        <li>简单，门槛低</li>
+                        <li>可扩展</li>
+                        <li >分布式超媒体</li>
+                        <li>更好的使用HTTP</li>
+                    </ul>
+                </section>
+                <section>
+                    <section>
+                    <h2>Server Code</h2>
+                    <pre><code contenteditable>
+@Controller
+public class DemoController {
+    @Autowired
+    private CountService countService;
+
+    @RequestMapping( value = "/{app}/{id}/",method = RequestMethod.GET)
+    @ResponseBody
+    public Map get(@PathVariable( "app" ) final String app,
+                   @PathVariable( "id" ) final String id){
+        return countService.get(app, id);
+    }
+
+    @RequestMapping( value = "/{app}/{id}/",method = RequestMethod.POST )
+    @ResponseBody
+    public Map inc(@PathVariable( "app" ) final String app,
+                   @PathVariable( "id" ) final String id){
+        return countService.inc(app, id, 1);
+    }
+
+    @RequestMapping( value = "/{app}/{id}/",method = RequestMethod.DELETE )
+    @ResponseBody
+    public boolean delete(@PathVariable( "app" ) final String app,
+                   @PathVariable( "id" ) final String id){
+        Long count = countService.delete(app, id);
+        if(count == null)
+            return false;
+        return true;
+    }
+}
+                </code></pre>
+                </section>
+                <section>
+                    <h2>Client Code</h2>
+                    <pre><code contenteditable>
+RestTemplate restTemplate = new RestTemplate();
+Map<String, String> params = new HashMap<String, String>();
+params.put("app", "pp");
+params.put("id", "123");
+String url = "http://127.0.0.1:8102/api/{app}/{id}/";
+Assert.assertEquals(restTemplate.getForObject(url, String.class, params), "0");
+Assert.assertEquals(restTemplate.postForObject(url, null, String.class, params), "1");
+restTemplate.delete(url, params);
+                </code></pre>
+                </section>
+                </section>
+                
+                
+                <section>
+                    <section>
+                    <h2>HATEOAS</h2>
+                    <ul>
+                        <li>Ruby On Rails.Restful CRUG<img width="30px" height="30px" src="http://pic.yupoo.com/sinaweibo925395968_v/BOOOoklO/d95lT.jpg"/></li>
+                        <li><a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">《rest-apis-must-be-hypertext-driven》</a></li>
+                        <li>HATEOAS（Hypermedia as the engine of application state）</li>
+                    </ul>
+                    </section>
+                    <section>
+                        <h2>Richardson成熟度模型</h2>
+                        <img src="http://pic.yupoo.com/sinaweibo925395968_v/BNd8kzIS/vA4qS.png" alt="Richardson成熟度模型">
+                        <ul>
+                            <li>最底层的是0级，XML-RPC，SOAP WebService</li>
+                            <li>一级服务使用了很多的URI,但是只使用单个HTTP动词</li>
+                            <li>二级服务使用了大量的URI寻址的资源，支持多个HTTP动词来暴露资源。典型的CRUD服务。</li>
+                            <li>三级服务支持超媒体作为应用状态引擎。目前的框架对超媒体的支持都不是很好，只能自己来设计实现。</li>
+                        </ul>
+                    </section>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>Framework</h2>
+	                    <ul>
+	                      <li>RUBY ON RAILS</li>
+	                      <ul>
+	                      <li>Jersey</li>
+	                      <li>resteasy</li>
+	                      <li>Apache Wink</li>
+	                      </ul>
+	                      <li>Restlet</li>
+	                      <li>bottle</li>
+	                    </ul>
+                    </section>
+                    <section>
+                        <h2>Benchmark</h2>
+                        <p>CPU:Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz</p>
+                        <br/>
+                        
+                        <small>每秒完成的请求数</small>
+                        <div align="center">
+                            <table class="etable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Restlet + netty</th>
+                                        <th scope="col">Jersey + grizzly</th>
+                                        <th scope="col">Jersey + jetty</th>
+                                        <th scope="col">Spring + jetty</th>
+                                        <th scope="col">Bottle + gevent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>348</td>
+                                        <td>790</td>
+                                        <td>612</td>
+                                        <td>468</td>
+                                        <td>2300</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+			    </section>
+                <section>
+                    <section>
+	                    <h2>Security</h2>
+	                    <ul>
+	                        <li >HTTP Basic Authentication</li>
+	                        <li >HTTP Digest</li>
+	                        <li >HTTPS</li>
+	                        <li >OPENID</li>
+	                        <li>OAUTH</li>
+	                    </ul>
+                    </section>
+                    <section>
+                        <h2>HTTP Basic Authentication</h2>
+                        
+                        <pre style="font-size: 20px"><em>
+GET /private/index.html HTTP/1.1
+Host: localhost
+Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+                        </em></pre>
+                        
+                    </section>
+                    <section>
+                        <h2>HTTP Digest Authentication</h2>
+                        
+                        <pre style="font-size: 20px"><em>
+GET /dir/index.html HTTP/1.0
+Host: localhost
+Authorization: Digest username="Mufasa",
+                     realm="testrealm@host.com",
+                     nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
+                     uri="/dir/index.html",
+                     qop=auth,
+                     nc=00000001,
+                     cnonce="0a4f113b",
+                     response="6629fae49393a05397450978507c4ef1",
+                     opaque="5ccc069c403ebaf9f0171e9517f40e41"
+                        </em></pre>
+                        
+                    </section>
+                    <section>
+                        <h2>HTTPS</h2>
+                        
+                    </section>
+                    <section>
+                        <h2>OPENID</h2>
+                        <img src="./assets/openid.png">
+                    </section>
+                    <section>
+                        <h2>OAUTH</h2>
+                        <img src="./assets/oauth.png" height="80%">
+                    </section>
+                    
+                </section>
+                
+				
+				<section>
+					<h1>THE END</h1>
+					<h3 class="inverted">BY <a href="http://ellios.me">ellios</a></h3>
+				</section>
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+			</aside>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+			
+		</div>
+		
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script>
+			// Parse the query string into a key/value object
+			var query = {};
+			location.search.replace( /[A-Z0-9]+?=(\w*)/gi, function(a) {
+				query[ a.split( '=' ).shift() ] = a.split( '=' ).pop();
+			} );
+
+			Reveal.initialize({
+				// Display controls in the bottom right corner
+				controls: true,
+
+				// Display a presentation progress bar
+				progress: true,
+
+				// If true; each slide will be pushed to the browser history
+				history: false,
+
+				// Flags if mouse wheel navigation should be enabled
+				mouseWheel: true,
+
+				// Apply a 3D roll to links on hover
+				rollingLinks: true,
+
+				// UI style
+				theme: query.theme || 'default', // default/neon
+
+				// Transition style
+				transition: query.transition || 'default' // default/cube/page/concave/linear(2d)
+			});
+
+			hljs.initHighlightingOnLoad();
+		</script>
+
+	</body>
+</html>

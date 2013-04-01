@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ubuntu | ellios's blog]]></title>
+  <link href="http://ellios.github.com//blog/categories/ubuntu/atom.xml" rel="self"/>
+  <link href="http://ellios.github.com//"/>
+  <updated>2013-04-02T00:07:14+08:00</updated>
+  <id>http://ellios.github.com//</id>
+  <author>
+    <name><![CDATA[ellios]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[艰难的reviewboard折腾]]></title>
+    <link href="http://ellios.github.com//blog/2012/10/24/reviewboard/"/>
+    <updated>2012-10-24T16:54:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/10/24/reviewboard</id>
+    <content type="html"><![CDATA[<p>折腾了半天的<a href="http://www.reviewboard.org/">Review Board</a>，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。</p>
+
+<p>因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件<a href="http://code.taobao.org/p/tao-reviewboard/wiki/index/">tao-reviewboard</a>，安装和配置都比较简单。因为移到linux和idea的开发环境已经好久了，所以我只能自己折腾了。</p>
+
+<p>google了下，发现有基于idea的reviewboard插件，装上试了下，跟tao-reviewboard比起来，可以说是非常简陋，而且提交review请求的时候，报了一堆的错误。以为是自己的配置有问题，于是看着Review Board的文档，把配置文件~/.reviewboardrc重新检查了下，文件的内容如下
+<code>sh .reviewboardrc
+REVIEWBOARD_URL = "http://reviewboard.xxx.com/"
+USERNAME = "xxx"
+PASSWORD = "xxx"
+HTTP_USERNAME = "xxx"
+HTTP_PASSWORD = "xxx"
+</code>
+配置完之后，继续报错，报的是
+<code>java
+java.net.ProtocolException: Server redirected too many  times
+</code>
+google无结果，简单看了源码，还得了解idea的插件开发的一些知识，暂时没功夫，于是放弃。</p>
+
+<p>试着装了下eclipse，发现tao-reviewboard是依赖于subclipse的，这个东西以前就装过，没有成功，这回试了下，果然还是不成功。同事说需要编译相应版本的svn客户端，觉得单独为个CodeReview再把eclipse折腾半天，不值得，于是放弃。</p>
+
+<p>又去啃Review Board的文档了，Review Board提供了一个命令行的工具post-review，这个工具是python写的，看到是python写的就很有亲切感。安装很简单，执行下面的命令（之前已经有了python的环境，没有的可能还得提前装python和easy_install）
+<code>sh
+easy_install -U RBTools
+</code>
+提交review请求的命令也很简单
+<code>sh
+post-review -p --target-groups=xxx --target-people=xxx --summary=xxx --description=xxx files
+</code>
+执行上面的命令，报了206的错误。提示
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+于是，加上-d参数，打印debug信息，觉得可能repository没加到Review Board Server里面，但是其他人都可以提交review，于是试着进到代码目录，在代码当前目录提交review请求，没想到竟然pass了这个问题，不过马上又报了一个207的错误。提示
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+这个问题，试了好多办法都不行，于是只能调试源码，下了源码，一路输出debug信息，怀疑是diff文件的问题。看了下其他同事提交的diff文件，他们的diff文件里开头，代码文件的路径是相对路径，而我生成的竟然是绝对路径，而造成这一问题的原因就是svn.py下面这一句，把这句注释掉，替换掉RBTools-xxx.egg这个文件里面的相应文件
+<code>python svn.py
+diff = self.convert_to_absolute_paths(diff, repository_info)
+</code>
+试了下，终于OK了。post-review的那些参数太繁琐而且又长，以后有时间写个程序自己定制下。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[硬盘安装ubuntu11.04]]></title>
+    <link href="http://ellios.github.com//blog/2012/06/08/ying-pan-an-zhuang-ubuntu11-dot-04/"/>
+    <updated>2012-06-08T11:19:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/06/08/ying-pan-an-zhuang-ubuntu11-dot-04</id>
+    <content type="html"><![CDATA[<p>每次重装系统，都要查一堆的文章，常用的几个命令以及一些常见的问题就是记不住。实在有必要写一下备忘了。</p>
+
+
+<p>现有的系统winxp, win7，要装的系统是ubuntu 11.04.</p>
+
+
+<!--more-->
+
+
+<h3>一些准备工作</h3>
+
+<ul>
+<li><a href="http://sourceforge.net/projects/grub4dos/">grub4dos</a></li>
+<li><a href="http://www.ubuntu.com/download/ubuntu/download">ubuntu-11.04-XXX.iso</a>（系统的镜像文件）</li>
+<li><a href="http://www.ipauly.com/bbs/dispbbs.asp?boardid=2&amp;Id=1">bootice</a>(这个工具不是很必要，我用它来修复一些mbr的问题)</li>
+</ul>
+
+
+<h3>设置启动引导</h3>
+
+<ul>
+<li>解压grub4dos，将目录中的grldr，grldr.mbr，grub.exe三个文件复制到C盘根目录下</li>
+<li>打开ubuntu-11.04-XXX.iso，将casper目录下vmlinuz、initrd.lz两个文件提取到C盘根目录下</li>
+<li>C 盘根目录下建立menu.lst 文件，内容如下</li>
+<pre>color blue/green yellow/red white/magenta white/magenta
+timeout 30
+default /default
+
+title Ubuntu Oneiric
+root (hd0,7)
+find /boot/grub/core.img
+kernel /boot/grub/core.img
+boot
+
+title Install Ubuntu
+find --set-root /ubuntu-11.04-desktop-i386.iso
+kernel /vmlinuz boot=casper iso-scan/filename=/ubuntu-11.04-desktop-i386.iso locale=zh_CN.UTF-8
+initrd /initrd.lz
+
+title Windows 7  
+acpi  
+fallback 1  
+root (hd0,0)  
+chainloader /bootmgr  
+</pre>
+<li>设置windows引导项                 
+<ul>
+<li style="list-style-type: lower-roman;">如果是winxp的，修改隐藏的boot.ini文件，我的boot.ini内容如下</li>
+<pre style="margin-left: -20px;">[boot loader]
+timeout=30
+default=c:\grldr
+[operating systems]
+multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="Microsoft Windows XP Professional" /noexecute=optin /fastdetect
+c:\grldr="install ubuntu"
+</pre>
+<li style="list-style-type: lower-roman;">如果是win7的话，以管理员身份运行cmd，并执行一下命令。（id是create时生成的一长串字母）</li>
+</ul>
+<ul>
+<pre style="margin-left: -20px;">bcdedit /create /d "grub4dos" /application bootsector
+bcdedit /set {id} device partition=c: 
+bcdedit /set {id} path \grldr.mbr 
+bcdedit /displayorder {id} /addlast 
+</pre> 
+</ul>
+</li>
+</ul>
+
+
+<p>引导设置好后，重启系统，选择install ubuntu就进入安装界面了，安装界面还是很友好的，基本上照提示一步步来就好了，这里记录下几个碰到的小问题</p>
+
+<ul>
+<li>到分区的时候很慢，一度以为是不是有啥毛病了，耐心点就好</li>
+<li>有时候会提示卸载不了/iosdevice, 执行 sudo umount -l /iosdevice</li>
+</ul>
+
+
+<p>装好ubuntu后，grub引导可能会覆盖之前的windows引导，运行bootice恢复下windows引导，再在menu.lst中加上对ubuntu的引导就可以了</p>
+
+<h3>参考文档</h3>
+
+<ul>
+<li><a href="http://chinageek.sinaapp.com/archives/83">win7使用grub安装ubuntu11.10</a></li>
+<li><a href="http://guge1616.blog.51cto.com/327785/247174">Windows7/Vista下如何将grub加入开机菜单</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ubuntu install]]></title>
+    <link href="http://ellios.github.com//blog/2011/10/26/ubuntu-install/"/>
+    <updated>2011-10-26T22:22:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2011/10/26/ubuntu-install</id>
+    <content type="html"><![CDATA[<p>重装了ubuntu，这里记录下软件的安装过程 安装的是ubuntu 11.04，装好后提示升级，于是升级到11.10。话说oneiric变化还是满大的，使用了新的unity界面，而且不能切换回旧的gnome3的界面，登录界面也从GDM换成了LightDM。刚开始使用起来还是有些不习惯。</p>
+
+
+<ol>
+<li>更新软件源
+之前用的一直是官方默认的源。这次想专门测试下各种源的速度，于是想安装apt-spy。
+
+<pre><code> sudo apt-get install apt-spy 
+</code></pre>
+
+提示找不到软件。折腾了半天没有找到安装方法，遂作罢，弄了163的源，修改<em>/etc/apt/sources.list</em>。更新源
+
+<pre><code> sudo apt-get update
+</code></pre></li>
+<li>升级软件
+
+<pre><code> sudo apt-get upgrade
+</code></pre></li>
+<li>安装chrome
+
+<pre><code> wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add
+ sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" &gt;&gt; /etc/apt/sources.list.d/google.list' 
+ sudo apt-get update  
+ sudo apt-get install google-chrome-stable
+</code></pre></li>
+<li>安装flash，MP3解码。。。
+
+<pre><code> sudo apt-get install ubuntu-restricted-extras
+</code></pre></li>
+<li>安装7z
+
+<pre><code> sudo apt-get install p7zip-full p7zip-rar
+</code></pre></li>
+<li>安装synergy
+synergy可以使用一套键盘鼠标来控制多台机器。
+
+<pre><code> sudo apt-get install synergy 
+</code></pre>
+
+<p>安装好后要修改下<em>/etc/lightdm/lightdm.conf</em>，在最后加上<em>greeter-setup-script=/usr/bin/synergyc {ip}</em>。以上是synergy作为客户端的配置，如果作为服务器端的话，可能要稍微麻烦些。</p></li>
+<li>安装tsokc
+
+<pre><code> sudo apt-get install tsocks
+</code></pre>
+
+对于某些只能用http代理的应用，可以用他帮忙把socks的代理转一下。
+
+<h3>参考文档</h3></li>
+</ol>
+
+
+<ul>
+<li> Ubuntu 11.10 安装后要做的11件事 <a title="http://os.51cto.com/art/201110/295548.htm" href="http://os.51cto.com/art/201110/295548.htm">http://os.51cto.com/art/201110/295548.htm</a> </li>
+<li> Ubuntu 11.10 安装后要做的12件事 <a title="http://www.bentutu.com/2011/10/ubuntu-11-10-Ubuntu 11.10 安装后要做的12件事/" href="http://www.bentutu.com/2011/10/ubuntu-11-10-Ubuntu 11.10 安装后要做的12件事/">http://www.bentutu.com/2011/10/ubuntu-11-10-Ubuntu 11.10 安装后要做的12件事/</a> </li>
+<li> Top 10 Tips and Tricks for Ubuntu 11.10 <a title="http://blog.sudobits.com/2011/10/13/top-10-tips-and-tricks-for-ubuntu-11-10/" href="http://blog.sudobits.com/2011/10/13/top-10-tips-and-tricks-for-ubuntu-11-10/">http://blog.sudobits.com/2011/10/13/top-10-tips-and-tricks-for-ubuntu-11-10/</a> </li>
+<li> Chrome browser in Google repos <a title="http://www.ubuntuupdates.org/ppas/8" href="http://www.ubuntuupdates.org/ppas/8">http://www.ubuntuupdates.org/ppas/8</a> </li>
+<li> SynergyHowto <a title="https://help.ubuntu.com/community/SynergyHowto" href="https://help.ubuntu.com/community/SynergyHowto">https://help.ubuntu.com/community/SynergyHowto</a> </li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

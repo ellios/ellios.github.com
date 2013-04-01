@@ -1,0 +1,745 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Protocol Buffer入门 - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="是啥 Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2012/10/19/pb-tutorial">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Protocol Buffer入门</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-19T16:52:00+08:00" pubdate data-updated="true">Oct 19<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>是啥</h2>
+
+<blockquote><p>Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that are compiled against the &#8220;old&#8221; format.</p><footer><strong>Google, Developer Guide,</strong> <cite><a href='https://developers.google.com/protocol-buffers/docs/overview'>developers.google.com/docs/&hellip;</a></cite></footer></blockquote>
+
+
+<p>上面是Google官方文档对Protocol Buffer(简称PB)的定义，简单翻译下。</p>
+
+<ul>
+<li>序列化结构数据的自动化机制，类似XML，但是更小，更快，更简单</li>
+<li>你只需定义你的数据结构，就可以用PB生成的源码去操作结构数据</li>
+<li>支持多种语言</li>
+<li>数据结构向后兼容</li>
+</ul>
+
+
+<h2>性能</h2>
+
+<p>PB的性能，数据大小口碑一直不错，好多公司也都在用。这里有些人们做的<a href="http://code.google.com/p/thrift-protobuf-compare/wiki/BenchmarkingV2">Benchmark</a>数据。相对与未压缩的xml或者json来说是有不小的优势的，官方文档的说法是比xml要小3-10倍，快20-100倍。</p>
+
+<h2>使用</h2>
+
+<p>在使用PB之前要先定义你的数据结构，PB有一套数据结构定义的语法，你需要使用这套语法来定义你的结构。定义结构的代码一般会写到一个以.proto为后缀的文件中（文件后缀好像没有强制）</p>
+
+<h3>语法</h3>
+
+<h4>Message</h4>
+
+<p>Message类似于Java中的对象，C中的struct，是PB中数据封装的基本单元，一般我们在PB中定义的数据结构就是一个个的Message了。</p>
+
+<figure class='code'><figcaption><span>message.proto</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">message</span> <span class="n">SearchRequest</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">required</span> <span class="n">string</span> <span class="n">query</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">optional</span> <span class="n">int32</span> <span class="n">page_number</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">optional</span> <span class="n">int32</span> <span class="n">result_per_page</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码就定义了一个message</p>
+
+<ul>
+<li>message由field组成，类似对象中的成员变量</li>
+<li>要定义field的类型，类型包括scalar（待会儿说）， enumeration，以及message（支持嵌套哦）</li>
+<li>要定义field的规则，规则有required（值不能为空）,optional（值可以为空），repeated（重复，用来声明列表）</li>
+<li>每个field要分配Tag，tag就是每行最后的那写数字，占位符的意思。数据编码后用tag来对应每个field。tag从1开始，而且是动态编码的，1-16占一个字节，16-2047两个字节，最大是2<sup>29</sup> - 1</li>
+</ul>
+
+
+<h4>Scalar</h4>
+
+<p>下图列出了PB所支持的Scalar的类型</p>
+
+<p><img src="/images/proto-scalar.png" alt="&quot;PB Scalar&quot;" /></p>
+
+<h4>enum</h4>
+
+<p>PB支持枚举类型，对应Java或者C中的枚举类型,下面是一个枚举的例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'> <span class="n">enum</span> <span class="n">Colour</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">RED</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">BLACK</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">BLUE</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用</h3>
+
+<p>使用之前需要先安装protoc，protoc用于生成对应语言的代码。除了protoc，还需要编译对应语言的库，并且添加到你的依赖路径中。<a href="http://ellios-note.readthedocs.org/en/latest/ice/protobuf.html?t">安装wiki</a></p>
+
+<h4>数据结构</h4>
+
+<p>首先用pb的语法定义数据结构。</p>
+
+<figure class='code'><figcaption><span>tutorial.proto</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">package</span> <span class="n">me</span><span class="o">.</span><span class="n">ellios</span><span class="o">.</span><span class="n">tutorial</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">option</span> <span class="n">java_package</span> <span class="o">=</span> <span class="s">&quot;me.ellios.tutorial&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">option</span> <span class="n">java_outer_classname</span> <span class="o">=</span> <span class="s">&quot;AddressBookProtos&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">message</span> <span class="n">Person</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">required</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">required</span> <span class="n">int32</span> <span class="nb">id</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">optional</span> <span class="n">string</span> <span class="n">email</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">repeated</span> <span class="n">PhoneNumber</span> <span class="n">phone</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">enum</span> <span class="n">PhoneType</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">MOBILE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">HOME</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">WORK</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">message</span> <span class="n">PhoneNumber</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">required</span> <span class="n">string</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">optional</span> <span class="n">PhoneType</span> <span class="nb">type</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">[</span><span class="n">default</span> <span class="o">=</span> <span class="n">HOME</span><span class="p">];</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">message</span> <span class="n">AddressBook</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">repeated</span> <span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><em>package</em>：声明生成的代码所在的包，貌似是对应cpp的命名空间</li>
+<li><em>option java_package</em>：针对java，声明java代码的包</li>
+<li><em>option java_outer_classname</em>：针对java，声明java代码的类</li>
+</ul>
+
+
+<h4>java的例子</h4>
+
+<p>执行下面的命令，会生成AddressBookProtos.java文件，将它拷到你的工作目录中</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>protoc --java_out<span class="o">=</span>. tutorial.proto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面是一段简单的示例代码，演示怎么创建对象，以及对象的序列化和反序列化。</p>
+
+<figure class='code'><figcaption><span>AddressBookExample.java</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">me</span><span class="o">.</span><span class="na">ellios</span><span class="o">.</span><span class="na">tutorial</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">me.ellios.tutorial.AddressBookProtos.Person</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">me.ellios.tutorial.AddressBookProtos.AddressBook</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AddressBookExample</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//要通过builder来构建对象，</span>
+</span><span class='line'>        <span class="n">AddressBook</span><span class="o">.</span><span class="na">Builder</span> <span class="n">addressBuiler</span> <span class="o">=</span> <span class="n">AddressBook</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+</span><span class='line'>            <span class="n">Person</span><span class="o">.</span><span class="na">Builder</span> <span class="n">personBuilder</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;ellios&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span> <span class="c1">//设置name，不能为空</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="c1">//设置id，也不能为空</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">setEmail</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">);</span> <span class="c1">//email可以为空</span>
+</span><span class='line'>            <span class="c1">//创建phone</span>
+</span><span class='line'>            <span class="n">Person</span><span class="o">.</span><span class="na">PhoneNumber</span><span class="o">.</span><span class="na">Builder</span> <span class="n">phoneBuilder</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="na">PhoneNumber</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">phoneBuilder</span><span class="o">.</span><span class="na">setNumber</span><span class="o">(</span><span class="s">&quot;132222222222&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">phoneBuilder</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Person</span><span class="o">.</span><span class="na">PhoneType</span><span class="o">.</span><span class="na">values</span><span class="o">()[</span><span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">3</span><span class="o">)]);</span>
+</span><span class='line'>            <span class="c1">//将phone添加到person中,              .</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">addPhone</span><span class="o">(</span><span class="n">phoneBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
+</span><span class='line'>            <span class="c1">//将person添加到地址簿的列表中</span>
+</span><span class='line'>            <span class="n">addressBuiler</span><span class="o">.</span><span class="na">addPerson</span><span class="o">(</span><span class="n">personBuilder</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">AddressBook</span> <span class="n">addressBook</span> <span class="o">=</span> <span class="n">addressBuiler</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;addressBook : &quot;</span>  <span class="o">+</span> <span class="n">addressBook</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">serializeBytes</span> <span class="o">=</span> <span class="n">addressBook</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">AddressBook</span> <span class="n">addressBook2</span> <span class="o">=</span> <span class="n">AddressBook</span><span class="o">.</span><span class="na">parseFrom</span><span class="o">(</span><span class="n">serializeBytes</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;addressBook2 equal to addressBook. result is &quot;</span> <span class="o">+</span> <span class="n">addressBook</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">addressBook2</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">addressBook</span><span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;addressBook&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">AddressBook</span><span class="o">.</span><span class="na">Builder</span> <span class="n">addressBuilder3</span> <span class="o">=</span> <span class="n">AddressBook</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">addressBuilder3</span><span class="o">.</span><span class="na">mergeFrom</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;addressBook&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;addressBook3 equal to addressBook. result is &quot;</span> <span class="o">+</span> <span class="n">addressBook</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">addressBuilder3</span><span class="o">.</span><span class="na">build</span><span class="o">()));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>python示例</h4>
+
+<p>执行下面的命令，生成tutorial_pb2.py文件,将它拷到工作目录中。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>protoc --python_out<span class="o">=</span>. tutorial.proto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面是简单的示例代码</p>
+
+<figure class='code'><figcaption><span>address_book_example.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#! /usr/bin/python</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">tutorial_pb2</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">address_book</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">AddressBook</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">person</span> <span class="o">=</span> <span class="n">address_book</span><span class="o">.</span><span class="n">person</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">person</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">i</span>
+</span><span class='line'>    <span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;ellios</span><span class="si">%d</span><span class="s">&#39;</span><span class="o">%</span><span class="n">i</span>
+</span><span class='line'>    <span class="n">person</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>    <span class="n">phone_number</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="n">phone</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">phone_number</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="s">&quot;13233333333&quot;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">phone_number</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">MOBILE</span>
+</span><span class='line'>    <span class="k">elif</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">phone_number</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">HOME</span>
+</span><span class='line'>    <span class="k">elif</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">phone_number</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">WORK</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="s">&#39;address_book : &#39;</span><span class="p">,</span> <span class="n">address_book</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="s">&quot;wb&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">address_book</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">())</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">address_book2</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">AddressBook</span><span class="p">()</span>
+</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">address_book2</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="s">&quot;address_book same with address_book2. the result is </span><span class="si">%d</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">address_book</span> <span class="o">==</span> <span class="n">address_book2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>cpp示例</h4>
+
+<p>执行下面的命令，生成tutorial.pb.h和tutorial.pb.cc文件，将这两个文件拷到工作目录</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>protoc --cpp_out<span class="o">=</span>. tutorial.proto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面是一段示例代码</p>
+
+<figure class='code'><figcaption><span>address_book_example.cc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fstream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &quot;tutorial.pb.h&quot;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// Verify that the version of the library that we linked against is</span>
+</span><span class='line'>  <span class="c1">// compatible with the version of the headers we compiled against.</span>
+</span><span class='line'>  <span class="n">GOOGLE_PROTOBUF_VERIFY_VERSION</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">tutorial</span><span class="o">::</span><span class="n">AddressBook</span> <span class="n">address_book</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">tutorial</span><span class="o">::</span><span class="n">Person</span><span class="o">*</span> <span class="n">person</span> <span class="o">=</span> <span class="n">address_book</span><span class="p">.</span><span class="n">add_person</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">person</span><span class="o">-&gt;</span><span class="n">set_id</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">person</span><span class="o">-&gt;</span><span class="n">set_name</span><span class="p">(</span><span class="s">&quot;ellios&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">person</span><span class="o">-&gt;</span><span class="n">set_email</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">tutorial</span><span class="o">::</span><span class="n">Person</span><span class="o">::</span><span class="n">PhoneNumber</span><span class="o">*</span> <span class="n">phone_number</span> <span class="o">=</span> <span class="n">person</span><span class="o">-&gt;</span><span class="n">add_phone</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">phone_number</span><span class="o">-&gt;</span><span class="n">set_number</span><span class="p">(</span><span class="s">&quot;13333333333&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">phone_number</span><span class="o">-&gt;</span><span class="n">set_type</span><span class="p">(</span><span class="n">tutorial</span><span class="o">::</span><span class="n">Person</span><span class="o">::</span><span class="n">HOME</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">// Write the new address book back to disk.</span>
+</span><span class='line'>  <span class="n">fstream</span> <span class="n">output</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="n">ios</span><span class="o">::</span><span class="n">out</span> <span class="o">|</span> <span class="n">ios</span><span class="o">::</span><span class="n">trunc</span> <span class="o">|</span> <span class="n">ios</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">address_book</span><span class="p">.</span><span class="n">SerializeToOstream</span><span class="p">(</span><span class="o">&amp;</span><span class="n">output</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Failed to write address book.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;address_book : &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">address_book</span><span class="p">.</span><span class="n">person_size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">tutorial</span><span class="o">::</span><span class="n">AddressBook</span> <span class="n">address_book2</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fstream</span> <span class="n">input</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="n">ios</span><span class="o">::</span><span class="n">in</span> <span class="o">|</span> <span class="n">ios</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">address_book2</span><span class="p">.</span><span class="n">ParseFromIstream</span><span class="p">(</span><span class="o">&amp;</span><span class="n">input</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Optional:  Delete all global objects allocated by libprotobuf.</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">::</span><span class="n">protobuf</span><span class="o">::</span><span class="n">ShutdownProtobufLibrary</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考资料</h2>
+
+<ul>
+<li><a href="https://developers.google.com/protocol-buffers/docs/proto">https://developers.google.com/protocol-buffers/docs/proto</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-19T16:52:00+08:00" pubdate data-updated="true">Oct 19<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/rpc/'>RPC</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/10/19/pb-tutorial/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/10/19/pb-tutorial/" data-via="" data-counturl="http://ellios.github.com//blog/2012/10/19/pb-tutorial/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/09/01/jdk7-fork-join/" title="Previous Post: jdk7-fork-join">&laquo; jdk7-fork-join</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/10/24/reviewboard/" title="Next Post: 艰难的reviewboard折腾">艰难的reviewboard折腾 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2012/10/19/pb-tutorial/';
+        var disqus_url = 'http://ellios.github.com//blog/2012/10/19/pb-tutorial/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

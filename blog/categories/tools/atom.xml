@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: tools | ellios's blog]]></title>
+  <link href="http://ellios.github.com//blog/categories/tools/atom.xml" rel="self"/>
+  <link href="http://ellios.github.com//"/>
+  <updated>2013-04-02T00:07:14+08:00</updated>
+  <id>http://ellios.github.com//</id>
+  <author>
+    <name><![CDATA[ellios]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[jnotify]]></title>
+    <link href="http://ellios.github.com//blog/2012/06/08/jnotify/"/>
+    <updated>2012-06-08T11:38:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2012/06/08/jnotify</id>
+    <content type="html"><![CDATA[<p>eclipse装了aptana，结果报</p>
+
+
+<blockquote>JNotifyAdapterLinux.registerToSubTree : warning, failed to register /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base :Error watching /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base : No space left on device</blockquote>
+
+
+<p>查了下，aptana使用了jnotify，而jnotify使inotify的java封装，inotify对每个进程能够观察的文件数使是有限制的。可以把限制加大一些来解决这个问题。</p>
+
+
+<pre>su
+echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
+</pre>
+
+
+<p>顺便发掘了下jnotify，对文件的增删改等事件进行监听的java库，使用也很简单。  </p>
+
+
+<h3>参考文档</h3>
+
+<ul>
+<li> jnotify <a title="http://jnotify.sourceforge.net/" href="http://jnotify.sourceforge.net/">http://jnotify.sourceforge.net/</a> </li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

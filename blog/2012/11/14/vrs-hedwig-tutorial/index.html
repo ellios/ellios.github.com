@@ -1,0 +1,741 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>vrs hedwig入门 - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="hedwig（Harry Potter&#8217;s owl. A messager.）是一个分布式服务的框架，用户使用它可以很方便的开发分布式服务，并使用这些服务。它主要有以下功能： 统一的服务注册中心
+统一的服务管理平台
+统一的服务监控平台
+使用protocol &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Vrs Hedwig入门</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-14T21:13:00+08:00" pubdate data-updated="true">Nov 14<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>hedwig（Harry Potter&#8217;s owl. A messager.）是一个分布式服务的框架，用户使用它可以很方便的开发分布式服务，并使用这些服务。它主要有以下功能：</p>
+
+<ul>
+<li>统一的服务注册中心</li>
+<li>统一的服务管理平台</li>
+<li>统一的服务监控平台</li>
+<li>使用protocol buffer或者thrift作为消息格式，支持多种语言调用。</li>
+<li>服务可动态扩展</li>
+<li>负载均衡</li>
+<li>服务的容错容灾</li>
+</ul>
+
+
+<p>下面对hedwig的使用做一个简单的入门介绍.</p>
+
+<p>hedwig支持[protocol buffer]和<a href="http://thrift.apache.org/">thrift</a>作为消息格式，两种格式的服务开发和调用略有不同，下面分别讲述。</p>
+
+<h3>Protocol bufffe服务</h3>
+
+<h4>服务Provider</h4>
+
+<ol>
+<li>定义消息格式</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>example.proto</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">package</span> <span class="n">com</span><span class="p">.</span><span class="n">qiyi</span><span class="p">.</span><span class="n">vrs</span><span class="p">.</span><span class="n">hedwig</span><span class="p">.</span><span class="n">examples</span><span class="p">.</span><span class="n">pb</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">option</span> <span class="n">java_package</span> <span class="o">=</span> <span class="s">&quot;com.qiyi.vrs.hedwig.examples.pb&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">option</span> <span class="n">java_outer_classname</span> <span class="o">=</span> <span class="s">&quot;Calculator&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">message</span> <span class="n">CalcRequest</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">required</span> <span class="n">int32</span> <span class="n">num1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">required</span> <span class="n">int32</span> <span class="n">num2</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">required</span> <span class="n">Operation</span> <span class="n">op</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">enum</span> <span class="n">Operation</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">ADD</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">SUBTRACT</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">MULTIPLY</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">DIVIDE</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">message</span> <span class="n">CalcResponse</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">required</span> <span class="n">int32</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>使用protoc生成代码</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>protoc --java_out<span class="o">=</span>../java example.proto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>定义服务接口</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>CalculatorService.java</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CalculatorService</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Calculator</span><span class="o">.</span><span class="na">CalcResponse</span> <span class="nf">calculate</span><span class="o">(</span><span class="n">Calculator</span><span class="o">.</span><span class="na">CalcRequest</span> <span class="n">request</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>实现服务</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>CalculatorServiceImpl.java</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CalculatorServiceImpl</span> <span class="kd">implements</span> <span class="n">CalculatorService</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">CalcResponse</span> <span class="nf">calculate</span><span class="o">(</span><span class="n">Calculator</span><span class="o">.</span><span class="na">CalcRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">num1</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getNum1</span><span class="o">();</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">num2</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getNum2</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">Calculator</span><span class="o">.</span><span class="na">CalcRequest</span><span class="o">.</span><span class="na">Operation</span> <span class="n">op</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getOp</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;calculate(, {&quot;</span> <span class="o">+</span> <span class="n">op</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">num1</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">num2</span> <span class="o">+</span> <span class="s">&quot;})&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">val</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">switch</span> <span class="o">(</span><span class="n">op</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">ADD:</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">SUBTRACT:</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">-</span> <span class="n">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">MULTIPLY:</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">*</span> <span class="n">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">DIVIDE:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">num2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;num2 is zero for divide operation&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">/</span> <span class="n">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;unknown operation&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">CalcResponse</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">().</span><span class="na">setResult</span><span class="o">(</span><span class="n">val</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>启动服务，服务启动时会自动在服务中心注册</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>CalculatorServiceImpl.java</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PbCalServer</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">){</span>
+</span><span class='line'>        <span class="n">HedwigServer</span> <span class="n">server</span> <span class="o">=</span> <span class="n">HedwigServer</span><span class="o">.</span><span class="na">getServer</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">server</span><span class="o">.</span><span class="na">registerService</span><span class="o">(</span><span class="n">ServiceConfigFactory</span><span class="o">.</span><span class="na">createServiceConfig</span><span class="o">(</span><span class="n">CalculatorService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span><span class='line'>                <span class="n">CalculatorServiceImpl</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">server</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>服务调用</h4>
+
+<p>调用服务前你需要获取服务的接口类和接口名称，然后就可以调用服务了。</p>
+
+<figure class='code'><figcaption><span>CalculatorServiceImpl.java</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PbCalClient</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">){</span>
+</span><span class='line'>        <span class="n">CalculatorService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">ServiceHelper</span><span class="o">.</span><span class="na">getPbService</span><span class="o">(</span><span class="n">CalculatorService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Calculator</span><span class="o">.</span><span class="na">CalcRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">CalcRequest</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">().</span><span class="na">setNum1</span><span class="o">(</span><span class="mi">10</span><span class="o">).</span><span class="na">setNum2</span><span class="o">(</span><span class="mi">20</span><span class="o">).</span><span class="na">setOp</span><span class="o">(</span><span class="n">Calculator</span><span class="o">.</span><span class="na">CalcRequest</span><span class="o">.</span><span class="na">Operation</span><span class="o">.</span><span class="na">ADD</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">service</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Thrift服务</h3>
+
+<h4>Thrift服务Provider</h4>
+
+<p>一. 定义服务接口</p>
+
+<figure class='code'><figcaption><span>example.thrift</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm">* example.thrift</span>
+</span><span class='line'><span class="cm">* show how to use thrift rpc</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="n">namespace</span> <span class="n">java</span> <span class="n">com</span><span class="p">.</span><span class="n">qiyi</span><span class="p">.</span><span class="n">vrs</span><span class="p">.</span><span class="n">hedwig</span><span class="p">.</span><span class="n">examples</span><span class="p">.</span><span class="n">thrift</span>
+</span><span class='line'><span class="n">namespace</span> <span class="n">py</span> <span class="n">com</span><span class="p">.</span><span class="n">qiyi</span><span class="p">.</span><span class="n">vrs</span><span class="p">.</span><span class="n">hedwig</span><span class="p">.</span><span class="n">examples</span><span class="p">.</span><span class="n">thrift</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">enum</span> <span class="n">Operation</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">ADD</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">SUBTRACT</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">MULTIPLY</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">DIVIDE</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">exception</span> <span class="n">InvalidOperation</span> <span class="p">{</span>
+</span><span class='line'>  <span class="mi">1</span><span class="o">:</span> <span class="n">i32</span> <span class="n">what</span><span class="p">,</span>
+</span><span class='line'>  <span class="mi">2</span><span class="o">:</span> <span class="n">string</span> <span class="n">why</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">service</span> <span class="n">Calculator</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">i32</span> <span class="n">calculate</span><span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">i32</span> <span class="n">num1</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span><span class="n">i32</span> <span class="n">num2</span><span class="p">,</span> <span class="mi">3</span><span class="o">:</span><span class="n">Operation</span> <span class="n">op</span><span class="p">)</span> <span class="n">throws</span> <span class="p">(</span><span class="mi">1</span><span class="o">:</span><span class="n">InvalidOperation</span> <span class="n">ouch</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>二. 生成代码，thrift提供了代码生成工具，执行下面的命令生成java代码</p>
+
+<figure class='code'><figcaption><span>example.thrift</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">thrift</span> <span class="o">-</span><span class="n">gen</span> <span class="n">java</span> <span class="o">-</span><span class="n">out</span> <span class="p">..</span><span class="o">/</span><span class="n">java</span> <span class="n">exmaple</span><span class="p">.</span><span class="n">thrift</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>实现服务</li>
+</ol>
+
+
+<p>thrift的代码生成工具会自动生成接口类，直接实现接口就可以了</p>
+
+<figure class='code'><figcaption><span>example.thrift</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">public</span> <span class="n">class</span> <span class="n">CalculatorServiceImpl</span> <span class="n">implements</span> <span class="n">Calculator</span><span class="p">.</span><span class="n">Iface</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="err">@</span><span class="n">Override</span>
+</span><span class='line'>    <span class="n">public</span> <span class="kt">int</span> <span class="n">calculate</span><span class="p">(</span><span class="kt">int</span> <span class="n">num1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">num2</span><span class="p">,</span> <span class="n">Operation</span> <span class="n">op</span><span class="p">)</span> <span class="n">throws</span> <span class="n">InvalidOperation</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;calculate({&quot;</span> <span class="o">+</span> <span class="n">op</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">num1</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">num2</span> <span class="o">+</span> <span class="s">&quot;})&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">val</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">switch</span> <span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">ADD</span>:
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">num2</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">SUBTRACT</span>:
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">-</span> <span class="n">num2</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">MULTIPLY</span>:
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">*</span> <span class="n">num2</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">DIVIDE</span>:
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">num2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="n">InvalidOperation</span> <span class="n">io</span> <span class="o">=</span> <span class="n">new</span> <span class="n">InvalidOperation</span><span class="p">();</span>
+</span><span class='line'>                    <span class="n">io</span><span class="p">.</span><span class="n">what</span> <span class="o">=</span> <span class="n">op</span><span class="p">.</span><span class="n">getValue</span><span class="p">();</span>
+</span><span class='line'>                    <span class="n">io</span><span class="p">.</span><span class="n">why</span> <span class="o">=</span> <span class="s">&quot;Cannot divide by 0&quot;</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">throw</span> <span class="n">io</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">num1</span> <span class="o">/</span> <span class="n">num2</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="nl">default:</span>
+</span><span class='line'>                <span class="n">InvalidOperation</span> <span class="n">io</span> <span class="o">=</span> <span class="n">new</span> <span class="n">InvalidOperation</span><span class="p">();</span>
+</span><span class='line'>                <span class="n">io</span><span class="p">.</span><span class="n">what</span> <span class="o">=</span> <span class="n">op</span><span class="p">.</span><span class="n">getValue</span><span class="p">();</span>
+</span><span class='line'>                <span class="n">io</span><span class="p">.</span><span class="n">why</span> <span class="o">=</span> <span class="s">&quot;Unknown operation&quot;</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">throw</span> <span class="n">io</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">val</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>启动服务</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>example.thrift</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">public</span> <span class="n">class</span> <span class="n">ThriftCalServer</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">public</span> <span class="k">static</span> <span class="kt">void</span> <span class="n">main</span><span class="p">(</span><span class="n">String</span><span class="p">...</span> <span class="n">args</span><span class="p">){</span>
+</span><span class='line'>        <span class="n">HedwigServer</span> <span class="n">server</span> <span class="o">=</span> <span class="n">HedwigServer</span><span class="p">.</span><span class="n">getServer</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">server</span><span class="p">.</span><span class="n">registerService</span><span class="p">(</span><span class="n">ServiceConfigFactory</span><span class="p">.</span><span class="n">createServiceConfig</span><span class="p">(</span><span class="s">&quot;ThriftCalculatorService&quot;</span><span class="p">,</span> <span class="mi">8886</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">ServiceConfig</span><span class="p">.</span><span class="n">ServiceSchema</span><span class="p">.</span><span class="n">TCP</span><span class="p">,</span>
+</span><span class='line'>                 <span class="n">ServiceConfig</span><span class="p">.</span><span class="n">ServiceType</span><span class="p">.</span><span class="n">THRIFT</span><span class="p">,</span> <span class="n">Calculator</span><span class="p">.</span><span class="n">Iface</span><span class="p">.</span><span class="n">class</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">CalculatorServiceImpl</span><span class="p">.</span><span class="n">class</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">server</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>thrift服务调用</h4>
+
+<figure class='code'><figcaption><span>example.thrift</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">public</span> <span class="n">class</span> <span class="n">ThriftCalClient</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">public</span> <span class="k">static</span> <span class="kt">void</span> <span class="n">main</span><span class="p">(</span><span class="n">String</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="n">throws</span> <span class="n">TException</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">Calculator</span><span class="p">.</span><span class="n">Iface</span> <span class="n">service</span> <span class="o">=</span> <span class="n">ServiceHelper</span><span class="p">.</span><span class="n">getThriftService</span><span class="p">(</span><span class="s">&quot;ThriftCalculatorService&quot;</span><span class="p">,</span> <span class="n">Calculator</span><span class="p">.</span><span class="n">Iface</span><span class="p">.</span><span class="n">class</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">service</span><span class="p">.</span><span class="n">calculate</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">Operation</span><span class="p">.</span><span class="n">ADD</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>其他</h3>
+
+<ol>
+<li>服务端支持spring,需要在配置文件hedwig.properties中填加如下内容</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>hedwig.spring.enable<span class="o">=</span><span class="nb">true</span>
+</span><span class='line'>hedwig.spring.config<span class="o">=</span>spring/vrs_all.xml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>hedwig.spring.config可不填，默认会从META-INf/spring/下读取所有的配置文件</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-14T21:13:00+08:00" pubdate data-updated="true">Nov 14<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial/" data-via="" data-counturl="http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/11/11/zookeeper-tutorial/" title="Previous Post: zookeeper入门">&laquo; zookeeper入门</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/03/12/ganglia/" title="Next Post: ganglia">ganglia &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial/';
+        var disqus_url = 'http://ellios.github.com//blog/2012/11/14/vrs-hedwig-tutorial/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

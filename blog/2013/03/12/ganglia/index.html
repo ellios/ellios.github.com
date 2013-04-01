@@ -1,0 +1,615 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ganglia - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="最近忙的一个项目，终于上线了，忙了一个多月，但是心里仍然很没谱。为什么没谱，主要是因为目前的系统缺乏有效的监控，对于机器负载，jvm的运行情况，各接口的调用次数，接口的调用时间。于是痛下决心，利用系统刚上线，空余的一周搭建一套监控系统。 之前做运维的工作很少，对于各种监控系统更是缺乏有效的了解， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2013/03/12/ganglia">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ganglia</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-12T23:38:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2013</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>最近忙的一个项目，终于上线了，忙了一个多月，但是心里仍然很没谱。为什么没谱，主要是因为目前的系统缺乏有效的监控，对于机器负载，jvm的运行情况，各接口的调用次数，接口的调用时间。于是痛下决心，利用系统刚上线，空余的一周搭建一套监控系统。</p>
+
+<p>之前做运维的工作很少，对于各种监控系统更是缺乏有效的了解，了解到的一些常用监控系统有catti，zabbix和ganglia，考虑再三选择了ganglia。为什么选择ganglia呢，理由没那么充分，可能之前看过ganglia的一些资料，对他更为熟悉，对于他出身Berkley和支持python，这两点都比较满意，于是就选择它了。</p>
+
+<p>选型之后就开始折腾了，相关的资料不多，很多的配置都是试着来，期间走了很多的弯路，本来预计两天搞定的事情，其实用了一周多。直接导致本周计划的持续集成环境的搭建没时间搞了。这里简单记录下安装过程。</p>
+
+<h3>相关简介</h3>
+
+<p><a href="http://ganglia.info/">Ganglia</a>是UC Berkley发起的一个开源项目，可以用来监控数以千记的服务器集群，具有很好的扩展性。Ganglia主要包括三个部分
+1. Gmond，运行在每台目标机器节点上，用于获取节点的监控数据，gmond不仅能够收集本节点的数据，还能接收其他节点发来的数据，对数据做汇集后发送到gmetad，这样就可以保证整个监控系统的可扩展性；
+2. Gemtad，将各gmond的数据收集到一起，用rrdtool将数据保存到硬盘上
+3. Web Front， 将rrdtool生成的数据输出可视化的图片</p>
+
+<p>简单介绍下rrdtool（Round Robin Database Tool）
+rrdtool是一种环状结构的数据库，非常适合处理时间序列的数据，能够非常高效的绘制时间序列的图片。ganglia的数据存储和可视化都是通过rrdtool实现的。</p>
+
+<h3>安装</h3>
+
+<h4>Ubuntu安装</h4>
+
+<p>Ubuntu下用apt-get会自动把相关的依赖都给安装上，执行下面的命令</p>
+
+<pre><code>```sh
+sudo apt-get install ganglia-monitor ganglia-webfrontend
+```
+</code></pre>
+
+<h4>rh5编译安装</h4>
+
+<ol>
+<li>安装依赖的库</li>
+</ol>
+
+
+<p>先用yum把相关的依赖都安装上</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>yum -y install apr-devel apr-util check-devel cairo-devel pango-devel <span class="se">\</span>
+</span><span class='line'>libxml2-devel rpmbuild glib2-devel dbus-devel freetype-devel fontconfig-devel <span class="se">\</span>
+</span><span class='line'>gcc-c++ expat-devel python-devel libXrender-devel libconfuse
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>虽然列出来好多，但是绝大多数都是一些常见的基础包，需要注意的就是expat和libconfuse</p>
+
+<ol>
+<li>编译安装rrdtool，执行下面的命令</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>wget http://oss.oetiker.ch/rrdtool/pub/rrdtool.tar.gz
+</span><span class='line'>tar zxvf rrdtool*
+</span><span class='line'><span class="nb">cd </span>rrdtool-*
+</span><span class='line'>./configure --prefix<span class="o">=</span>/data/apps/rrdtool
+</span><span class='line'>make
+</span><span class='line'>make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>编译安装ganglia</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&quot;$CPPFLAGS -I/opt/apps/rrdtool&quot;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;$LDFLAGS -L/opt/apps/rrdtool&quot;</span>
+</span><span class='line'>tar –zxvf ganglia-3.1.2.tar.gz
+</span><span class='line'><span class="nb">cd </span>ganglia-3.1.2.tar.gz
+</span><span class='line'>./configure --prefix<span class="o">=</span>/data/apps/ganglia --with-gmetad
+</span><span class='line'>make
+</span><span class='line'>make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>4.将编译好的ganglia发布到客户端
+首先在目标机器上建立ssh信任，然后执行下面的脚本</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">GANGLIA_BIN</span><span class="o">=</span>/data/apps/ganglia/bin
+</span><span class='line'><span class="nv">GANGLIA_SBIN</span><span class="o">=</span>/data/apps/ganglia/sbin
+</span><span class='line'><span class="nv">GANGLIA_LIB</span><span class="o">=</span>/data/apps/ganglia/lib64
+</span><span class='line'><span class="nv">i</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>ssh <span class="nv">$i</span> mkdir -p <span class="nv">$GANGLIA_BIN</span>
+</span><span class='line'>ssh <span class="nv">$i</span> mkdir -p <span class="nv">$GANGLIA_SBIN</span>
+</span><span class='line'>scp <span class="nv">$GANGLIA_BIN</span>/gmetric <span class="nv">$i</span>:<span class="nv">$GANGLIA_BIN</span>
+</span><span class='line'>scp <span class="k">${</span><span class="nv">GANGLIA_SBIN</span><span class="k">}</span>/gmond <span class="nv">$i</span>:<span class="k">${</span><span class="nv">GANGLIA_SBIN</span><span class="k">}</span>/gmond
+</span><span class='line'>ssh <span class="nv">$i</span> ln -fs <span class="nv">$GANGLIA_SBIN</span>/gmond /usr/sbin/gmond
+</span><span class='line'>scp -r <span class="nv">$GANGLIA_LIB</span> <span class="nv">$i</span>:<span class="nv">$GANGLIA_LIB</span>
+</span><span class='line'>ssh <span class="nv">$i</span> mkdir -p /etc/ganglia/
+</span><span class='line'>scp gmond.conf <span class="nv">$i</span>:/etc/ganglia/gmond.conf
+</span><span class='line'>scp /etc/init.d/gmond <span class="nv">$i</span>:/etc/init.d/
+</span><span class='line'>scp /lib64/libexpat.so.0 <span class="nv">$i</span>:/lib64/
+</span><span class='line'>scp /usr/lib64/libconfuse.so.0 <span class="nv">$i</span>:/usr/lib64/
+</span><span class='line'>scp /usr/lib64/libapr-1.so.0 <span class="nv">$i</span>:/usr/lib64/
+</span><span class='line'>ssh <span class="nv">$i</span> chkconfig --add gmond
+</span><span class='line'>ssh <span class="nv">$i</span> chkconfig gmond on
+</span><span class='line'>ssh <span class="nv">$i</span> service gmond start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>5.搭建Http Server
+ganglia的Web界面是用php写的，所以支持php的http server是必须的。这个没啥好说的，php和各种http Server集成的方法还是
+挺多的，我用的最经典的Apache+php_module的方式。</p>
+
+<h3>配置</h3>
+
+<p>对应于组成ganglia的三种组件，ganglia的配置也需要对这三种组件分别做配置</p>
+
+<ol>
+<li>Web Front的配置
+Web Front的配置文件是web项目下的conf.php文件，新版的web项目可能没有这个文件，自己建一个就好了，默认是先从conf.php加载不到，如果
+没有的话，就从conf_default.php加载。可以通过这个文件对web项目做些简单的定制。下面是我的配置文件。</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">$conf[&#39;gmetad_root&#39;] = &quot;/data/appdata/ganglia&quot;;</span>
+</span><span class='line'><span class="x">$conf[&#39;rrds&#39;] = &quot;${conf[&#39;gmetad_root&#39;]}/rrds&quot;;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Gmetad的配置
+Gmetad的配置文件默认是/etc/ganglia/gmetad.conf，编译的时候可以自己指定配置文件的位置在configure加&#8211;sysconfdir=xx.这个文件里面
+最重要的配置项是data_source，下面是我的一个简要的配置</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">data_source &quot;monitor&quot; xx.xx.xx.xx:8649</span>
+</span><span class='line'><span class="x">data_source &quot;test&quot; xx.xx.xx.xx:8649</span>
+</span><span class='line'><span class="x">rrd_rootdir &quot;/data/appdata/ganglia/rrds&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>Gmond的配置
+Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低级错误。Gmond的默认数据收集的方式有组播和单播两种，默认是组播，组播的好处是配置非常简单，
+但是对网络的可适应要差些。我们的机器由于有跨机房的问题，所以用的是单播的方式。</li>
+</ol>
+
+
+<p>生成默认的gmond配置文件</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>gmond --default_config &gt; /etc/ganglia/gmond.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我的配置文件的示例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="x">globals {</span>
+</span><span class='line'><span class="x">  daemonize = yes</span>
+</span><span class='line'><span class="x">  setuid = yes</span>
+</span><span class='line'><span class="x">  user = nobody</span>
+</span><span class='line'><span class="x">  debug_level = 0</span>
+</span><span class='line'><span class="x">  max_udp_msg_len = 1472</span>
+</span><span class='line'><span class="x">  mute = no</span>
+</span><span class='line'><span class="x">  deaf = no</span>
+</span><span class='line'><span class="x">  allow_extra_data = yes</span>
+</span><span class='line'><span class="x">  host_dmax = 86400 /*secs. Expires (removes from web interface) hosts in 1 day */</span>
+</span><span class='line'><span class="x">  host_tmax = 20 /*secs */</span>
+</span><span class='line'><span class="x">  cleanup_threshold = 300 /*secs */</span>
+</span><span class='line'><span class="x">  gexec = no</span>
+</span><span class='line'><span class="x">  send_metadata_interval = 120 /*secs */</span>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">cluster {</span>
+</span><span class='line'><span class="x">  name = &quot;cluster&quot; /*这个字段是集群的名称，对应gmetad的data_source的名称 */</span>
+</span><span class='line'><span class="x">  owner = &quot;&quot;</span>
+</span><span class='line'><span class="x">  latlong = &quot;unspecified&quot;</span>
+</span><span class='line'><span class="x">  url = &quot;&quot;</span>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">host {</span>
+</span><span class='line'><span class="x">  location = &quot;unspecified&quot;</span>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="x">udp_send_channel {</span>
+</span><span class='line'><span class="x">  host = xx.xx.xx.xx</span>
+</span><span class='line'><span class="x">  port = 7649</span>
+</span><span class='line'><span class="x">  ttl = 1</span>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">udp_recv_channel {</span>
+</span><span class='line'><span class="x">  port = 7649</span>
+</span><span class='line'><span class="x">  bind = yy.yy.yy.yy</span>
+</span><span class='line'><span class="x">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="x">tcp_accept_channel {</span>
+</span><span class='line'><span class="x">  port = 7649</span>
+</span><span class='line'><span class="x">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>遇到的一些问题</h3>
+
+<ol>
+<li>gmond会把一些错误日志打到系统日志里面，如果有问题可以关注下系统日志</li>
+<li>gmond -d 10可以打出debug信息</li>
+</ol>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://www.imxylz.info/wiki/Ganglia/Ganglia">http://www.imxylz.info/wiki/Ganglia/Ganglia</a></li>
+<li><a href="http://www.howtocn.org/ganglia_how_to">http://www.howtocn.org/ganglia_how_to</a></li>
+<li><a href="http://sourceforge.net/apps/trac/ganglia/wiki">http://sourceforge.net/apps/trac/ganglia/wiki</a></li>
+<li><a href="">http://ganglia.info/</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-12T23:38:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ganglia/'>Ganglia</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2013/03/12/ganglia/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2013/03/12/ganglia/" data-via="" data-counturl="http://ellios.github.com//blog/2013/03/12/ganglia/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/11/14/vrs-hedwig-tutorial/" title="Previous Post: vrs hedwig入门">&laquo; vrs hedwig入门</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2013/03/12/ganglia/';
+        var disqus_url = 'http://ellios.github.com//blog/2013/03/12/ganglia/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

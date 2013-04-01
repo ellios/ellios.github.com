@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ubuntu install - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="重装了ubuntu，这里记录下软件的安装过程 安装的是ubuntu 11.04，装好后提示升级，于是升级到11.10。话说oneiric变化还是满大的，使用了新的unity界面，而且不能切换回旧的gnome3的界面，登录界面也从GDM换成了LightDM。刚开始使用起来还是有些不习惯。 更新软件源 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2011/10/26/ubuntu-install">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ubuntu Install</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-26T22:22:00+08:00" pubdate data-updated="true">Oct 26<span>th</span>, 2011</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>重装了ubuntu，这里记录下软件的安装过程 安装的是ubuntu 11.04，装好后提示升级，于是升级到11.10。话说oneiric变化还是满大的，使用了新的unity界面，而且不能切换回旧的gnome3的界面，登录界面也从GDM换成了LightDM。刚开始使用起来还是有些不习惯。</p>
+
+
+<ol>
+<li>更新软件源
+之前用的一直是官方默认的源。这次想专门测试下各种源的速度，于是想安装apt-spy。
+
+<pre><code> sudo apt-get install apt-spy 
+</code></pre>
+
+提示找不到软件。折腾了半天没有找到安装方法，遂作罢，弄了163的源，修改<em>/etc/apt/sources.list</em>。更新源
+
+<pre><code> sudo apt-get update
+</code></pre></li>
+<li>升级软件
+
+<pre><code> sudo apt-get upgrade
+</code></pre></li>
+<li>安装chrome
+
+<pre><code> wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add
+ sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" &gt;&gt; /etc/apt/sources.list.d/google.list' 
+ sudo apt-get update  
+ sudo apt-get install google-chrome-stable
+</code></pre></li>
+<li>安装flash，MP3解码。。。
+
+<pre><code> sudo apt-get install ubuntu-restricted-extras
+</code></pre></li>
+<li>安装7z
+
+<pre><code> sudo apt-get install p7zip-full p7zip-rar
+</code></pre></li>
+<li>安装synergy
+synergy可以使用一套键盘鼠标来控制多台机器。
+
+<pre><code> sudo apt-get install synergy 
+</code></pre>
+
+<p>安装好后要修改下<em>/etc/lightdm/lightdm.conf</em>，在最后加上<em>greeter-setup-script=/usr/bin/synergyc {ip}</em>。以上是synergy作为客户端的配置，如果作为服务器端的话，可能要稍微麻烦些。</p></li>
+<li>安装tsokc
+
+<pre><code> sudo apt-get install tsocks
+</code></pre>
+
+对于某些只能用http代理的应用，可以用他帮忙把socks的代理转一下。
+
+<h3>参考文档</h3></li>
+</ol>
+
+
+<ul>
+<li> Ubuntu 11.10 安装后要做的11件事 <a title="http://os.51cto.com/art/201110/295548.htm" href="http://os.51cto.com/art/201110/295548.htm">http://os.51cto.com/art/201110/295548.htm</a> </li>
+<li> Ubuntu 11.10 安装后要做的12件事 <a title="http://www.bentutu.com/2011/10/ubuntu-11-10-Ubuntu 11.10 安装后要做的12件事/" href="http://www.bentutu.com/2011/10/ubuntu-11-10-Ubuntu 11.10 安装后要做的12件事/">http://www.bentutu.com/2011/10/ubuntu-11-10-Ubuntu 11.10 安装后要做的12件事/</a> </li>
+<li> Top 10 Tips and Tricks for Ubuntu 11.10 <a title="http://blog.sudobits.com/2011/10/13/top-10-tips-and-tricks-for-ubuntu-11-10/" href="http://blog.sudobits.com/2011/10/13/top-10-tips-and-tricks-for-ubuntu-11-10/">http://blog.sudobits.com/2011/10/13/top-10-tips-and-tricks-for-ubuntu-11-10/</a> </li>
+<li> Chrome browser in Google repos <a title="http://www.ubuntuupdates.org/ppas/8" href="http://www.ubuntuupdates.org/ppas/8">http://www.ubuntuupdates.org/ppas/8</a> </li>
+<li> SynergyHowto <a title="https://help.ubuntu.com/community/SynergyHowto" href="https://help.ubuntu.com/community/SynergyHowto">https://help.ubuntu.com/community/SynergyHowto</a> </li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-26T22:22:00+08:00" pubdate data-updated="true">Oct 26<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ubuntu/'>Ubuntu</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2011/10/26/ubuntu-install/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2011/10/26/ubuntu-install/" data-via="" data-counturl="http://ellios.github.com//blog/2011/10/26/ubuntu-install/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/05/02/octopress/" title="Next Post: Octopress">Octopress &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2011/10/26/ubuntu-install/';
+        var disqus_url = 'http://ellios.github.com//blog/2011/10/26/ubuntu-install/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>艰难的reviewboard折腾 - ellios's blog</title>
+  <meta name="author" content="ellios">
+
+  
+  <meta name="description" content="折腾了半天的Review Board，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。 因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件tao- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ellios.github.com//blog/2012/10/24/reviewboard">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">ellios's blog</a></h1>
+  
+    <h2>ellios's trivial story.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ellios.github.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
+  <li><a href="/slide">Slide</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">艰难的reviewboard折腾</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-24T16:54:00+08:00" pubdate data-updated="true">Oct 24<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>折腾了半天的<a href="http://www.reviewboard.org/">Review Board</a>，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。</p>
+
+<p>因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件<a href="http://code.taobao.org/p/tao-reviewboard/wiki/index/">tao-reviewboard</a>，安装和配置都比较简单。因为移到linux和idea的开发环境已经好久了，所以我只能自己折腾了。</p>
+
+<p>google了下，发现有基于idea的reviewboard插件，装上试了下，跟tao-reviewboard比起来，可以说是非常简陋，而且提交review请求的时候，报了一堆的错误。以为是自己的配置有问题，于是看着Review Board的文档，把配置文件~/.reviewboardrc重新检查了下，文件的内容如下</p>
+
+<figure class='code'><figcaption><span>.reviewboardrc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">REVIEWBOARD_URL</span> <span class="o">=</span> <span class="s2">&quot;http://reviewboard.xxx.com/&quot;</span>
+</span><span class='line'><span class="nv">USERNAME</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span><span class='line'><span class="nv">PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span><span class='line'><span class="nv">HTTP_USERNAME</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span><span class='line'><span class="nv">HTTP_PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>配置完之后，继续报错，报的是</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">java</span><span class="o">.</span><span class="na">net</span><span class="o">.</span><span class="na">ProtocolException</span><span class="o">:</span> <span class="n">Server</span> <span class="n">redirected</span> <span class="n">too</span> <span class="n">many</span>  <span class="n">times</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>google无结果，简单看了源码，还得了解idea的插件开发的一些知识，暂时没功夫，于是放弃。</p>
+
+<p>试着装了下eclipse，发现tao-reviewboard是依赖于subclipse的，这个东西以前就装过，没有成功，这回试了下，果然还是不成功。同事说需要编译相应版本的svn客户端，觉得单独为个CodeReview再把eclipse折腾半天，不值得，于是放弃。</p>
+
+<p>又去啃Review Board的文档了，Review Board提供了一个命令行的工具post-review，这个工具是python写的，看到是python写的就很有亲切感。安装很简单，执行下面的命令（之前已经有了python的环境，没有的可能还得提前装python和easy_install）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>easy_install -U RBTools
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>提交review请求的命令也很简单</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>post-review -p --target-groups<span class="o">=</span>xxx --target-people<span class="o">=</span>xxx --summary<span class="o">=</span>xxx --description<span class="o">=</span>xxx files
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行上面的命令，报了206的错误。提示</p>
+
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+
+
+<p>于是，加上-d参数，打印debug信息，觉得可能repository没加到Review Board Server里面，但是其他人都可以提交review，于是试着进到代码目录，在代码当前目录提交review请求，没想到竟然pass了这个问题，不过马上又报了一个207的错误。提示</p>
+
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+
+
+<p>这个问题，试了好多办法都不行，于是只能调试源码，下了源码，一路输出debug信息，怀疑是diff文件的问题。看了下其他同事提交的diff文件，他们的diff文件里开头，代码文件的路径是相对路径，而我生成的竟然是绝对路径，而造成这一问题的原因就是svn.py下面这一句，把这句注释掉，替换掉RBTools-xxx.egg这个文件里面的相应文件</p>
+
+<figure class='code'><figcaption><span>svn.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_absolute_paths</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">repository_info</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>试了下，终于OK了。post-review的那些参数太繁琐而且又长，以后有时间写个程序自己定制下。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ellios</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-24T16:54:00+08:00" pubdate data-updated="true">Oct 24<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/python/'>Python</a>, <a class='category' href='/blog/categories/ubuntu/'>Ubuntu</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <span>
+  <iframe 
+    width="86" 
+    scrolling="no" 
+    height="16" 
+    frameborder="0" 
+    src=
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/10/24/reviewboard/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+  </iframe>
+  </span>
+  
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/10/24/reviewboard/" data-via="" data-counturl="http://ellios.github.com//blog/2012/10/24/reviewboard/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/10/19/pb-tutorial/" title="Previous Post: Protocol Buffer入门">&laquo; Protocol Buffer入门</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/10/24/thrift-guide/" title="Next Post: thrift入门">thrift入门 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ellios">@ellios</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ellios',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+      <iframe 
+        width="100%" 
+        height="100" 
+        class="share_self" 
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?width=0&height=550&ptype=1&speed=0&skin=&isTitle=0&noborder=1&isWeibo=0&isFans=&uid=1778777231&verifier=50fd5291">
+      </iframe>
+    </li>
+  </ul>
+</section>
+
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116522806634244035442?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - ellios -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'ellios';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://ellios.github.com//blog/2012/10/24/reviewboard/';
+        var disqus_url = 'http://ellios.github.com//blog/2012/10/24/reviewboard/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
