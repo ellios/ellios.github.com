@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Java | ellios's blog]]></title>
   <link href="http://ellios.github.com//blog/categories/java/atom.xml" rel="self"/>
   <link href="http://ellios.github.com//"/>
-  <updated>2013-04-02T00:07:14+08:00</updated>
+  <updated>2013-04-24T19:06:30+08:00</updated>
   <id>http://ellios.github.com//</id>
   <author>
     <name><![CDATA[ellios]]></name>
@@ -12,6 +12,349 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ganglia整合java]]></title>
+    <link href="http://ellios.github.com//blog/2013/04/16/ganglia-java/"/>
+    <updated>2013-04-16T22:09:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2013/04/16/ganglia-java</id>
+    <content type="html"><![CDATA[<p>前段时间简单介绍了Ganglia的安装和配置，现在我们的Ganglia已经跑了起来，并且已经可以展示机器的负载，
+网络，io等各种数据，但是光有机器的情况还是远远不够，我们还需要了解每个应用的运行情况。针对一些常见的应用如：Mysql，Memcached，Redis，Nginx等，Ganglia的github上有很多开源的模块，大家可以自己折腾，要是有时间，后面也会简单简介绍下。这里主要介绍下怎么用Ganglia来收集和展示Java的数据，包括JVM的运行数据和业务数据。</p>
+
+<h4>获取JMX数据</h4>
+
+<p>JVM的运行数据我们是从JMX获得的，其实业务数据也可以写进JMX里，所以如果你的Java应用开启了JMX的话，基本上各种数据都可以从JMX中获得了。获取JMX数据的包Ganglia的网站已经有了，叫<a href="https://github.com/ganglia/jmxetric">jmxetric</a>。要使用它，需要再jvm参数里加入如下的内容</p>
+
+<p><code>sh
+-javaagent:jmxetric-1.0.3.jar=host=xxx,port=xxx,mode=unicast,wireformat31x=true,config=jmxetric.xml
+</code></p>
+
+<p>host是接收数据gmond的host，port是gmond的端口，mode有multicast和unicast两种，由于网络原因，我们使用的是unicast（单播），wireformat31x这个不清楚，一直都是true来着。前面几项配置都可以写到jmxetric.xml里面，不过为了方便控制这些参数，放到了外面。jmxetric.xml里面写需要获取的JMX的数据项，jmxetric的站点上有各详细的示例，这个不不再占用空间了。</p>
+
+<p>一些注意的地方:
+1. jmxetric.jar还依赖与gmetric4j.jar和oncrpc.jar，所以如果是直接下载jar包的话，要把依赖的jar包也都下到，而且要和jmxetric.jar在一个目录下。我们的项目是用maven管理的，直接加如下的依赖</p>
+
+<p>```xml</p>
+
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;info.ganglia.jmxetric&lt;/groupId&gt;
+    &lt;artifactId&gt;jmxetric&lt;/artifactId&gt;
+    &lt;version&gt;1.0.3&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>```
+2. 记得开启JMX哦</p>
+
+<h4>直接发送数据</h4>
+
+<p>如果觉得从JMX获取数据麻烦的话，或者你不想开启JMX，你也可以直接发送数据到gmond。这个也有了现成的包gmetric4j，其实jmxetric也是利用他来发送数据的。这个没啥好说的，就是利用包提供的api发送数据就好了。
+写了一个工具类，对原生的api做了简单的封装。最近看了下yammer开源的metrics，很强大，有兴趣的可以看下它的源码。</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>最简单的单例  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">VisMonitorUtil</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">VisMonitorUtil</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">HedwigConfig</span> <span class="n">HC</span> <span class="o">=</span> <span class="n">HedwigConfig</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">GMetricHOlder</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">static</span> <span class="n">String</span> <span class="n">GANGLIA_HOST</span> <span class="o">=</span> <span class="n">HC</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&quot;ganglia.host&quot;</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">GANGLIA_PORT</span> <span class="o">=</span> <span class="n">HC</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">&quot;ganglia.port&quot;</span><span class="o">,</span> <span class="mi">8649</span><span class="o">);</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">GANGLIA_TTL</span> <span class="o">=</span> <span class="n">HC</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">&quot;ganglia.ttl&quot;</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="kd">static</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">GANGLIA_HOST</span><span class="o">)){</span>
+</span><span class='line'>            <span class="n">GANGLIA_HOST</span> <span class="o">=</span> <span class="n">NetworkUtils</span><span class="o">.</span><span class="na">getEth0Address</span><span class="o">();</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;[VIS-MONITOR] begin to init gmetric&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;[VIS-MONITOR] GANGLIA_HOST : &quot;</span> <span class="o">+</span> <span class="n">GANGLIA_HOST</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;[VIS-MONITOR] GANGLIA_PORT : &quot;</span> <span class="o">+</span> <span class="n">GANGLIA_PORT</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;[VIS-MONITOR] GANGLIA_TTL : &quot;</span> <span class="o">+</span> <span class="n">GANGLIA_TTL</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="kd">static</span> <span class="n">GMetric</span> <span class="n">G_METRIC</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GMetric</span><span class="o">(</span><span class="n">GANGLIA_HOST</span><span class="o">,</span> <span class="n">GANGLIA_PORT</span><span class="o">,</span> <span class="n">GMetric</span><span class="o">.</span><span class="na">UDPAddressingMode</span><span class="o">.</span><span class="na">UNICAST</span><span class="o">,</span> <span class="n">GANGLIA_TTL</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="n">GMetric</span> <span class="nf">getGMetric</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">GMetricHOlder</span><span class="o">.</span><span class="na">G_METRIC</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param type Type of the metric.  Either string|int8|uint8|int16|uint16|int32|uint32|float|double</span>
+</span><span class='line'><span class="cm"> * @param units Unit of measure for the value</span>
+</span><span class='line'><span class="cm"> * @param slope Either zero|positive|negative|both</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">monitor</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">,</span> <span class="n">GMetricType</span> <span class="n">type</span><span class="o">,</span> <span class="n">String</span> <span class="n">units</span><span class="o">,</span>  <span class="n">GMetricSlope</span> <span class="n">slope</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">GMetric</span> <span class="n">gm</span> <span class="o">=</span> <span class="n">getGMetric</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">gm</span><span class="o">.</span><span class="na">announce</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="n">type</span><span class="o">,</span> <span class="n">units</span><span class="o">,</span> <span class="n">slope</span><span class="o">,</span> <span class="mi">60</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span>  <span class="n">group</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">GangliaException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&quot;monitor fail. name : {}, value:{}, error:{}&quot;</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">(),</span> <span class="n">e</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">monitor</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span>  <span class="n">String</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="n">GMetricType</span><span class="o">.</span><span class="na">STRING</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">BOTH</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a positive metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">counter</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span>  <span class="n">String</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="n">GMetricType</span><span class="o">.</span><span class="na">STRING</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">POSITIVE</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">monitor</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span>  <span class="kt">int</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span><span class="n">GMetricType</span><span class="o">.</span><span class="na">FLOAT</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">BOTH</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a positive metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">counter</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span>  <span class="kt">int</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span><span class="n">GMetricType</span><span class="o">.</span><span class="na">FLOAT</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">POSITIVE</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">monitor</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">long</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span><span class="n">GMetricType</span><span class="o">.</span><span class="na">DOUBLE</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">BOTH</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a positive metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">counter</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">long</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Long</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span><span class="n">GMetricType</span><span class="o">.</span><span class="na">DOUBLE</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">POSITIVE</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">monitor</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span>  <span class="kt">float</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Float</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span><span class="n">GMetricType</span><span class="o">.</span><span class="na">DOUBLE</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">BOTH</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a positive metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">counter</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">float</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Float</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span><span class="n">GMetricType</span><span class="o">.</span><span class="na">FLOAT</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">POSITIVE</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">monitor</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span>  <span class="kt">double</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span><span class="n">GMetricType</span><span class="o">.</span><span class="na">DOUBLE</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">BOTH</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * monitor a positive metric</span>
+</span><span class='line'><span class="cm"> * @param name Name of the metric</span>
+</span><span class='line'><span class="cm"> * @param value Value of the metric</span>
+</span><span class='line'><span class="cm"> * @param group Group Name of the metric</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">counter</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="kt">double</span> <span class="n">value</span><span class="o">,</span> <span class="n">String</span> <span class="n">group</span><span class="o">){</span>
+</span><span class='line'>    <span class="n">monitor</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">value</span><span class="o">),</span> <span class="n">GMetricType</span><span class="o">.</span><span class="na">DOUBLE</span><span class="o">,</span> <span class="s">&quot; &quot;</span><span class="o">,</span> <span class="n">GMetricSlope</span><span class="o">.</span><span class="na">POSITIVE</span><span class="o">,</span> <span class="n">group</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="https://github.com/ganglia/jmxetric">https://github.com/ganglia/jmxetric</a></li>
+<li><a href="https://github.com/ganglia/gmetric4j">https://github.com/ganglia/gmetric4j</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[zookeeper入门]]></title>
@@ -781,25 +1124,6 @@ return 0;
 
 <ul>
 <li><a href="http://gee.cs.oswego.edu/dl/papers/fj.pdf"> fork/join framework article </a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[JDK7-TransferQueue]]></title>
-    <link href="http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue/"/>
-    <updated>2012-08-23T09:11:00+08:00</updated>
-    <id>http://ellios.github.com//blog/2012/08/23/jdk7-transferqueue</id>
-    <content type="html"><![CDATA[<p>继续研究jdk7对concurrency的增强。这次研究下<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/TransferQueue.html">TransferQueue</a>，在jdk7里的实现是<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/LinkedTransferQueue.html">LinkedTransferQueue</a>。它实现了BlockingQueue的接口，并且提供了类似<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronizeQueue</a>的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销，性能相对与其他的队列实现有了很大的提升。其内部的实现是一个FiFo的<a href="http://www.cs.rice.edu/~wns1/papers/2004-DISC-DDS.pdf">Dual Quque</a>。很多开源的项目，在jdk7之前，就早早的用上了这个东东，比如<a href="https://netty.io/">netty</a>，<a href="http://jolbox.com/">bonecp</a>，<a href="https://github.com/killme2008/xmemcached">xmemcached</a>...</p>
-
-<p>TransferQueue的基本使用和BlockingQueue差不多，有点特殊的就是它的transfer接口。</p>
-
-<h3>参考资料</h3>
-
-<ul>
-<li><a href="http://tech.puredanger.com/2009/02/28/java-7-transferqueue/">http://tech.puredanger.com/2009/02/28/java-7-transferqueue/</a></li>
-<li><a href="http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html">http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html</a></li>
 </ul>
 
 ]]></content>

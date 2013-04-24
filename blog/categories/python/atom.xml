@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Python | ellios's blog]]></title>
   <link href="http://ellios.github.com//blog/categories/python/atom.xml" rel="self"/>
   <link href="http://ellios.github.com//"/>
-  <updated>2013-04-02T00:07:14+08:00</updated>
+  <updated>2013-04-24T19:06:30+08:00</updated>
   <id>http://ellios.github.com//</id>
   <author>
     <name><![CDATA[ellios]]></name>
@@ -12,6 +12,151 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ganglia python]]></title>
+    <link href="http://ellios.github.com//blog/2013/04/16/ganglia-python/"/>
+    <updated>2013-04-16T23:30:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2013/04/16/ganglia-python</id>
+    <content type="html"><![CDATA[<p>老大想把我们放在mongdodb的一些统计数据，在Ganglia展示出来，想到Ganglia支持用python来写扩展模块，于是欣然应下，正好也学习下怎么写Ganglia的python扩展模块。</p>
+
+<p>Ganglia要集成python模块是非常容易的，简单的数据展示，只需要写个pyconf后缀的文件和一个python的脚本就好了。Ganglia自身的源码里面也有很多python的模块的源码，其中有一个是专门用来做示例用的，我们就从他开始吧。</p>
+
+<p>首先要弄清楚你需要收集哪些各数据，在pyconf文件中配置你要收集的数据的名称，像下面这样
+```js
+modules {
+  module {</p>
+
+<pre><code>name = "example"
+language = "python"
+enabled = "yes"
+param RandomMax {
+    value = 600 
+}   
+param ConstantValue {
+    value = 112 
+}   
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>collection_group {
+  collect_every = 10
+  time_threshold = 50
+  metric {</p>
+
+<pre><code>name = "PyRandom_Numbers"
+value_threshold = 1.0 
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>collection_group {
+  collect_once = yes
+  time_threshold = 20
+  metric {</p>
+
+<pre><code>name = "PyConstant_Number"
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```
+很简单，modules里面配置了要加载的模块的名称，具体的配置项这里就不纠结了，collection_group里面可以配置你要收集的数据，metric项就是了。</p>
+
+<p>配置文件写好了，下面看看真真干活的模块吧，ganglia的python模块是有一定的规范的，每个模块必要要有 metric_init, metric_cleanup方法，metric_cleanup做些收尾的工作，当gmond关闭时释放资源。metric_init方法做初始化操作，gmond在加载模块时，会先调用metric_init方法。这里你需要定义要收集的数据的详细参数，以及数据的call_back方法。具体看下面吧。
+```py</p>
+
+<p>import random
+descriptors = list()
+Random_Max = 50
+Constant_Value = 50</p>
+
+<p>def Random_Numbers(name):</p>
+
+<pre><code>'''Return a random number.'''
+return int(random.uniform(0, Random_Max))
+</code></pre>
+
+<p>def Constant_Number(name):</p>
+
+<pre><code>'''Return a constant number.'''
+return int(Constant_Value)
+</code></pre>
+
+<p>def metric_init(params):</p>
+
+<pre><code>'''Initialize the random number generator and create the
+metric definition dictionary object for each metric.'''
+global descriptors
+global Random_Max
+global Constant_Value
+random.seed()
+
+print '[pyexample] Received the following parameters'
+print params
+
+if 'RandomMax' in params:
+    Random_Max = int(params['RandomMax'])
+if 'ConstantValue' in params:
+    Constant_Value = int(params['ConstantValue'])
+
+d1 = {'name': 'PyRandom_Numbers',
+    'call_back': Random_Numbers,
+    'time_max': 90, 
+    'value_type': 'uint',
+    'units': 'N',
+    'slope': 'both',
+    'format': '%u',
+    'description': 'Example module metric (random numbers)',
+    'groups': 'example,random'}
+
+d2 = {'name': 'PyConstant_Number',
+    'call_back': Constant_Number,
+    'time_max': 90, 
+    'value_type': 'uint',
+    'units': 'N',
+    'slope': 'zero',
+    'format': '%hu',
+    'description': 'Example module metric (constant number)'}
+
+descriptors = [d1, d2]
+return descriptors
+</code></pre>
+
+<p>def metric_cleanup():</p>
+
+<pre><code>'''Clean up the metric module.'''
+pass
+</code></pre>
+
+<h1>This code is for debugging and unit testing</h1>
+
+<p>if <strong>name</strong> == '<strong>main</strong>':</p>
+
+<pre><code>params = {'RandomMax': '500',
+    'ConstantValue': '322'}
+metric_init(params)
+for d in descriptors:
+    v = d['call_back'](d['name'])
+    print 'value for %s is %u' % (d['name'],  v)
+</code></pre>
+
+<p>```</p>
+
+<p>其他还需要做些简单的配置，不过看下gmond.conf的配置文件基本上就都搞好了。这里就不啰嗦了，这两天感冒的厉害，需要好好休息。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://shop.oreilly.com/product/0636920025573.do">Monitoring with Ganglia</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[艰难的reviewboard折腾]]></title>

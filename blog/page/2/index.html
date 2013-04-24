@@ -9,7 +9,7 @@
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="上一篇简单分析了下CoffeeScript的源码，这篇开始介绍CoffeeScript的语法。CoffeeScript的语法相比JavaScript要清爽好多，如果有Python，Ruby的经验的话，基本上半天就差不多了。CoffeeScript最终还是会被编译为JavaScript， &hellip;">
+  <meta name="description" content="中午吃饭的时候和同事讨论了下JDK的排序算法的实现，同事坚持认为是简单的插入排序，觉得JDK应该不会这么弱，看了下JDK的源码，发现JDK针对排序是做了大量的优化的。 JDK对排序的实现在Arrays的sort方法里，Arrays里面有大量的重载的sort方法。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,385 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/23/java-sort/">JDK排序算法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-23T09:10:00+08:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>中午吃饭的时候和同事讨论了下JDK的排序算法的实现，同事坚持认为是简单的插入排序，觉得JDK应该不会这么弱，看了下JDK的源码，发现JDK针对排序是做了大量的优化的。</p>
+
+<p>JDK对排序的实现在Arrays的sort方法里，Arrays里面有大量的重载的sort方法。而JDK7和JDK6的排序算法又有一些不同。</p>
+
+<h3>JDK6排序实现</h3>
+
+<p>JDK6对的排序实现针对基本类型和对象又有不同。</p>
+
+<ol>
+<li>对于基本类型，由于不要求排序是稳定的，因此使用了平均效率最好的排序算法——<a href="http://cs.fit.edu/~pkc/classes/writing/samples/bentley93engineering.pdf">快速排序</a>。为了避免最差情况的出现，JDK6对排序算法做了些优化。</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>针对基本类型的快速排序</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 针对整形的排序实现</span>
+</span><span class='line'><span class="cm"> * @param x 待排序的数据</span>
+</span><span class='line'><span class="cm"> * @param off 起始位置</span>
+</span><span class='line'><span class="cm"> * @param len 要排序的数据元素的个数</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">sort1</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">[],</span> <span class="kt">int</span> <span class="n">off</span><span class="o">,</span> <span class="kt">int</span> <span class="n">len</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//在小规模(size&lt;7)数组中，直接插入排序的效率要比快速排序高。</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">len</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">off</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">len</span><span class="o">+</span><span class="n">off</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">&gt;</span><span class="n">off</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">]&gt;</span><span class="n">x</span><span class="o">[</span><span class="n">j</span><span class="o">];</span> <span class="n">j</span><span class="o">--)</span>
+</span><span class='line'>                <span class="n">swap</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//选择划分元素，即枢轴</span>
+</span><span class='line'>    <span class="c1">//如果是小规模数组(size=7)，直接取中间元素作为枢轴</span>
+</span><span class='line'>    <span class="c1">//如果是中等规模数组(7&lt;size&lt;=40)，则在数组首、中、尾三个位置上的数中取中间大小的数作为枢轴</span>
+</span><span class='line'>    <span class="c1">//如果是大规模数组(size&gt;40),则在9个指定的数中取一个伪中数(中间大小的数s)</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">off</span> <span class="o">+</span> <span class="o">(</span><span class="n">len</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="n">off</span><span class="o">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">off</span> <span class="o">+</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">40</span><span class="o">)</span> <span class="o">{</span>        <span class="c1">// Big arrays, pseudomedian of 9</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">len</span><span class="o">/</span><span class="mi">8</span><span class="o">;</span>
+</span><span class='line'>            <span class="n">l</span> <span class="o">=</span> <span class="n">med3</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">l</span><span class="o">,</span>     <span class="n">l</span><span class="o">+</span><span class="n">s</span><span class="o">,</span> <span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">m</span> <span class="o">=</span> <span class="n">med3</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">m</span><span class="o">-</span><span class="n">s</span><span class="o">,</span>   <span class="n">m</span><span class="o">,</span>   <span class="n">m</span><span class="o">+</span><span class="n">s</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">n</span> <span class="o">=</span> <span class="n">med3</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">s</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="n">s</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">m</span> <span class="o">=</span> <span class="n">med3</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">l</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span> <span class="c1">// Mid-size, med of 3</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="n">x</span><span class="o">[</span><span class="n">m</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 针对相同的元素做优化， 形成 v* (&lt;v)* (&gt;v)* v* 的数组</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="n">off</span><span class="o">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">off</span> <span class="o">+</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">b</span> <span class="o">&lt;=</span> <span class="n">c</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">[</span><span class="n">b</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">[</span><span class="n">b</span><span class="o">]</span> <span class="o">==</span> <span class="n">v</span><span class="o">)</span>
+</span><span class='line'>                <span class="n">swap</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">a</span><span class="o">++,</span> <span class="n">b</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">b</span><span class="o">++;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">while</span> <span class="o">(</span><span class="n">c</span> <span class="o">&gt;=</span> <span class="n">b</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">&gt;=</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">x</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">==</span> <span class="n">v</span><span class="o">)</span>
+</span><span class='line'>                <span class="n">swap</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="n">d</span><span class="o">--);</span>
+</span><span class='line'>            <span class="n">c</span><span class="o">--;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="n">c</span><span class="o">)</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">swap</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">b</span><span class="o">++,</span> <span class="n">c</span><span class="o">--);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 将所有相同的枢轴都移到中间，形成(&lt;v)* v* (&gt;v)*</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">s</span><span class="o">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">off</span> <span class="o">+</span> <span class="n">len</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">s</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">a</span><span class="o">-</span><span class="n">off</span><span class="o">,</span> <span class="n">b</span><span class="o">-</span><span class="n">a</span>  <span class="o">);</span>  <span class="n">vecswap</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">off</span><span class="o">,</span> <span class="n">b</span><span class="o">-</span><span class="n">s</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">s</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">d</span><span class="o">-</span><span class="n">c</span><span class="o">,</span>   <span class="n">n</span><span class="o">-</span><span class="n">d</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>  <span class="n">vecswap</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span>   <span class="n">n</span><span class="o">-</span><span class="n">s</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 递归排序子数组</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">((</span><span class="n">s</span> <span class="o">=</span> <span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="o">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">sort1</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">off</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">((</span><span class="n">s</span> <span class="o">=</span> <span class="n">d</span><span class="o">-</span><span class="n">c</span><span class="o">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">sort1</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="n">s</span><span class="o">,</span> <span class="n">s</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>针对对象数组，为了保证排序是稳定的，JDK6采用了归并排序，同样也做了一些优化。</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>针对对象数据的归并排序</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 归并排序对象数组</span>
+</span><span class='line'><span class="cm"> * @param src 原待排数组</span>
+</span><span class='line'><span class="cm"> * @param dest 目的待排数组</span>
+</span><span class='line'><span class="cm"> * @param low 待排数组的下界位置</span>
+</span><span class='line'><span class="cm"> * @param high 待排数组的上界位置</span>
+</span><span class='line'><span class="cm"> * @param off 从数组的第off个元素开始排序</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">mergeSort</span><span class="o">(</span><span class="n">Object</span><span class="o">[]</span> <span class="n">src</span><span class="o">,</span>
+</span><span class='line'>                              <span class="n">Object</span><span class="o">[]</span> <span class="n">dest</span><span class="o">,</span>
+</span><span class='line'>                              <span class="kt">int</span> <span class="n">low</span><span class="o">,</span>
+</span><span class='line'>                              <span class="kt">int</span> <span class="n">high</span><span class="o">,</span>
+</span><span class='line'>                              <span class="kt">int</span> <span class="n">off</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">high</span> <span class="o">-</span> <span class="n">low</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//在小规模(size&lt;7)数组中，使用归并排序。</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">&lt;</span> <span class="n">INSERTIONSORT_THRESHOLD</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">low</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">high</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">&gt;</span><span class="n">low</span> <span class="o">&amp;&amp;</span>
+</span><span class='line'>                    <span class="o">((</span><span class="n">Comparable</span><span class="o">)</span> <span class="n">dest</span><span class="o">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">]).</span><span class="na">compareTo</span><span class="o">(</span><span class="n">dest</span><span class="o">[</span><span class="n">j</span><span class="o">])&gt;</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">--)</span>
+</span><span class='line'>                <span class="n">swap</span><span class="o">(</span><span class="n">dest</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//将src数组划分为两半，并分别递归做归并，</span>
+</span><span class='line'>    <span class="c1">//在递归调用mergeSort时将desc和src的位置做了互换。</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">destLow</span>  <span class="o">=</span> <span class="n">low</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">destHigh</span> <span class="o">=</span> <span class="n">high</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">low</span>  <span class="o">+=</span> <span class="n">off</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">high</span> <span class="o">+=</span> <span class="n">off</span><span class="o">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="o">(</span><span class="n">low</span> <span class="o">+</span> <span class="n">high</span><span class="o">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>    <span class="n">mergeSort</span><span class="o">(</span><span class="n">dest</span><span class="o">,</span> <span class="n">src</span><span class="o">,</span> <span class="n">low</span><span class="o">,</span> <span class="n">mid</span><span class="o">,</span> <span class="o">-</span><span class="n">off</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">mergeSort</span><span class="o">(</span><span class="n">dest</span><span class="o">,</span> <span class="n">src</span><span class="o">,</span> <span class="n">mid</span><span class="o">,</span> <span class="n">high</span><span class="o">,</span> <span class="o">-</span><span class="n">off</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//如果低子列表中的最高元素小于高子列表中的最低元素，则忽略合并</span>
+</span><span class='line'>    <span class="c1">//如果需要归并的两端low~(middle-1)，middle~high已经有序，即src[mid-1]==src[mid]。</span>
+</span><span class='line'>    <span class="c1">//那么只需要将src的low~high赋值对应的dest即可，无需再归并。</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(((</span><span class="n">Comparable</span><span class="o">)</span><span class="n">src</span><span class="o">[</span><span class="n">mid</span><span class="o">-</span><span class="mi">1</span><span class="o">]).</span><span class="na">compareTo</span><span class="o">(</span><span class="n">src</span><span class="o">[</span><span class="n">mid</span><span class="o">])</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">src</span><span class="o">,</span> <span class="n">low</span><span class="o">,</span> <span class="n">dest</span><span class="o">,</span> <span class="n">destLow</span><span class="o">,</span> <span class="n">length</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//将src的两个部分做归并操作，并赋值给dest</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">destLow</span><span class="o">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">low</span><span class="o">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">mid</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">destHigh</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">q</span> <span class="o">&gt;=</span> <span class="n">high</span> <span class="o">||</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">mid</span> <span class="o">&amp;&amp;</span> <span class="o">((</span><span class="n">Comparable</span><span class="o">)</span><span class="n">src</span><span class="o">[</span><span class="n">p</span><span class="o">]).</span><span class="na">compareTo</span><span class="o">(</span><span class="n">src</span><span class="o">[</span><span class="n">q</span><span class="o">])&lt;=</span><span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>            <span class="n">dest</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">src</span><span class="o">[</span><span class="n">p</span><span class="o">++];</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>            <span class="n">dest</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">src</span><span class="o">[</span><span class="n">q</span><span class="o">++];</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>JDK7的排序实现</h3>
+
+<ol>
+<li><p>JDK7针对基本类型使用了<a href="http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf">Dual Pivot Quicksort</a>,这种快速排序算法，相对于传统的单Pivot的快速排序效率要更好。</p></li>
+<li><p>JDK7针对对象数组采用了<a href="http://svn.python.org/projects/python/trunk/Objects/listsort.txt">TimSort</a>, 这也是python的排序算法。</p></li>
+</ol>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://cs.fit.edu/~pkc/classes/writing/samples/bentley93engineering.pdf">Engineering a Sort Function</a></li>
+<li><a href="http://hxraid.iteye.com/blog/665095">http://hxraid.iteye.com/blog/665095</a></li>
+<li><a href="http://iaroslavski.narod.ru/quicksort/DualPivotQuicksort.pdf">Dual Pivot Quicksort </a></li>
+<li><a href="http://svn.python.org/projects/python/trunk/Objects/listsort.txt">TimSort</a></li>
+<li><a href="http://yangdong.iteye.com/blog/1170214">http://yangdong.iteye.com/blog/1170214</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/14/jdk7-concurrency-phaser/">JDK7 Concurrency Phaser</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-14T16:51:00+08:00" pubdate data-updated="true">Aug 14<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>继续研究Jdk7的新特性，这次看看jdk7对Concurrency的增强。concurrency这次新增了3个新元素。</p>
+
+<ol>
+<li>Phaser,类似于CountDownLatch和CyclicBarrier</li>
+<li>TransferQueue, 比SynchronousQueue更加高效的队列</li>
+<li>Fork-Join, 类似与MapReduce的东东</li>
+</ol>
+
+
+<p>体验下Phaser, 这个东东和CountDownLatch,CyclicBarrier的功能比较类似，但是要更加灵活，提供了更多的控制。</p>
+
+<p>先来回顾下CountDownLatch, CyclicBarrier。下面这段程序每次同时执行一组任务，然后当这一组任务执行完后，再执行下一组。用CyclicBarrier对每组的各个任务的执行时机进行控制，用CountDownLatch对各组任务的执行时机进行控制。</p>
+
+<div><script src='https://gist.github.com/3361796.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>复习完毕，下面来把Phaser好好弄清楚。这个东东究竟是个啥，为啥能比CountDownLatch，CyclicBarrier更灵活呢。Phaser类的注释里对Phaser做了充分的描述，我们这里简单整理下。</p>
+
+<p>Phaser是一个可重用的同步Barrier，类似与CountDownLatch和CyclicBarrier，但是要更加灵活</p>
+
+<ol>
+<li><p><em>Registration</em>. Phaser支持通过register()和bulkRegister(int parties)方法来动态调整注册任务的数量，此外也支持通过其构造函数进行指定初始数量。在适当的时机，Phaser支持减少注册任务的数量，例如 arriveAndDeregister()。单个Phaser实例允许的注册任务数的上限是65535。</p></li>
+<li><p><em>Arrival</em>. 正如Phaser类的名字所暗示，每个Phaser实例都会维护一个phase number，初始值为0。每当所有注册的任务都到达Phaser时，phase number累加，并在超过Integer.MAX_VALUE后清零。arrive()和arriveAndDeregister()方法用于记录到 达，arriveAndAwaitAdvance()方法用于记录到达，并且等待其它未到达的任务。</p></li>
+<li><p><em>Termination</em>.Phaser支持终止。Phaser终止之后，调用register()和bulkRegister(int parties)方法没有任何效果，arriveAndAwaitAdvance()方法也会立即返回。触发终止的时机是在protected boolean onAdvance(int phase, int registeredParties)方法返回时，如果该方法返回true，那么Phaser会被终止。默认实现是在注册任务数为0时返回true（即 return registeredParties == 0;）。此外，forceTermination()方法用于强制终止，isTerminated()方法用于判断是否已经终止。</p></li>
+<li><p><em>Tiering</em>. Phaser支持层次结构，即通过构造函数Phaser(Phaser parent)和Phaser(Phaser parent, int parties)构造一个树形结构。这有助于减轻因在单个的Phaser上注册过多的任务而导致的竞争，从而提升吞吐量，代价是增加单个操作的开销。</p></li>
+</ol>
+
+
+<p>描述已经好清楚了，下面我们用Phaser实现上面类似功能的程序。</p>
+
+<div><script src='https://gist.github.com/3371555.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://puredanger.com/tech/2009/11/15/jsr-166-concurrency-updates-hit-jdk-7/">http://puredanger.com/tech/2009/11/15/jsr-166-concurrency-updates-hit-jdk-7/</a></li>
+<li><a href="http://tech.puredanger.com/2009/02/28/java-7-transferqueue/">http://tech.puredanger.com/2009/02/28/java-7-transferqueue/</a></li>
+<li><a href="http://yaofeng928.iteye.com/blog/1136648">http://yaofeng928.iteye.com/blog/1136648</a></li>
+<li><a href="http://whitesock.iteye.com/blog/1135457">http://whitesock.iteye.com/blog/1135457</a></li>
+<li><a href="http://www.blogjava.net/xylz/archive/2010/07/09/325612.html">CountDownLatch的源码分析</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1191,90 +1570,6 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/08/ying-pan-an-zhuang-ubuntu11-dot-04/">硬盘安装ubuntu11.04</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-08T11:19:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>每次重装系统，都要查一堆的文章，常用的几个命令以及一些常见的问题就是记不住。实在有必要写一下备忘了。</p>
-
-
-<p>现有的系统winxp, win7，要装的系统是ubuntu 11.04.</p>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/06/08/ying-pan-an-zhuang-ubuntu11-dot-04/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/02/octopress/">Octopress</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-02T19:15:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>第一篇octopress日志！</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/05/02/octopress/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1292,6 +1587,14 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/04/16/ganglia-python/">ganglia python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/16/ganglia-java/">ganglia整合java</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/03/12/ganglia/">ganglia</a>
       </li>
     
@@ -1303,19 +1606,11 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
         <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2012/10/24/thrift-guide/">thrift入门</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (1)</a></li><li><a href='/blog/categories/java'>Java (11)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (2)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (3)</a></li><li><a href='/blog/categories/java'>Java (12)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (3)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
 </section>
 
 <section>
