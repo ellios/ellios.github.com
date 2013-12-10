@@ -9,7 +9,7 @@
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="每次重装系统，都要查一堆的文章，常用的几个命令以及一些常见的问题就是记不住。实在有必要写一下备忘了。 现有的系统winxp, win7，要装的系统是ubuntu 11.04. ">
+  <meta name="description" content="eclipse装了aptana，结果报 JNotifyAdapterLinux.registerToSubTree : warning, failed to register /opt/workspace/django/django/contrib/localflavor/locale/ar/. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,63 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/08/jnotify/">Jnotify</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-08T11:38:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>eclipse装了aptana，结果报</p>
+
+
+<blockquote>JNotifyAdapterLinux.registerToSubTree : warning, failed to register /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base :Error watching /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base : No space left on device</blockquote>
+
+
+<p>查了下，aptana使用了jnotify，而jnotify使inotify的java封装，inotify对每个进程能够观察的文件数使是有限制的。可以把限制加大一些来解决这个问题。</p>
+
+
+<pre>su
+echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
+</pre>
+
+
+<p>顺便发掘了下jnotify，对文件的增删改等事件进行监听的java库，使用也很简单。  </p>
+
+
+<h3>参考文档</h3>
+
+<ul>
+<li> jnotify <a title="http://jnotify.sourceforge.net/" href="http://jnotify.sourceforge.net/">http://jnotify.sourceforge.net/</a> </li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -259,6 +316,10 @@ synergy可以使用一套键盘鼠标来控制多台机器。
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/06/random-thoughts/">随想</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/04/16/ganglia-python/">ganglia python</a>
       </li>
     
@@ -272,10 +333,6 @@ synergy可以使用一套键盘鼠标来控制多台机器。
     
       <li class="post">
         <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
       </li>
     
   </ul>

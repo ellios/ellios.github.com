@@ -4,7 +4,7 @@
   <title><![CDATA[ellios's blog]]></title>
   <link href="http://ellios.github.com//atom.xml" rel="self"/>
   <link href="http://ellios.github.com//"/>
-  <updated>2013-04-27T15:12:50+08:00</updated>
+  <updated>2013-12-07T01:55:32+08:00</updated>
   <id>http://ellios.github.com//</id>
   <author>
     <name><![CDATA[ellios]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[随想]]></title>
+    <link href="http://ellios.github.com//blog/2013/12/06/random-thoughts/"/>
+    <updated>2013-12-06T23:35:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2013/12/06/random-thoughts</id>
+    <content type="html"><![CDATA[<p>转眼一年又快过去了，今年是目前参加工作以来最忙的一年，尤其是后半年，被各种产品需求和线上报障追着跑，连写个博客的时间都没有了，本来已经上手了的emacs，最近又都忘完了。现在是用sublime text写的，还是这个简单，不需要折腾一堆插件和记一堆的快捷键。</p>
+
+<p>下半年基本上没接触什么新的技术，主要的精力都放在数据服务了，好在经过一年的推动，目前的数据服务已经基本稳定了，整个系统的服务化改造也基本完成了。最近把restful service相关的文章又重新看了下，之前对restful的理解还是太片面了，之后会推动我们的系统朝着真正的restful的方向发展，最近会写一些东西分享下我们做restful服务的心得。上周偷闲，终于把买了好久的PI给跑起来，之前一直觉得挺对不起它的，买来放了3，4个月连包装都没拆。之前一直想好好学学的lua, scala, hadoop, hbase更是一眼都没看过，希望过段时间能有时间把这些都好好看一遍。</p>
+
+<p>虽然技术的收获不多，但是对于业务的理解这半年却加深了不少，能够独自和产品PK了。也开始学着做一些管理，手下有了两个小兵，虽然刚开始的时候有点不太习惯，脾气也比较急，基本上什么都是亲力亲为，但是最近也开始慢慢进入角色了，目前主要是通过每天的站例会议和code review的方式，团队的协作自我感觉还算不错。和其他部门同事的交往越来越多了，基本上跨部门的合作都会比较麻烦，这个我觉得需要一种艺术，目前我还不得要领，探索学习中吧。</p>
+
+<p>上个月，经过李剑同学的提醒，发现偶用的手机竟然是移动版的3G手机，不支持联通3G，汗，用了半年了才知道。于是紧急花900又买了一个华为的G610U，上网快多了，顺便刷了一个miui系统玩，怪不得小米手机那么多人抢，miui做得确实挺舒服的。个人觉得android的手机现在和apple的用户体验的差距已经很小了，apple还得越狱，费半天劲，一般人真心没必要多花那么多钱买个apple。</p>
+
+<p>很早就想学一些经济和金融的知识，觉得这东西挺重要的，但是一直不知道该怎么入门。前段时间上豆瓣买了本《白话金融投资》的电子书，居然让俺看懂了点，于是觉得看书这方式也挺靠谱，上豆瓣找了一堆经济和金融的书先看着，权当入门吧，计划春节前能把买得7，8本书全部看完，我要好好学习啦。</p>
+
+<p>晶晶已经1岁半多了，也越来越可爱了，小家伙太爱说话，跟她妈一个性格，说起话来不带停的，不过有时间你听半天也听不明白她说啥。每次晚上加完班，走在路上，想想晶晶和晶晶她妈，心里就可满足了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ganglia python]]></title>
@@ -3475,37 +3494,6 @@ ldconfig
 </ul>
 
 
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[jnotify]]></title>
-    <link href="http://ellios.github.com//blog/2012/06/08/jnotify/"/>
-    <updated>2012-06-08T11:38:00+08:00</updated>
-    <id>http://ellios.github.com//blog/2012/06/08/jnotify</id>
-    <content type="html"><![CDATA[<p>eclipse装了aptana，结果报</p>
-
-
-<blockquote>JNotifyAdapterLinux.registerToSubTree : warning, failed to register /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base :Error watching /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base : No space left on device</blockquote>
-
-
-<p>查了下，aptana使用了jnotify，而jnotify使inotify的java封装，inotify对每个进程能够观察的文件数使是有限制的。可以把限制加大一些来解决这个问题。</p>
-
-
-<pre>su
-echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
-</pre>
-
-
-<p>顺便发掘了下jnotify，对文件的增删改等事件进行监听的java库，使用也很简单。  </p>
-
-
-<h3>参考文档</h3>
-
-<ul>
-<li> jnotify <a title="http://jnotify.sourceforge.net/" href="http://jnotify.sourceforge.net/">http://jnotify.sourceforge.net/</a> </li>
-</ul>
 
 ]]></content>
   </entry>

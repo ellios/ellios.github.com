@@ -5,26 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>python程序打包成exe - ellios's blog</title>
+  <title>随想 - ellios's blog</title>
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。 setup.py 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-import sys
-from distutils.core &hellip;">
+  <meta name="description" content="转眼一年又快过去了，今年是目前参加工作以来最忙的一年，尤其是后半年，被各种产品需求和线上报障追着跑，连写个博客的时间都没有了，本来已经上手了的emacs，最近又都忘完了。现在是用sublime text写的，还是这个简单，不需要折腾一堆插件和记一堆的快捷键。 下半年基本上没接触什么新的技术， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +18,7 @@ from distutils.core &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ellios.github.com//blog/2012/06/08/py2exe">
+  <link rel="canonical" href="http://ellios.github.com//blog/2013/12/06/random-thoughts">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -84,7 +69,7 @@ from distutils.core &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Python程序打包成exe</h1>
+      <h1 class="entry-title">随想</h1>
     
     
       <p class="meta">
@@ -100,60 +85,23 @@ from distutils.core &hellip;">
   
 
 
-<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+<time datetime="2013-12-06T23:35:00+08:00" pubdate data-updated="true">Dec 6<span>th</span>, 2013</time>
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。</p>
+<div class="entry-content"><p>转眼一年又快过去了，今年是目前参加工作以来最忙的一年，尤其是后半年，被各种产品需求和线上报障追着跑，连写个博客的时间都没有了，本来已经上手了的emacs，最近又都忘完了。现在是用sublime text写的，还是这个简单，不需要折腾一堆插件和记一堆的快捷键。</p>
 
-<figure class='code'><figcaption><span>setup.py  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/*.*&#39;</span><span class="p">))]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">setup</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
-</span><span class='line'>      <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>下半年基本上没接触什么新的技术，主要的精力都放在数据服务了，好在经过一年的推动，目前的数据服务已经基本稳定了，整个系统的服务化改造也基本完成了。最近把restful service相关的文章又重新看了下，之前对restful的理解还是太片面了，之后会推动我们的系统朝着真正的restful的方向发展，最近会写一些东西分享下我们做restful服务的心得。上周偷闲，终于把买了好久的PI给跑起来，之前一直觉得挺对不起它的，买来放了3，4个月连包装都没拆。之前一直想好好学学的lua, scala, hadoop, hbase更是一眼都没看过，希望过段时间能有时间把这些都好好看一遍。</p>
 
+<p>虽然技术的收获不多，但是对于业务的理解这半年却加深了不少，能够独自和产品PK了。也开始学着做一些管理，手下有了两个小兵，虽然刚开始的时候有点不太习惯，脾气也比较急，基本上什么都是亲力亲为，但是最近也开始慢慢进入角色了，目前主要是通过每天的站例会议和code review的方式，团队的协作自我感觉还算不错。和其他部门同事的交往越来越多了，基本上跨部门的合作都会比较麻烦，这个我觉得需要一种艺术，目前我还不得要领，探索学习中吧。</p>
 
-<p>我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
+<p>上个月，经过李剑同学的提醒，发现偶用的手机竟然是移动版的3G手机，不支持联通3G，汗，用了半年了才知道。于是紧急花900又买了一个华为的G610U，上网快多了，顺便刷了一个miui系统玩，怪不得小米手机那么多人抢，miui做得确实挺舒服的。个人觉得android的手机现在和apple的用户体验的差距已经很小了，apple还得越狱，费半天劲，一般人真心没必要多花那么多钱买个apple。</p>
 
-<pre><code>python setup.py py2exe
-</code></pre>
+<p>很早就想学一些经济和金融的知识，觉得这东西挺重要的，但是一直不知道该怎么入门。前段时间上豆瓣买了本《白话金融投资》的电子书，居然让俺看懂了点，于是觉得看书这方式也挺靠谱，上豆瓣找了一堆经济和金融的书先看着，权当入门吧，计划春节前能把买得7，8本书全部看完，我要好好学习啦。</p>
 
-<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
-
-<h3>参考资料</h3>
-
-<ul>
-<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
-<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
-</ul>
-
+<p>晶晶已经1岁半多了，也越来越可爱了，小家伙太爱说话，跟她妈一个性格，说起话来不带停的，不过有时间你听半天也听不明白她说啥。每次晚上加完班，走在路上，想想晶晶和晶晶她妈，心里就可满足了。</p>
 </div>
 
 
@@ -176,14 +124,8 @@ from distutils.core &hellip;">
   
 
 
-<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+<time datetime="2013-12-06T23:35:00+08:00" pubdate data-updated="true">Dec 6<span>th</span>, 2013</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/python/'>Python</a>
-  
-</span>
 
 
     </p>
@@ -197,12 +139,12 @@ from distutils.core &hellip;">
     height="16" 
     frameborder="0" 
     src=
-      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/06/08/py2exe/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2013/12/06/random-thoughts/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
   </iframe>
   </span>
   
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/06/08/py2exe/" data-via="" data-counturl="http://ellios.github.com//blog/2012/06/08/py2exe/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2013/12/06/random-thoughts/" data-via="" data-counturl="http://ellios.github.com//blog/2013/12/06/random-thoughts/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -213,10 +155,8 @@ from distutils.core &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/08/bdb-install/" title="Previous Post: java版Berkeley db安装">&laquo; java版Berkeley db安装</a>
+        <a class="basic-alignment left" href="/blog/2013/04/16/ganglia-python/" title="Previous Post: ganglia python">&laquo; ganglia python</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/07/23/dbcp-source/" title="Next Post: DBCP源码分析">DBCP源码分析 &raquo;</a>
       
     </p>
   </footer>
@@ -342,8 +282,8 @@ from distutils.core &hellip;">
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://ellios.github.com//blog/2012/06/08/py2exe/';
-        var disqus_url = 'http://ellios.github.com//blog/2012/06/08/py2exe/';
+        var disqus_identifier = 'http://ellios.github.com//blog/2013/12/06/random-thoughts/';
+        var disqus_url = 'http://ellios.github.com//blog/2013/12/06/random-thoughts/';
         var disqus_script = 'embed.js';
       
     (function () {

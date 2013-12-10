@@ -9,7 +9,7 @@
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="中午吃饭的时候和同事讨论了下JDK的排序算法的实现，同事坚持认为是简单的插入排序，觉得JDK应该不会这么弱，看了下JDK的源码，发现JDK针对排序是做了大量的优化的。 JDK对排序的实现在Arrays的sort方法里，Arrays里面有大量的重载的sort方法。 &hellip;">
+  <meta name="description" content="继续研究jdk7对concurrency的增强。这次研究下TransferQueue，在jdk7里的实现是LinkedTransferQueue。它实现了BlockingQueue的接口，并且提供了类似SynchronizeQueue的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/23/jdk7-transferqueue/">JDK7-TransferQueue</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-23T09:11:00+08:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>继续研究jdk7对concurrency的增强。这次研究下<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/TransferQueue.html">TransferQueue</a>，在jdk7里的实现是<a href="http://gee.cs.oswego.edu/dl/jsr166/dist/jsr166ydocs/jsr166y/LinkedTransferQueue.html">LinkedTransferQueue</a>。它实现了BlockingQueue的接口，并且提供了类似<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronizeQueue</a>的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销，性能相对与其他的队列实现有了很大的提升。其内部的实现是一个FiFo的<a href="http://www.cs.rice.edu/~wns1/papers/2004-DISC-DDS.pdf">Dual Quque</a>。很多开源的项目，在jdk7之前，就早早的用上了这个东东，比如<a href="https://netty.io/">netty</a>，<a href="http://jolbox.com/">bonecp</a>，<a href="https://github.com/killme2008/xmemcached">xmemcached</a>&#8230;</p>
+
+<p>TransferQueue的基本使用和BlockingQueue差不多，有点特殊的就是它的transfer接口。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://tech.puredanger.com/2009/02/28/java-7-transferqueue/">http://tech.puredanger.com/2009/02/28/java-7-transferqueue/</a></li>
+<li><a href="http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html">http://www.yongboy.com/2012/02/forkjoinjsr166ytransferqueuelinkedtrans.html</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1513,63 +1558,6 @@ ldconfig
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/08/jnotify/">Jnotify</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-08T11:38:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>eclipse装了aptana，结果报</p>
-
-
-<blockquote>JNotifyAdapterLinux.registerToSubTree : warning, failed to register /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base :Error watching /opt/workspace/django/django/contrib/localflavor/locale/ar/.svn/tmp/prop-base : No space left on device</blockquote>
-
-
-<p>查了下，aptana使用了jnotify，而jnotify使inotify的java封装，inotify对每个进程能够观察的文件数使是有限制的。可以把限制加大一些来解决这个问题。</p>
-
-
-<pre>su
-echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
-</pre>
-
-
-<p>顺便发掘了下jnotify，对文件的增删改等事件进行监听的java库，使用也很简单。  </p>
-
-
-<h3>参考文档</h3>
-
-<ul>
-<li> jnotify <a title="http://jnotify.sourceforge.net/" href="http://jnotify.sourceforge.net/">http://jnotify.sourceforge.net/</a> </li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1587,6 +1575,10 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/06/random-thoughts/">随想</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/04/16/ganglia-python/">ganglia python</a>
       </li>
     
@@ -1600,10 +1592,6 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
     
       <li class="post">
         <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/11/zookeeper-tutorial/">zookeeper入门</a>
       </li>
     
   </ul>
