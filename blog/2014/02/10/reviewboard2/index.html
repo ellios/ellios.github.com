@@ -5,26 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>python程序打包成exe - ellios's blog</title>
+  <title>reviewboard折腾二 - ellios's blog</title>
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。 setup.py 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-import sys
-from distutils.core &hellip;">
+  <meta name="description" content="最近因为兄弟团队的一次比较严重的故障，领导又开始强制要求code reivew了，并且要提交到reviewboard上。之前也有过类似的强制要求，我还写过篇日志《艰难的reviewboard折腾》,但是应付完领导之后，整个团队没一个人主动提交review。对于code review这种事情， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +18,7 @@ from distutils.core &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ellios.github.com//blog/2012/06/08/py2exe">
+  <link rel="canonical" href="http://ellios.github.com//blog/2014/02/10/reviewboard2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -84,7 +69,7 @@ from distutils.core &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Python程序打包成exe</h1>
+      <h1 class="entry-title">Reviewboard折腾二</h1>
     
     
       <p class="meta">
@@ -100,59 +85,27 @@ from distutils.core &hellip;">
   
 
 
-<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+<time datetime="2014-02-10T14:04:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2014</time>
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。</p>
+<div class="entry-content"><p>最近因为兄弟团队的一次比较严重的故障，领导又开始强制要求code reivew了，并且要提交到reviewboard上。之前也有过类似的强制要求，我还写过篇日志<a href="http://ellios.me">《艰难的reviewboard折腾》</a>,但是应付完领导之后，整个团队没一个人主动提交review。对于code review这种事情，很难立刻见到成效，而且还会增加大家的负担，最好是能有一种长效机制，慢慢去培养大家的习惯,而且靠领导命令去推动，也违背了进行code review的初衷&#8211;学习和交流。</p>
 
-<figure class='code'><figcaption><span>setup.py  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/*.*&#39;</span><span class="p">))]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">setup</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
-</span><span class='line'>      <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>OK,废话说完，开始正题，目前的团队用eclipse和idea各占一半，用eclipse的可以用<a href="http://code.taobao.org/p/tao-reviewboard/wiki/index/">tao-reviewboard</a>，但是idea目前发现的各种插件，经测试都不可用。没办法，我们团队的同学自己造了一个，基于一个开源的项目https://code.google.com/p/reviewboard-plugin-for-idea/，我们修复了这个项目的一些bug，代码放在https://github.com/georgecao/reviewboard4idea。下面简单介绍下该插件的安装和使用</p>
 
-
-<p>我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
-
-<pre><code>python setup.py py2exe
-</code></pre>
-
-<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
-
-<h3>参考资料</h3>
-
-<ul>
-<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
-<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
-</ul>
+<ol>
+<li>下载编译好的<a href="http://pan.baidu.com/s/1sjpo1B3">jar包</a></li>
+<li>打开idea，进入菜单 Settings->Plugins, 点击按钮Install plugin from disk,选择刚刚下载的jar包。下图是安装成功后的截图:
+<img src="http://d.pcs.baidu.com/thumbnail/df938d976bd8937918952643d2da4783?fid=3107729884-250528-665226388&time=1392016876&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-2WbD%2FVQCB8iWTnQLWFd6C0%2FViR0%3D&expires=8h&prisign=amMwnVibYf88f2TB/V4FApSN5rJwOqzRhL6Now25HScufo4OuxITn8BmzguRNe+KOSvL1kr6vNdjxReTw2p4rao5rHOtKS4vAcdPT77uxjF528u8yMEWFMKCU55gdZOPF+eThF0cEZgTGgr9nQKeymOb5V3PMjZ+2dPQWYhaNwhe3cBnCv8SM4/fe9aSmqP0AC5A8VviSQvcyUtxR5NKO4GrqVf7hMnRM2HndBFijOIfpBR6e8d9Jg==&r=710409378&size=c850_u580&quality=100"></li>
+<li>点击上图的Review Board,简单配置下.其中Server Url是reviewboard的url,如http://reviewboard.xx.com, Username是用户名，Password就是密码了</li>
+<li>配置好后，简单修改一个文件，下方的Changes状态栏就会显示那个文件，如下图
+<img src="http://d.pcs.baidu.com/thumbnail/980d476e409a19620022c8cf648cfc1a?fid=3107729884-250528-1912072506&time=1392016876&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-xExXlwKyJ86MzP8o8iobdkqouvM%3D&expires=8h&prisign=amMwnVibYf88f2TB/V4FApSN5rJwOqzRhL6Now25HScufo4OuxITn8BmzguRNe+KOSvL1kr6vNdjxReTw2p4rao5rHOtKS4vAcdPT77uxjF528u8yMEWFMKCU55gdZOPF+eThF0cEZgTGgr9nQKeymOb5V3PMjZ+2dPQWYhaNwhe3cBnCv8SM4/fe9aSmqP0AC5A8VviSQvcyUtxR5NKO4GrqVf7hMnRM2HndBFijOIfpBR6e8d9Jg==&r=580019057&size=c850_u580&quality=100"></li>
+<li>右键点击该文件，选择PostReview菜单项，弹出Post Review对话框，如图
+<img class="left" src="http://d.pcs.baidu.com/thumbnail/b1be648c81f86ed7a3d91cae2d31d468?fid=3107729884-250528-3564722414&time=1392018561&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-A0HfIewACfVi1qhjIoXQrDhd9sA%3D&expires=8h&prisign=amMwnVibYf88f2TB/V4FApSN5rJwOqzRhL6Now25HScufo4OuxITn8BmzguRNe+KOSvL1kr6vNdjxReTw2p4rao5rHOtKS4vAcdPT77uxjF528u8yMEWFMKCU55gdZOPF+eThF0cEZgTGgr9nQKeymOb5V3PMjZ+2dPQWYhaNwhe3cBnCv8SM4/fe9aSmqP0AC5A8VviSQvcyUtxR5NKO4GrqVf7hMnRM2HndBFijOKs24khuUUlhA==&r=744605154&size=c850_u580&quality=100" width="400" height="300">
+其中 Summary:简短描述信息，Branch:代码分支一般是trunk吧，Bug:和bug相关的信息，比如Bug id等信息, Group:Review Board中的分组，多个分组用逗号分割,People：reviewers，需要谁来review，多个人用逗号分割,Description：这次提交的详细描述信息。</li>
+</ol>
 
 </div>
 
@@ -176,14 +129,8 @@ from distutils.core &hellip;">
   
 
 
-<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+<time datetime="2014-02-10T14:04:00+08:00" pubdate data-updated="true">Feb 10<span>th</span>, 2014</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/python/'>Python</a>
-  
-</span>
 
 
     </p>
@@ -197,12 +144,12 @@ from distutils.core &hellip;">
     height="16" 
     frameborder="0" 
     src=
-      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/06/08/py2exe/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2014/02/10/reviewboard2/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
   </iframe>
   </span>
   
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/06/08/py2exe/" data-via="" data-counturl="http://ellios.github.com//blog/2012/06/08/py2exe/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2014/02/10/reviewboard2/" data-via="" data-counturl="http://ellios.github.com//blog/2014/02/10/reviewboard2/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -213,10 +160,10 @@ from distutils.core &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/08/bdb-install/" title="Previous Post: java版Berkeley db安装">&laquo; java版Berkeley db安装</a>
+        <a class="basic-alignment left" href="/blog/2013/12/06/random-thoughts/" title="Previous Post: 随想">&laquo; 随想</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/07/23/dbcp-source/" title="Next Post: DBCP源码分析">DBCP源码分析 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2014/03/12/devops/" title="Next Post: devops">devops &raquo;</a>
       
     </p>
   </footer>
@@ -342,8 +289,8 @@ from distutils.core &hellip;">
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://ellios.github.com//blog/2012/06/08/py2exe/';
-        var disqus_url = 'http://ellios.github.com//blog/2012/06/08/py2exe/';
+        var disqus_identifier = 'http://ellios.github.com//blog/2014/02/10/reviewboard2/';
+        var disqus_url = 'http://ellios.github.com//blog/2014/02/10/reviewboard2/';
         var disqus_script = 'embed.js';
       
     (function () {

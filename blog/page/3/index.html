@@ -9,7 +9,9 @@
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="eclipse装了aptana，结果报 JNotifyAdapterLinux.registerToSubTree : warning, failed to register /opt/workspace/django/django/contrib/localflavor/locale/ar/. &hellip;">
+  <meta name="description" content="Why 连接池 一般我们进行一个数据库操作时，都要进行下面的步骤 客户端与服务器端建立连接
+执行数据库操作
+释放连接 频繁的数据库的连接和释放会占用大量的时间和资源，于是就有必要重复利用数据库连接，这便要用到连接池技术。 DBCP的使用和配置 DBCP的使用 一个简单的使用示例，但是代码还是有点长 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +68,256 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/23/dbcp-source/">DBCP源码分析</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-23T11:39:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Why 连接池</h3>
+
+<p>一般我们进行一个数据库操作时，都要进行下面的步骤</p>
+
+<ol>
+<li>客户端与服务器端建立连接</li>
+<li>执行数据库操作</li>
+<li>释放连接</li>
+</ol>
+
+
+<p>频繁的数据库的连接和释放会占用大量的时间和资源，于是就有必要重复利用数据库连接，这便要用到连接池技术。</p>
+
+<h3>DBCP的使用和配置</h3>
+
+<h5>DBCP的使用</h5>
+
+<p>一个简单的使用示例，但是代码还是有点长，这里放个传送门，有兴趣的可以点进去看看。
+<a href="https://gist.github.com/3161996">DBCPDemo</a></p>
+
+<h5>DBCP的配置</h5>
+
+<p>配置信息看这里把，传送门<a href="http://commons.apache.org/dbcp/configuration.html">DBCP Configuration</a></p>
+
+<h3>DBCP源码分析</h3>
+
+<p>DBCP其实就是一个存储数了据库连接的Object Pool，Object Pool是利用了commons-pool实现的。下面从BasicDataSource开始逐步分析DBCP的代码。
+<img src="/images/bds.png" alt="BasicDataSource类结构图" />
+从上图可以看出，BasicDataSource可以看成是一个Adapter模式的实现，其封装了真正实现连接池pool的PoolingDataSource，而PoolingDataSource实现了获
+取数据库连接的getConnection方法。</p>
+
+<figure class='code'><figcaption><span>getConnection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="n">Connection</span><span class="o">)(</span><span class="n">_pool</span><span class="o">.</span><span class="na">borrowObject</span><span class="o">());</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">conn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PoolGuardConnectionWrapper</span><span class="o">(</span><span class="n">conn</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>_pool就是ObjectPool，其实现是GenericObjectPool，这就是连接池的核心，真正实现Object Pool的地方。PoolGuardConnectionWrapper对Connection做了简单封装，如果通过该连接对数据库进行操作时，连接已经关闭，就会抛出异常。</p>
+
+<p>下面我们重点分析GenericObjectPool的代码，GenericObjectPool的类结构图如下图所示。
+<img src="/images/gop.png" alt="GenericObjectPool类结构图" /></p>
+
+<p>GenericObjectPool有三个内部类，分别是Config，Evictor和Latch.Config类包含了各种默认配置信息，如maxActive，maxWait（单位毫秒）等。Evictor类是清道夫，对于pool里过期的Idle对象会进行清理。Latch封装了真实的对象，这里为什么要对真实的对象进行封装，主要是拿它用来排队的，以保证请求的公平性，先来先拿。PoolableObjectFactory是生成对象的工厂接口，在使用pool前需要将其实现（这里是PoolableConnectionFactory）赋给pool的_factory。</p>
+
+<p>GenericObjectPool主要的接口有两个，分别是borrowObject和returnObject。先看下borrowObject的逻辑，代码太长。这里只贴一些主要的代码，有兴趣的可以自己去看。</p>
+
+<div><script src='https://gist.github.com/3163574.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>再看下returnObject,逻辑简单了好多。</p>
+
+<div><script src='https://gist.github.com/3163684.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>话说DBCP和common-pool的代码好老，最近看了下bonecp，据说比DBCP快了30被，以后分析下他的代码。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/08/py2exe/">Python程序打包成exe</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。</p>
+
+<figure class='code'><figcaption><span>setup.py  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
+</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
+</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/*.*&#39;</span><span class="p">))]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">setup</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
+</span><span class='line'>      <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
+
+<pre><code>python setup.py py2exe
+</code></pre>
+
+<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
+<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/08/bdb-install/">java版Berkeley Db安装</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-08T22:10:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>下载源码包<a title="db-4.5.20.tar.gz" href="http://download.oracle.com/berkeley-db/db-4.5.20.tar.gz">db-4.5.20.tar.gz</a> 执行下面的命令，编译源码</p>
+
+
+<pre>tar -xzf db-4.5.20.tar.gz
+cd db-4.5.20/build_unix
+../dist/configure --prefix=/opt/apps/berkeleydb --enable-java
+make &amp;&amp; make install
+</pre>
+
+
+<p>将动态库加到系统查找路径</p>
+
+
+<pre>echo &lsquo;/usr/local/berkeleydb/lib/&rsquo; &gt;&gt; /etc/ld.so.conf
+ldconfig
+</pre>
+
+
+<p>或者</p>
+
+
+<pre>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/apps/berkeleydb/lib</pre>
+
+
+<p>顺便提下windows下的安装 下载<a title="db-4.5.20.msi" href="http://download.oracle.com/berkeley-db/db-4.5.20.msi">db-4.5.20.msi</a>，安装。 将安装目录下的bin/libdb_java45.dll，bin/libdb45.dll和bin/msvcp71.dll拷贝到系统的system32目录下。  <span style="color: grey;">db.jar是java的接口类库，可以通过他来访问dbd</span></p>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li> <a title="berkeley db" href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index.html">berkeley db</a> </li>
+</ul>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -316,6 +568,18 @@ synergy可以使用一套键盘鼠标来控制多台机器。
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/07/06/startup1/">创业记一</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/devops/">devops</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/10/reviewboard2/">reviewboard折腾二</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/06/random-thoughts/">随想</a>
       </li>
     
@@ -323,23 +587,11 @@ synergy可以使用一套键盘鼠标来控制多台机器。
         <a href="/blog/2013/04/16/ganglia-python/">ganglia python</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/04/16/ganglia-java/">ganglia整合java</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (3)</a></li><li><a href='/blog/categories/java'>Java (12)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (3)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/devops'>devops (1)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (3)</a></li><li><a href='/blog/categories/java'>Java (12)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (3)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/startup'>startup (1)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
 </section>
 
 <section>
@@ -408,7 +660,7 @@ synergy可以使用一套键盘鼠标来控制多台机器。
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - ellios -
+  Copyright &copy; 2014 - ellios -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

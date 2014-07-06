@@ -5,26 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>python程序打包成exe - ellios's blog</title>
+  <title>devops - ellios's blog</title>
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。 setup.py 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-import sys
-from distutils.core &hellip;">
+  <meta name="description" content="最近做的监控平台基本work起来了，后期就是完善文档，然后推动大家去用了。自己统计了下，发现来公司一年半，基本上有一半的时间都是在做运维的工作。能得到的运维支持太少了，没办法，很多事情只能赶鸭子上架自己来了。不过做完之后，还能挺有成就感的，自己也收获了不少，处理问题的能力有了很大的提升。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +18,7 @@ from distutils.core &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ellios.github.com//blog/2012/06/08/py2exe">
+  <link rel="canonical" href="http://ellios.github.com//blog/2014/03/12/devops">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -84,7 +69,7 @@ from distutils.core &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Python程序打包成exe</h1>
+      <h1 class="entry-title">Devops</h1>
     
     
       <p class="meta">
@@ -100,60 +85,30 @@ from distutils.core &hellip;">
   
 
 
-<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+<time datetime="2014-03-12T10:12:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2014</time>
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。</p>
+<div class="entry-content"><p>最近做的监控平台基本work起来了，后期就是完善文档，然后推动大家去用了。自己统计了下，发现来公司一年半，基本上有一半的时间都是在做运维的工作。能得到的运维支持太少了，没办法，很多事情只能赶鸭子上架自己来了。不过做完之后，还能挺有成就感的，自己也收获了不少，处理问题的能力有了很大的提升。</p>
 
-<figure class='code'><figcaption><span>setup.py  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/*.*&#39;</span><span class="p">))]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">setup</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
-</span><span class='line'>      <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
-
-<pre><code>python setup.py py2exe
-</code></pre>
-
-<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
-
-<h3>参考资料</h3>
+<p>看下自己在公司做过的一些运维相关的工作</p>
 
 <ul>
-<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
-<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
+<li>基于jenkins搭建持续集成和自动化部署的平台</li>
+<li>用ganglia对JVM和业务数据进行监控，ganglia画出来的图太难看，定制化也太麻烦，试用了一段时间没有推广了</li>
+<li>试着用了下zabbix做监控，因为公司其他部门用这个比较多，看了下太复杂，放弃</li>
+<li>试用了下fabric,自动化安装JDK,自动压缩清理日志，目前还是入门阶段的使用，没有太深入</li>
+<li>做了一个zookeeper的监控界面，做的比较糙，能增删改查数据，目前满足我们开发的需求是够了</li>
+<li>基于graphite搭建监控平台，graphite就是专业画图的，画的图超赞。而且周边的开源项目很多，目前我们用了jmxtrans做JMX的数据收集，基于logster做了定制开发，可以收集nginx日志数据以及业务产生的日志，用了leonardo做dashboard，用了seyren做报警</li>
+<li>用了monit对进程进行监控，目前还是属于初级使用阶段</li>
+<li>试用了supervisord,托管进程的运行，不过这个东西要用好的话得做大量的定制开发，暂时放弃吧</li>
+<li>使用了saltstack，目前的观感不错，后续会继续深挖它的潜力，</li>
 </ul>
 
+
+<p>我这算是devops的alone mode吧，现在深刻觉得开发人员掌握一点运维技能还能很有必要的，另外会点python之类的脚本语言在运维的时候会有很大的优势，以后如果team招人的话，这会是一个很大的加分项。</p>
 </div>
 
 
@@ -176,12 +131,12 @@ from distutils.core &hellip;">
   
 
 
-<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+<time datetime="2014-03-12T10:12:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/python/'>Python</a>
+    <a class='category' href='/blog/categories/devops/'>devops</a>
   
 </span>
 
@@ -197,12 +152,12 @@ from distutils.core &hellip;">
     height="16" 
     frameborder="0" 
     src=
-      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/06/08/py2exe/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2014/03/12/devops/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
   </iframe>
   </span>
   
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/06/08/py2exe/" data-via="" data-counturl="http://ellios.github.com//blog/2012/06/08/py2exe/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2014/03/12/devops/" data-via="" data-counturl="http://ellios.github.com//blog/2014/03/12/devops/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -213,10 +168,10 @@ from distutils.core &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/06/08/bdb-install/" title="Previous Post: java版Berkeley db安装">&laquo; java版Berkeley db安装</a>
+        <a class="basic-alignment left" href="/blog/2014/02/10/reviewboard2/" title="Previous Post: reviewboard折腾二">&laquo; reviewboard折腾二</a>
       
       
-        <a class="basic-alignment right" href="/blog/2012/07/23/dbcp-source/" title="Next Post: DBCP源码分析">DBCP源码分析 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2014/07/06/startup1/" title="Next Post: 创业记一">创业记一 &raquo;</a>
       
     </p>
   </footer>
@@ -342,8 +297,8 @@ from distutils.core &hellip;">
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://ellios.github.com//blog/2012/06/08/py2exe/';
-        var disqus_url = 'http://ellios.github.com//blog/2012/06/08/py2exe/';
+        var disqus_identifier = 'http://ellios.github.com//blog/2014/03/12/devops/';
+        var disqus_url = 'http://ellios.github.com//blog/2014/03/12/devops/';
         var disqus_script = 'embed.js';
       
     (function () {

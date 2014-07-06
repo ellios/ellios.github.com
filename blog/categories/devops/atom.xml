@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: devops | ellios's blog]]></title>
+  <link href="http://ellios.github.com//blog/categories/devops/atom.xml" rel="self"/>
+  <link href="http://ellios.github.com//"/>
+  <updated>2014-07-06T23:20:23+08:00</updated>
+  <id>http://ellios.github.com//</id>
+  <author>
+    <name><![CDATA[ellios]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[devops]]></title>
+    <link href="http://ellios.github.com//blog/2014/03/12/devops/"/>
+    <updated>2014-03-12T10:12:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2014/03/12/devops</id>
+    <content type="html"><![CDATA[<p>最近做的监控平台基本work起来了，后期就是完善文档，然后推动大家去用了。自己统计了下，发现来公司一年半，基本上有一半的时间都是在做运维的工作。能得到的运维支持太少了，没办法，很多事情只能赶鸭子上架自己来了。不过做完之后，还能挺有成就感的，自己也收获了不少，处理问题的能力有了很大的提升。</p>
+
+<p>看下自己在公司做过的一些运维相关的工作</p>
+
+<ul>
+<li>基于jenkins搭建持续集成和自动化部署的平台</li>
+<li>用ganglia对JVM和业务数据进行监控，ganglia画出来的图太难看，定制化也太麻烦，试用了一段时间没有推广了</li>
+<li>试着用了下zabbix做监控，因为公司其他部门用这个比较多，看了下太复杂，放弃</li>
+<li>试用了下fabric,自动化安装JDK,自动压缩清理日志，目前还是入门阶段的使用，没有太深入</li>
+<li>做了一个zookeeper的监控界面，做的比较糙，能增删改查数据，目前满足我们开发的需求是够了</li>
+<li>基于graphite搭建监控平台，graphite就是专业画图的，画的图超赞。而且周边的开源项目很多，目前我们用了jmxtrans做JMX的数据收集，基于logster做了定制开发，可以收集nginx日志数据以及业务产生的日志，用了leonardo做dashboard，用了seyren做报警</li>
+<li>用了monit对进程进行监控，目前还是属于初级使用阶段</li>
+<li>试用了supervisord,托管进程的运行，不过这个东西要用好的话得做大量的定制开发，暂时放弃吧</li>
+<li>使用了saltstack，目前的观感不错，后续会继续深挖它的潜力，</li>
+</ul>
+
+
+<p>我这算是devops的alone mode吧，现在深刻觉得开发人员掌握一点运维技能还能很有必要的，另外会点python之类的脚本语言在运维的时候会有很大的优势，以后如果team招人的话，这会是一个很大的加分项。</p>
+]]></content>
+  </entry>
+  
+</feed>

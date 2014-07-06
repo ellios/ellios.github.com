@@ -4,7 +4,7 @@
   <title><![CDATA[ellios's blog]]></title>
   <link href="http://ellios.github.com//atom.xml" rel="self"/>
   <link href="http://ellios.github.com//"/>
-  <updated>2013-12-10T10:12:34+08:00</updated>
+  <updated>2014-07-06T23:20:23+08:00</updated>
   <id>http://ellios.github.com//</id>
   <author>
     <name><![CDATA[ellios]]></name>
@@ -12,6 +12,71 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[创业记一]]></title>
+    <link href="http://ellios.github.com//blog/2014/07/06/startup1/"/>
+    <updated>2014-07-06T21:31:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2014/07/06/startup1</id>
+    <content type="html"><![CDATA[<p>google，facebook，阿里，一个个伟大公司的创业故事，激励着无数IT从业者走上了创业的不归路，最后绝大多数都沉寂在了沙滩上，但要的就是那份追求。不想创业的程序员不是好程序员，于是，作为一个还可以的程序员，在收到创业的橄榄枝时，我毅然决定加入了。</p>
+
+<p>作为典型的技术工种，我担任了公司的技术总监，title挺唬人的，现实其实也是很唬人的，我要带着现有的13人左右的产品+技术团队，在一个半月之内把我们的一期产品上线。而当了解了整个产品需求和开发进度的时候，我立即认识到，除非找到合适的人，否则现有的团队在规定的时间点内把产品上线，几乎是不可能的。而我也终于明确了自己作为一个技术管理者的使命感，放下代码，拼命找人，开始不停的给之前的同事打电话，折腾了一个星期，招到了4个人，准确的说是给4个人发了offer，而他们真正入职，可能得1个月之后了（就连我也要到两周之后才能正式入职）那个时候，我们的产品只有半个月时间了，在这么短时间内做一个新产品出来，根本是不可能的。于是只能用创业公司的杀手锏了，加班和兼职。加班不用说了，上过班的都知道。兼职，对于那些还不能入职的同事，周末过来和我们联调，平时兼职开发，效率不好保证，不过也是现有情况下，唯一的办法了。</p>
+
+<p>人员基本确认了，但是怎么带着20个人（之前有两人发了offer，在我确认入伙后两天，他两也入职了）的团队把产品做上线，我还是一点底都没有。之前在奇艺我最多只带过6个人的团队，那个时候是纯粹的java团队，我可以把每个人的代码都review一遍，自己还有时间写些比较核心的模块。我不用太多去想产品，设计，运维这些东西，因为有专门的团队去做了，而现在，这些东西都要去考虑，买了些书去恶补这方面的知识，但是短时间内也很难入门。之前习惯了事必躬亲，每一件事情自己都要想清楚才会去做，而现在需要放手让别人去做了，自己很多时候只能旁观了。除了我招过来的几个人，之前的14个同事，我基本都不熟悉，我找每个人都谈了一次，了解了下大家的情况，团队整体的情况不错，这给了我小小的信心。</p>
+
+<p>周末把几个现在比较核心的和即将入职的同事召集到一起，重新过了一遍产品ui和现有的系统的数据结构，把整体的排期和工作安排定了下来。下周我决定提前过去了(本来还有一周才正式入职呢)，不过考虑到自己在奇艺的年假可以充分利用下，另外项目的压力还是蛮大的，能早点过去就早点过去吧。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[devops]]></title>
+    <link href="http://ellios.github.com//blog/2014/03/12/devops/"/>
+    <updated>2014-03-12T10:12:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2014/03/12/devops</id>
+    <content type="html"><![CDATA[<p>最近做的监控平台基本work起来了，后期就是完善文档，然后推动大家去用了。自己统计了下，发现来公司一年半，基本上有一半的时间都是在做运维的工作。能得到的运维支持太少了，没办法，很多事情只能赶鸭子上架自己来了。不过做完之后，还能挺有成就感的，自己也收获了不少，处理问题的能力有了很大的提升。</p>
+
+<p>看下自己在公司做过的一些运维相关的工作</p>
+
+<ul>
+<li>基于jenkins搭建持续集成和自动化部署的平台</li>
+<li>用ganglia对JVM和业务数据进行监控，ganglia画出来的图太难看，定制化也太麻烦，试用了一段时间没有推广了</li>
+<li>试着用了下zabbix做监控，因为公司其他部门用这个比较多，看了下太复杂，放弃</li>
+<li>试用了下fabric,自动化安装JDK,自动压缩清理日志，目前还是入门阶段的使用，没有太深入</li>
+<li>做了一个zookeeper的监控界面，做的比较糙，能增删改查数据，目前满足我们开发的需求是够了</li>
+<li>基于graphite搭建监控平台，graphite就是专业画图的，画的图超赞。而且周边的开源项目很多，目前我们用了jmxtrans做JMX的数据收集，基于logster做了定制开发，可以收集nginx日志数据以及业务产生的日志，用了leonardo做dashboard，用了seyren做报警</li>
+<li>用了monit对进程进行监控，目前还是属于初级使用阶段</li>
+<li>试用了supervisord,托管进程的运行，不过这个东西要用好的话得做大量的定制开发，暂时放弃吧</li>
+<li>使用了saltstack，目前的观感不错，后续会继续深挖它的潜力，</li>
+</ul>
+
+
+<p>我这算是devops的alone mode吧，现在深刻觉得开发人员掌握一点运维技能还能很有必要的，另外会点python之类的脚本语言在运维的时候会有很大的优势，以后如果team招人的话，这会是一个很大的加分项。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[reviewboard折腾二]]></title>
+    <link href="http://ellios.github.com//blog/2014/02/10/reviewboard2/"/>
+    <updated>2014-02-10T14:04:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2014/02/10/reviewboard2</id>
+    <content type="html"><![CDATA[<p>最近因为兄弟团队的一次比较严重的故障，领导又开始强制要求code reivew了，并且要提交到reviewboard上。之前也有过类似的强制要求，我还写过篇日志<a href="http://ellios.me">《艰难的reviewboard折腾》</a>,但是应付完领导之后，整个团队没一个人主动提交review。对于code review这种事情，很难立刻见到成效，而且还会增加大家的负担，最好是能有一种长效机制，慢慢去培养大家的习惯,而且靠领导命令去推动，也违背了进行code review的初衷&#8211;学习和交流。</p>
+
+<p>OK,废话说完，开始正题，目前的团队用eclipse和idea各占一半，用eclipse的可以用<a href="http://code.taobao.org/p/tao-reviewboard/wiki/index/">tao-reviewboard</a>，但是idea目前发现的各种插件，经测试都不可用。没办法，我们团队的同学自己造了一个，基于一个开源的项目https://code.google.com/p/reviewboard-plugin-for-idea/，我们修复了这个项目的一些bug，代码放在https://github.com/georgecao/reviewboard4idea。下面简单介绍下该插件的安装和使用</p>
+
+<ol>
+<li>下载编译好的<a href="http://pan.baidu.com/s/1sjpo1B3">jar包</a></li>
+<li>打开idea，进入菜单 Settings->Plugins, 点击按钮Install plugin from disk,选择刚刚下载的jar包。下图是安装成功后的截图:
+<img src="http://d.pcs.baidu.com/thumbnail/df938d976bd8937918952643d2da4783?fid=3107729884-250528-665226388&time=1392016876&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-2WbD%2FVQCB8iWTnQLWFd6C0%2FViR0%3D&expires=8h&prisign=amMwnVibYf88f2TB/V4FApSN5rJwOqzRhL6Now25HScufo4OuxITn8BmzguRNe+KOSvL1kr6vNdjxReTw2p4rao5rHOtKS4vAcdPT77uxjF528u8yMEWFMKCU55gdZOPF+eThF0cEZgTGgr9nQKeymOb5V3PMjZ+2dPQWYhaNwhe3cBnCv8SM4/fe9aSmqP0AC5A8VviSQvcyUtxR5NKO4GrqVf7hMnRM2HndBFijOIfpBR6e8d9Jg==&r=710409378&size=c850_u580&quality=100"></li>
+<li>点击上图的Review Board,简单配置下.其中Server Url是reviewboard的url,如http://reviewboard.xx.com, Username是用户名，Password就是密码了</li>
+<li>配置好后，简单修改一个文件，下方的Changes状态栏就会显示那个文件，如下图
+<img src="http://d.pcs.baidu.com/thumbnail/980d476e409a19620022c8cf648cfc1a?fid=3107729884-250528-1912072506&time=1392016876&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-xExXlwKyJ86MzP8o8iobdkqouvM%3D&expires=8h&prisign=amMwnVibYf88f2TB/V4FApSN5rJwOqzRhL6Now25HScufo4OuxITn8BmzguRNe+KOSvL1kr6vNdjxReTw2p4rao5rHOtKS4vAcdPT77uxjF528u8yMEWFMKCU55gdZOPF+eThF0cEZgTGgr9nQKeymOb5V3PMjZ+2dPQWYhaNwhe3cBnCv8SM4/fe9aSmqP0AC5A8VviSQvcyUtxR5NKO4GrqVf7hMnRM2HndBFijOIfpBR6e8d9Jg==&r=580019057&size=c850_u580&quality=100"></li>
+<li>右键点击该文件，选择PostReview菜单项，弹出Post Review对话框，如图
+<img class="left" src="http://d.pcs.baidu.com/thumbnail/b1be648c81f86ed7a3d91cae2d31d468?fid=3107729884-250528-3564722414&time=1392018561&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-A0HfIewACfVi1qhjIoXQrDhd9sA%3D&expires=8h&prisign=amMwnVibYf88f2TB/V4FApSN5rJwOqzRhL6Now25HScufo4OuxITn8BmzguRNe+KOSvL1kr6vNdjxReTw2p4rao5rHOtKS4vAcdPT77uxjF528u8yMEWFMKCU55gdZOPF+eThF0cEZgTGgr9nQKeymOb5V3PMjZ+2dPQWYhaNwhe3cBnCv8SM4/fe9aSmqP0AC5A8VviSQvcyUtxR5NKO4GrqVf7hMnRM2HndBFijOKs24khuUUlhA==&r=744605154&size=c850_u580&quality=100" width="400" height="300">
+其中 Summary:简短描述信息，Branch:代码分支一般是trunk吧，Bug:和bug相关的信息，比如Bug id等信息, Group:Review Board中的分组，多个分组用逗号分割,People：reviewers，需要谁来review，多个人用逗号分割,Description：这次提交的详细描述信息。</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[随想]]></title>
@@ -3323,178 +3388,6 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <h3>参考资料</h3>
 
 <p><a href="http://www.blogjava.net/xylz/archive/2009/12/18/306622.html">http://www.blogjava.net/xylz/archive/2009/12/18/306622.html</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DBCP源码分析]]></title>
-    <link href="http://ellios.github.com//blog/2012/07/23/dbcp-source/"/>
-    <updated>2012-07-23T11:39:00+08:00</updated>
-    <id>http://ellios.github.com//blog/2012/07/23/dbcp-source</id>
-    <content type="html"><![CDATA[<h3>Why 连接池</h3>
-
-<p>一般我们进行一个数据库操作时，都要进行下面的步骤</p>
-
-<ol>
-<li>客户端与服务器端建立连接</li>
-<li>执行数据库操作</li>
-<li>释放连接</li>
-</ol>
-
-
-<p>频繁的数据库的连接和释放会占用大量的时间和资源，于是就有必要重复利用数据库连接，这便要用到连接池技术。</p>
-
-<h3>DBCP的使用和配置</h3>
-
-<h5>DBCP的使用</h5>
-
-<p>一个简单的使用示例，但是代码还是有点长，这里放个传送门，有兴趣的可以点进去看看。
-<a href="https://gist.github.com/3161996">DBCPDemo</a></p>
-
-<h5>DBCP的配置</h5>
-
-<p>配置信息看这里把，传送门<a href="http://commons.apache.org/dbcp/configuration.html">DBCP Configuration</a></p>
-
-<h3>DBCP源码分析</h3>
-
-<p>DBCP其实就是一个存储数了据库连接的Object Pool，Object Pool是利用了commons-pool实现的。下面从BasicDataSource开始逐步分析DBCP的代码。
-<img src="http://ellios.github.com//images/bds.png" alt="BasicDataSource类结构图" />
-从上图可以看出，BasicDataSource可以看成是一个Adapter模式的实现，其封装了真正实现连接池pool的PoolingDataSource，而PoolingDataSource实现了获
-取数据库连接的getConnection方法。</p>
-
-<figure class='code'><figcaption><span>getConnection  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="n">Connection</span><span class="o">)(</span><span class="n">_pool</span><span class="o">.</span><span class="na">borrowObject</span><span class="o">());</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">conn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PoolGuardConnectionWrapper</span><span class="o">(</span><span class="n">conn</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>_pool就是ObjectPool，其实现是GenericObjectPool，这就是连接池的核心，真正实现Object Pool的地方。PoolGuardConnectionWrapper对Connection做了简单封装，如果通过该连接对数据库进行操作时，连接已经关闭，就会抛出异常。</p>
-
-<p>下面我们重点分析GenericObjectPool的代码，GenericObjectPool的类结构图如下图所示。
-<img src="http://ellios.github.com//images/gop.png" alt="GenericObjectPool类结构图" /></p>
-
-<p>GenericObjectPool有三个内部类，分别是Config，Evictor和Latch.Config类包含了各种默认配置信息，如maxActive，maxWait（单位毫秒）等。Evictor类是清道夫，对于pool里过期的Idle对象会进行清理。Latch封装了真实的对象，这里为什么要对真实的对象进行封装，主要是拿它用来排队的，以保证请求的公平性，先来先拿。PoolableObjectFactory是生成对象的工厂接口，在使用pool前需要将其实现（这里是PoolableConnectionFactory）赋给pool的_factory。</p>
-
-<p>GenericObjectPool主要的接口有两个，分别是borrowObject和returnObject。先看下borrowObject的逻辑，代码太长。这里只贴一些主要的代码，有兴趣的可以自己去看。</p>
-
-<div><script src='https://gist.github.com/3163574.js'></script>
-<noscript><pre><code></code></pre></noscript></div>
-
-
-<p>再看下returnObject,逻辑简单了好多。</p>
-
-<div><script src='https://gist.github.com/3163684.js'></script>
-<noscript><pre><code></code></pre></noscript></div>
-
-
-<p>话说DBCP和common-pool的代码好老，最近看了下bonecp，据说比DBCP快了30被，以后分析下他的代码。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[python程序打包成exe]]></title>
-    <link href="http://ellios.github.com//blog/2012/06/08/py2exe/"/>
-    <updated>2012-06-08T22:14:00+08:00</updated>
-    <id>http://ellios.github.com//blog/2012/06/08/py2exe</id>
-    <content type="html"><![CDATA[<p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。</p>
-
-<figure class='code'><figcaption><span>setup.py  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/*.*&#39;</span><span class="p">))]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">setup</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
-</span><span class='line'>      <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
-
-<pre><code>python setup.py py2exe
-</code></pre>
-
-<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
-
-<h3>参考资料</h3>
-
-<ul>
-<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
-<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[java版Berkeley db安装]]></title>
-    <link href="http://ellios.github.com//blog/2012/06/08/bdb-install/"/>
-    <updated>2012-06-08T22:10:00+08:00</updated>
-    <id>http://ellios.github.com//blog/2012/06/08/bdb-install</id>
-    <content type="html"><![CDATA[<p>下载源码包<a title="db-4.5.20.tar.gz" href="http://download.oracle.com/berkeley-db/db-4.5.20.tar.gz">db-4.5.20.tar.gz</a> 执行下面的命令，编译源码</p>
-
-
-<pre>tar -xzf db-4.5.20.tar.gz
-cd db-4.5.20/build_unix
-../dist/configure --prefix=/opt/apps/berkeleydb --enable-java
-make &amp;&amp; make install
-</pre>
-
-
-<p>将动态库加到系统查找路径</p>
-
-
-<pre>echo &lsquo;/usr/local/berkeleydb/lib/&rsquo; &gt;&gt; /etc/ld.so.conf
-ldconfig
-</pre>
-
-
-<p>或者</p>
-
-
-<pre>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/apps/berkeleydb/lib</pre>
-
-
-<p>顺便提下windows下的安装 下载<a title="db-4.5.20.msi" href="http://download.oracle.com/berkeley-db/db-4.5.20.msi">db-4.5.20.msi</a>，安装。 将安装目录下的bin/libdb_java45.dll，bin/libdb45.dll和bin/msvcp71.dll拷贝到系统的system32目录下。  <span style="color: grey;">db.jar是java的接口类库，可以通过他来访问dbd</span></p>
-
-
-<h3>参考资料</h3>
-
-<ul>
-<li> <a title="berkeley db" href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index.html">berkeley db</a> </li>
-</ul>
-
-
-
 ]]></content>
   </entry>
   

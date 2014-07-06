@@ -9,7 +9,7 @@
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="继续研究jdk7对concurrency的增强。这次研究下TransferQueue，在jdk7里的实现是LinkedTransferQueue。它实现了BlockingQueue的接口，并且提供了类似SynchronizeQueue的功能。由于采用了CAS的方式对线程进行同步，减少了锁的开销， &hellip;">
+  <meta name="description" content="折腾了半天的Review Board，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。 因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件tao- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,601 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/24/reviewboard/">艰难的reviewboard折腾</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-24T16:54:00+08:00" pubdate data-updated="true">Oct 24<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>折腾了半天的<a href="http://www.reviewboard.org/">Review Board</a>，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。</p>
+
+<p>因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件<a href="http://code.taobao.org/p/tao-reviewboard/wiki/index/">tao-reviewboard</a>，安装和配置都比较简单。因为移到linux和idea的开发环境已经好久了，所以我只能自己折腾了。</p>
+
+<p>google了下，发现有基于idea的reviewboard插件，装上试了下，跟tao-reviewboard比起来，可以说是非常简陋，而且提交review请求的时候，报了一堆的错误。以为是自己的配置有问题，于是看着Review Board的文档，把配置文件~/.reviewboardrc重新检查了下，文件的内容如下</p>
+
+<figure class='code'><figcaption><span>.reviewboardrc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">REVIEWBOARD_URL</span> <span class="o">=</span> <span class="s2">&quot;http://reviewboard.xxx.com/&quot;</span>
+</span><span class='line'><span class="nv">USERNAME</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span><span class='line'><span class="nv">PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span><span class='line'><span class="nv">HTTP_USERNAME</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span><span class='line'><span class="nv">HTTP_PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;xxx&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>配置完之后，继续报错，报的是</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">java</span><span class="o">.</span><span class="na">net</span><span class="o">.</span><span class="na">ProtocolException</span><span class="o">:</span> <span class="n">Server</span> <span class="n">redirected</span> <span class="n">too</span> <span class="n">many</span>  <span class="n">times</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>google无结果，简单看了源码，还得了解idea的插件开发的一些知识，暂时没功夫，于是放弃。</p>
+
+<p>试着装了下eclipse，发现tao-reviewboard是依赖于subclipse的，这个东西以前就装过，没有成功，这回试了下，果然还是不成功。同事说需要编译相应版本的svn客户端，觉得单独为个CodeReview再把eclipse折腾半天，不值得，于是放弃。</p>
+
+<p>又去啃Review Board的文档了，Review Board提供了一个命令行的工具post-review，这个工具是python写的，看到是python写的就很有亲切感。安装很简单，执行下面的命令（之前已经有了python的环境，没有的可能还得提前装python和easy_install）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>easy_install -U RBTools
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>提交review请求的命令也很简单</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>post-review -p --target-groups<span class="o">=</span>xxx --target-people<span class="o">=</span>xxx --summary<span class="o">=</span>xxx --description<span class="o">=</span>xxx files
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行上面的命令，报了206的错误。提示</p>
+
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+
+
+<p>于是，加上-d参数，打印debug信息，觉得可能repository没加到Review Board Server里面，但是其他人都可以提交review，于是试着进到代码目录，在代码当前目录提交review请求，没想到竟然pass了这个问题，不过马上又报了一个207的错误。提示</p>
+
+<blockquote><p>The repository path specified is not in the list of known repositories</p></blockquote>
+
+
+<p>这个问题，试了好多办法都不行，于是只能调试源码，下了源码，一路输出debug信息，怀疑是diff文件的问题。看了下其他同事提交的diff文件，他们的diff文件里开头，代码文件的路径是相对路径，而我生成的竟然是绝对路径，而造成这一问题的原因就是svn.py下面这一句，把这句注释掉，替换掉RBTools-xxx.egg这个文件里面的相应文件</p>
+
+<figure class='code'><figcaption><span>svn.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_absolute_paths</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">repository_info</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>试了下，终于OK了。post-review的那些参数太繁琐而且又长，以后有时间写个程序自己定制下。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/19/pb-tutorial/">Protocol Buffer入门</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-19T16:52:00+08:00" pubdate data-updated="true">Oct 19<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>是啥</h2>
+
+<blockquote><p>Protocol buffers are a flexible, efficient, automated mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages. You can even update your data structure without breaking deployed programs that are compiled against the &#8220;old&#8221; format.</p><footer><strong>Google, Developer Guide,</strong> <cite><a href='https://developers.google.com/protocol-buffers/docs/overview'>developers.google.com/docs/&hellip;</a></cite></footer></blockquote>
+
+
+<p>上面是Google官方文档对Protocol Buffer(简称PB)的定义，简单翻译下。</p>
+
+<ul>
+<li>序列化结构数据的自动化机制，类似XML，但是更小，更快，更简单</li>
+<li>你只需定义你的数据结构，就可以用PB生成的源码去操作结构数据</li>
+<li>支持多种语言</li>
+<li>数据结构向后兼容</li>
+</ul>
+
+
+<h2>性能</h2>
+
+<p>PB的性能，数据大小口碑一直不错，好多公司也都在用。这里有些人们做的<a href="http://code.google.com/p/thrift-protobuf-compare/wiki/BenchmarkingV2">Benchmark</a>数据。相对与未压缩的xml或者json来说是有不小的优势的，官方文档的说法是比xml要小3-10倍，快20-100倍。</p>
+
+<h2>使用</h2>
+
+<p>在使用PB之前要先定义你的数据结构，PB有一套数据结构定义的语法，你需要使用这套语法来定义你的结构。定义结构的代码一般会写到一个以.proto为后缀的文件中（文件后缀好像没有强制）</p>
+
+<h3>语法</h3>
+
+<h4>Message</h4>
+
+<p>Message类似于Java中的对象，C中的struct，是PB中数据封装的基本单元，一般我们在PB中定义的数据结构就是一个个的Message了。</p>
+
+<figure class='code'><figcaption><span>message.proto</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">message</span> <span class="n">SearchRequest</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">required</span> <span class="n">string</span> <span class="n">query</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">optional</span> <span class="n">int32</span> <span class="n">page_number</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">optional</span> <span class="n">int32</span> <span class="n">result_per_page</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码就定义了一个message</p>
+
+<ul>
+<li>message由field组成，类似对象中的成员变量</li>
+<li>要定义field的类型，类型包括scalar（待会儿说）， enumeration，以及message（支持嵌套哦）</li>
+<li>要定义field的规则，规则有required（值不能为空）,optional（值可以为空），repeated（重复，用来声明列表）</li>
+<li>每个field要分配Tag，tag就是每行最后的那写数字，占位符的意思。数据编码后用tag来对应每个field。tag从1开始，而且是动态编码的，1-16占一个字节，16-2047两个字节，最大是2<sup>29</sup> - 1</li>
+</ul>
+
+
+<h4>Scalar</h4>
+
+<p>下图列出了PB所支持的Scalar的类型</p>
+
+<p><img src="/images/proto-scalar.png" alt="&quot;PB Scalar&quot;" /></p>
+
+<h4>enum</h4>
+
+<p>PB支持枚举类型，对应Java或者C中的枚举类型,下面是一个枚举的例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'> <span class="n">enum</span> <span class="n">Colour</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">RED</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">BLACK</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">BLUE</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用</h3>
+
+<p>使用之前需要先安装protoc，protoc用于生成对应语言的代码。除了protoc，还需要编译对应语言的库，并且添加到你的依赖路径中。<a href="http://ellios-note.readthedocs.org/en/latest/ice/protobuf.html?t">安装wiki</a></p>
+
+<h4>数据结构</h4>
+
+<p>首先用pb的语法定义数据结构。</p>
+
+<figure class='code'><figcaption><span>tutorial.proto</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">package</span> <span class="n">me</span><span class="o">.</span><span class="n">ellios</span><span class="o">.</span><span class="n">tutorial</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">option</span> <span class="n">java_package</span> <span class="o">=</span> <span class="s">&quot;me.ellios.tutorial&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">option</span> <span class="n">java_outer_classname</span> <span class="o">=</span> <span class="s">&quot;AddressBookProtos&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">message</span> <span class="n">Person</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">required</span> <span class="n">string</span> <span class="n">name</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">required</span> <span class="n">int32</span> <span class="nb">id</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">optional</span> <span class="n">string</span> <span class="n">email</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">repeated</span> <span class="n">PhoneNumber</span> <span class="n">phone</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">enum</span> <span class="n">PhoneType</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">MOBILE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">HOME</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">WORK</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">message</span> <span class="n">PhoneNumber</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">required</span> <span class="n">string</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">optional</span> <span class="n">PhoneType</span> <span class="nb">type</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">[</span><span class="n">default</span> <span class="o">=</span> <span class="n">HOME</span><span class="p">];</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">message</span> <span class="n">AddressBook</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">repeated</span> <span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><em>package</em>：声明生成的代码所在的包，貌似是对应cpp的命名空间</li>
+<li><em>option java_package</em>：针对java，声明java代码的包</li>
+<li><em>option java_outer_classname</em>：针对java，声明java代码的类</li>
+</ul>
+
+
+<h4>java的例子</h4>
+
+<p>执行下面的命令，会生成AddressBookProtos.java文件，将它拷到你的工作目录中</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>protoc --java_out<span class="o">=</span>. tutorial.proto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面是一段简单的示例代码，演示怎么创建对象，以及对象的序列化和反序列化。</p>
+
+<figure class='code'><figcaption><span>AddressBookExample.java</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">me</span><span class="o">.</span><span class="na">ellios</span><span class="o">.</span><span class="na">tutorial</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">me.ellios.tutorial.AddressBookProtos.Person</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">me.ellios.tutorial.AddressBookProtos.AddressBook</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AddressBookExample</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//要通过builder来构建对象，</span>
+</span><span class='line'>        <span class="n">AddressBook</span><span class="o">.</span><span class="na">Builder</span> <span class="n">addressBuiler</span> <span class="o">=</span> <span class="n">AddressBook</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++){</span>
+</span><span class='line'>            <span class="n">Person</span><span class="o">.</span><span class="na">Builder</span> <span class="n">personBuilder</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;ellios&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span> <span class="c1">//设置name，不能为空</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">i</span><span class="o">);</span> <span class="c1">//设置id，也不能为空</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">setEmail</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">);</span> <span class="c1">//email可以为空</span>
+</span><span class='line'>            <span class="c1">//创建phone</span>
+</span><span class='line'>            <span class="n">Person</span><span class="o">.</span><span class="na">PhoneNumber</span><span class="o">.</span><span class="na">Builder</span> <span class="n">phoneBuilder</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="na">PhoneNumber</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">phoneBuilder</span><span class="o">.</span><span class="na">setNumber</span><span class="o">(</span><span class="s">&quot;132222222222&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">phoneBuilder</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Person</span><span class="o">.</span><span class="na">PhoneType</span><span class="o">.</span><span class="na">values</span><span class="o">()[</span><span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">3</span><span class="o">)]);</span>
+</span><span class='line'>            <span class="c1">//将phone添加到person中,              .</span>
+</span><span class='line'>            <span class="n">personBuilder</span><span class="o">.</span><span class="na">addPhone</span><span class="o">(</span><span class="n">phoneBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
+</span><span class='line'>            <span class="c1">//将person添加到地址簿的列表中</span>
+</span><span class='line'>            <span class="n">addressBuiler</span><span class="o">.</span><span class="na">addPerson</span><span class="o">(</span><span class="n">personBuilder</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">AddressBook</span> <span class="n">addressBook</span> <span class="o">=</span> <span class="n">addressBuiler</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;addressBook : &quot;</span>  <span class="o">+</span> <span class="n">addressBook</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">byte</span><span class="o">[]</span> <span class="n">serializeBytes</span> <span class="o">=</span> <span class="n">addressBook</span><span class="o">.</span><span class="na">toByteArray</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">AddressBook</span> <span class="n">addressBook2</span> <span class="o">=</span> <span class="n">AddressBook</span><span class="o">.</span><span class="na">parseFrom</span><span class="o">(</span><span class="n">serializeBytes</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;addressBook2 equal to addressBook. result is &quot;</span> <span class="o">+</span> <span class="n">addressBook</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">addressBook2</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">addressBook</span><span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;addressBook&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">AddressBook</span><span class="o">.</span><span class="na">Builder</span> <span class="n">addressBuilder3</span> <span class="o">=</span> <span class="n">AddressBook</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">addressBuilder3</span><span class="o">.</span><span class="na">mergeFrom</span><span class="o">(</span><span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;addressBook&quot;</span><span class="o">));</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;addressBook3 equal to addressBook. result is &quot;</span> <span class="o">+</span> <span class="n">addressBook</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">addressBuilder3</span><span class="o">.</span><span class="na">build</span><span class="o">()));</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>python示例</h4>
+
+<p>执行下面的命令，生成tutorial_pb2.py文件,将它拷到工作目录中。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>protoc --python_out<span class="o">=</span>. tutorial.proto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面是简单的示例代码</p>
+
+<figure class='code'><figcaption><span>address_book_example.py</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#! /usr/bin/python</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">tutorial_pb2</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">address_book</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">AddressBook</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">person</span> <span class="o">=</span> <span class="n">address_book</span><span class="o">.</span><span class="n">person</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">person</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">i</span>
+</span><span class='line'>    <span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;ellios</span><span class="si">%d</span><span class="s">&#39;</span><span class="o">%</span><span class="n">i</span>
+</span><span class='line'>    <span class="n">person</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>    <span class="n">phone_number</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="n">phone</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">phone_number</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="s">&quot;13233333333&quot;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">phone_number</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">MOBILE</span>
+</span><span class='line'>    <span class="k">elif</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">phone_number</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">HOME</span>
+</span><span class='line'>    <span class="k">elif</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">phone_number</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">WORK</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="s">&#39;address_book : &#39;</span><span class="p">,</span> <span class="n">address_book</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="s">&quot;wb&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">address_book</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">())</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">address_book2</span> <span class="o">=</span> <span class="n">tutorial_pb2</span><span class="o">.</span><span class="n">AddressBook</span><span class="p">()</span>
+</span><span class='line'><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">address_book2</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</span><span class='line'><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="s">&quot;address_book same with address_book2. the result is </span><span class="si">%d</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">address_book</span> <span class="o">==</span> <span class="n">address_book2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>cpp示例</h4>
+
+<p>执行下面的命令，生成tutorial.pb.h和tutorial.pb.cc文件，将这两个文件拷到工作目录</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>protoc --cpp_out<span class="o">=</span>. tutorial.proto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面是一段示例代码</p>
+
+<figure class='code'><figcaption><span>address_book_example.cc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;fstream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &quot;tutorial.pb.h&quot;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// Verify that the version of the library that we linked against is</span>
+</span><span class='line'>  <span class="c1">// compatible with the version of the headers we compiled against.</span>
+</span><span class='line'>  <span class="n">GOOGLE_PROTOBUF_VERIFY_VERSION</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">tutorial</span><span class="o">::</span><span class="n">AddressBook</span> <span class="n">address_book</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">tutorial</span><span class="o">::</span><span class="n">Person</span><span class="o">*</span> <span class="n">person</span> <span class="o">=</span> <span class="n">address_book</span><span class="p">.</span><span class="n">add_person</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">person</span><span class="o">-&gt;</span><span class="n">set_id</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">person</span><span class="o">-&gt;</span><span class="n">set_name</span><span class="p">(</span><span class="s">&quot;ellios&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">person</span><span class="o">-&gt;</span><span class="n">set_email</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">tutorial</span><span class="o">::</span><span class="n">Person</span><span class="o">::</span><span class="n">PhoneNumber</span><span class="o">*</span> <span class="n">phone_number</span> <span class="o">=</span> <span class="n">person</span><span class="o">-&gt;</span><span class="n">add_phone</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">phone_number</span><span class="o">-&gt;</span><span class="n">set_number</span><span class="p">(</span><span class="s">&quot;13333333333&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">phone_number</span><span class="o">-&gt;</span><span class="n">set_type</span><span class="p">(</span><span class="n">tutorial</span><span class="o">::</span><span class="n">Person</span><span class="o">::</span><span class="n">HOME</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">// Write the new address book back to disk.</span>
+</span><span class='line'>  <span class="n">fstream</span> <span class="n">output</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="n">ios</span><span class="o">::</span><span class="n">out</span> <span class="o">|</span> <span class="n">ios</span><span class="o">::</span><span class="n">trunc</span> <span class="o">|</span> <span class="n">ios</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">address_book</span><span class="p">.</span><span class="n">SerializeToOstream</span><span class="p">(</span><span class="o">&amp;</span><span class="n">output</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Failed to write address book.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;address_book : &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">address_book</span><span class="p">.</span><span class="n">person_size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">tutorial</span><span class="o">::</span><span class="n">AddressBook</span> <span class="n">address_book2</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fstream</span> <span class="n">input</span><span class="p">(</span><span class="s">&quot;address_book&quot;</span><span class="p">,</span> <span class="n">ios</span><span class="o">::</span><span class="n">in</span> <span class="o">|</span> <span class="n">ios</span><span class="o">::</span><span class="n">binary</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">address_book2</span><span class="p">.</span><span class="n">ParseFromIstream</span><span class="p">(</span><span class="o">&amp;</span><span class="n">input</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Optional:  Delete all global objects allocated by libprotobuf.</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">::</span><span class="n">protobuf</span><span class="o">::</span><span class="n">ShutdownProtobufLibrary</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考资料</h2>
+
+<ul>
+<li><a href="https://developers.google.com/protocol-buffers/docs/proto">https://developers.google.com/protocol-buffers/docs/proto</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/09/01/jdk7-fork-join/">Jdk7-fork-join</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-01T23:10:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>占坑&#8230;</em></p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://gee.cs.oswego.edu/dl/papers/fj.pdf"> fork/join framework article </a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1308,256 +1903,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/07/23/dbcp-source/">DBCP源码分析</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-23T11:39:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Why 连接池</h3>
-
-<p>一般我们进行一个数据库操作时，都要进行下面的步骤</p>
-
-<ol>
-<li>客户端与服务器端建立连接</li>
-<li>执行数据库操作</li>
-<li>释放连接</li>
-</ol>
-
-
-<p>频繁的数据库的连接和释放会占用大量的时间和资源，于是就有必要重复利用数据库连接，这便要用到连接池技术。</p>
-
-<h3>DBCP的使用和配置</h3>
-
-<h5>DBCP的使用</h5>
-
-<p>一个简单的使用示例，但是代码还是有点长，这里放个传送门，有兴趣的可以点进去看看。
-<a href="https://gist.github.com/3161996">DBCPDemo</a></p>
-
-<h5>DBCP的配置</h5>
-
-<p>配置信息看这里把，传送门<a href="http://commons.apache.org/dbcp/configuration.html">DBCP Configuration</a></p>
-
-<h3>DBCP源码分析</h3>
-
-<p>DBCP其实就是一个存储数了据库连接的Object Pool，Object Pool是利用了commons-pool实现的。下面从BasicDataSource开始逐步分析DBCP的代码。
-<img src="/images/bds.png" alt="BasicDataSource类结构图" />
-从上图可以看出，BasicDataSource可以看成是一个Adapter模式的实现，其封装了真正实现连接池pool的PoolingDataSource，而PoolingDataSource实现了获
-取数据库连接的getConnection方法。</p>
-
-<figure class='code'><figcaption><span>getConnection  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="o">(</span><span class="n">Connection</span><span class="o">)(</span><span class="n">_pool</span><span class="o">.</span><span class="na">borrowObject</span><span class="o">());</span>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">conn</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">conn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PoolGuardConnectionWrapper</span><span class="o">(</span><span class="n">conn</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">conn</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>_pool就是ObjectPool，其实现是GenericObjectPool，这就是连接池的核心，真正实现Object Pool的地方。PoolGuardConnectionWrapper对Connection做了简单封装，如果通过该连接对数据库进行操作时，连接已经关闭，就会抛出异常。</p>
-
-<p>下面我们重点分析GenericObjectPool的代码，GenericObjectPool的类结构图如下图所示。
-<img src="/images/gop.png" alt="GenericObjectPool类结构图" /></p>
-
-<p>GenericObjectPool有三个内部类，分别是Config，Evictor和Latch.Config类包含了各种默认配置信息，如maxActive，maxWait（单位毫秒）等。Evictor类是清道夫，对于pool里过期的Idle对象会进行清理。Latch封装了真实的对象，这里为什么要对真实的对象进行封装，主要是拿它用来排队的，以保证请求的公平性，先来先拿。PoolableObjectFactory是生成对象的工厂接口，在使用pool前需要将其实现（这里是PoolableConnectionFactory）赋给pool的_factory。</p>
-
-<p>GenericObjectPool主要的接口有两个，分别是borrowObject和returnObject。先看下borrowObject的逻辑，代码太长。这里只贴一些主要的代码，有兴趣的可以自己去看。</p>
-
-<div><script src='https://gist.github.com/3163574.js'></script>
-<noscript><pre><code></code></pre></noscript></div>
-
-
-<p>再看下returnObject,逻辑简单了好多。</p>
-
-<div><script src='https://gist.github.com/3163684.js'></script>
-<noscript><pre><code></code></pre></noscript></div>
-
-
-<p>话说DBCP和common-pool的代码好老，最近看了下bonecp，据说比DBCP快了30被，以后分析下他的代码。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/08/py2exe/">Python程序打包成exe</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>帮朋友用wxpython写了一个小程序，为了方便他使用，需要打包成exe。记得py2exe可以,看了下它的文档，写了一个简单的打包程序setup.py。</p>
-
-<figure class='code'><figcaption><span>setup.py  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">py2exe</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">data_files</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Microsoft.VC100.CRT&quot;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">r&#39;C:/Program Files/Microsoft </span><span class="se">\</span>
-</span><span class='line'><span class="s">Visual Studio 10.0/VC/redist/x86/Microsoft.VC100.CRT/*.*&#39;</span><span class="p">))]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">setup</span><span class="p">(</span>
-</span><span class='line'>      <span class="n">data_files</span><span class="o">=</span><span class="n">data_files</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">console</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;xxx.py&quot;</span><span class="p">]</span>
-</span><span class='line'>      <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我的python是2.7版本的，其他版本的打包程序可能具体还有些不同。打包的时候需要使用VC来编译，所以需要预装VC2008以上的版本，我装的是VC2010.运行程序</p>
-
-<pre><code>python setup.py py2exe
-</code></pre>
-
-<p>就会生成一个dist的目录，里面就有生成的exe文件和一大堆的pyd，dll，以及一些VC的运行时库文件。文件很多，py2exe有些参数，可以对文件数进行压缩。具体参数大家可以看文档。</p>
-
-<h3>参考资料</h3>
-
-<ul>
-<li>手动制作python的exe可执行程序 <a href="http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage">http://wiki.woodpecker.org.cn/moin/LeoJay/PyPackage</a></li>
-<li>py2exe Tutorial <a href="http://www.py2exe.org/index.cgi/Tutorial">http://www.py2exe.org/index.cgi/Tutorial</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/08/bdb-install/">java版Berkeley Db安装</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-08T22:10:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>下载源码包<a title="db-4.5.20.tar.gz" href="http://download.oracle.com/berkeley-db/db-4.5.20.tar.gz">db-4.5.20.tar.gz</a> 执行下面的命令，编译源码</p>
-
-
-<pre>tar -xzf db-4.5.20.tar.gz
-cd db-4.5.20/build_unix
-../dist/configure --prefix=/opt/apps/berkeleydb --enable-java
-make &amp;&amp; make install
-</pre>
-
-
-<p>将动态库加到系统查找路径</p>
-
-
-<pre>echo &lsquo;/usr/local/berkeleydb/lib/&rsquo; &gt;&gt; /etc/ld.so.conf
-ldconfig
-</pre>
-
-
-<p>或者</p>
-
-
-<pre>export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/apps/berkeleydb/lib</pre>
-
-
-<p>顺便提下windows下的安装 下载<a title="db-4.5.20.msi" href="http://download.oracle.com/berkeley-db/db-4.5.20.msi">db-4.5.20.msi</a>，安装。 将安装目录下的bin/libdb_java45.dll，bin/libdb45.dll和bin/msvcp71.dll拷贝到系统的system32目录下。  <span style="color: grey;">db.jar是java的接口类库，可以通过他来访问dbd</span></p>
-
-
-<h3>参考资料</h3>
-
-<ul>
-<li> <a title="berkeley db" href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index.html">berkeley db</a> </li>
-</ul>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1575,6 +1920,18 @@ ldconfig
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/07/06/startup1/">创业记一</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/12/devops/">devops</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/10/reviewboard2/">reviewboard折腾二</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/06/random-thoughts/">随想</a>
       </li>
     
@@ -1582,23 +1939,11 @@ ldconfig
         <a href="/blog/2013/04/16/ganglia-python/">ganglia python</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/04/16/ganglia-java/">ganglia整合java</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/03/12/ganglia/">ganglia</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/14/vrs-hedwig-tutorial/">vrs hedwig入门</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (3)</a></li><li><a href='/blog/categories/java'>Java (12)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (3)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/devops'>devops (1)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (3)</a></li><li><a href='/blog/categories/java'>Java (12)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (3)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/startup'>startup (1)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
 </section>
 
 <section>
@@ -1667,7 +2012,7 @@ ldconfig
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - ellios -
+  Copyright &copy; 2014 - ellios -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
