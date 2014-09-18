@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>jdk7-fork-join - ellios's blog</title>
+  <title>创业记二 - ellios's blog</title>
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="占坑&#8230; 参考资料 fork/join framework article ">
+  <meta name="description" content="一眨眼，已经快两个月了，距离网站上线刚刚过去了一个星期，自己终于能得闲整理下这段时间在创业团队工作的过程了。回想从刚进入团队到网站上线，虽然只有一个半月的时间，不过那段时间每天都觉得像是已经过了好几年似的，心里承受的压力还是挺大的，每天如果不工作到很晚，心里都会很不安，怕是有什么事情被自己漏过了。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ellios.github.com//blog/2012/09/01/jdk7-fork-join">
+  <link rel="canonical" href="http://ellios.github.com//blog/2014/08/24/startup2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -69,7 +69,7 @@
   
   <header>
     
-      <h1 class="entry-title">Jdk7-fork-join</h1>
+      <h1 class="entry-title">创业记二</h1>
     
     
       <p class="meta">
@@ -85,20 +85,19 @@
   
 
 
-<time datetime="2012-09-01T23:10:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2012</time>
+<time datetime="2014-08-24T22:10:00+08:00" pubdate data-updated="true">Aug 24<span>th</span>, 2014</time>
       </p>
     
   </header>
 
 
-<div class="entry-content"><p><em>占坑&#8230;</em></p>
+<div class="entry-content"><p>一眨眼，已经快两个月了，距离网站上线刚刚过去了一个星期，自己终于能得闲整理下这段时间在创业团队工作的过程了。回想从刚进入团队到网站上线，虽然只有一个半月的时间，不过那段时间每天都觉得像是已经过了好几年似的，心里承受的压力还是挺大的，每天如果不工作到很晚，心里都会很不安，怕是有什么事情被自己漏过了。尤其是最初的两周，自己需要定下短期的技术方案；把一些重要的事情分解到个人；鼓舞整个团队的士气；四处招人，但是最终只有一个人顺利入职；降低各种不确定因素造成的影响。每一天都在挑战自己的神经，70%的事情自己都是从新开始。管理一个技术团队，之前一直觉得是挺简单地一件事，现在一个半月走下来，其中各种不容易，还是挺有感触的。</p>
 
-<h3>参考资料</h3>
+<p>由于产品迟迟不能上线，整个公司包括运营和市场团队很长一段时间是在空转，巧妇难为无米之炊。这个时候，技术和产品团队自然要承受最大的压力，但是由于缺乏具体的执行方案，技术和产品这个时候也是处于无所事事的状态。这就是我决定加入时，整个公司的状态。看到这种情况，自己心里开始发急了，如果这种状态一直持续下去，之前定好的上线日期肯定又要delay了，而如果再次delay，投资人很可能对整个公司的执行力失去信心，当时真的希望技术和产品团队的每个人第二天能跟打了兴奋剂一样，每天都能开始通宵。但是，面对现实，团队不可能一下子飞起来，而我也必须加快行动的步伐了。提前一周加入了团队，和大家简单聊了下，团队成员的水平基本处于初中级的水平，缺乏对大型系统整体把控的能力，自己短期内需要充当架构师的角色，把整个系统分割成效的任务点让大家开发，另外慢慢的去培养几个人。第二天，召集技术和产品团队的所有人开了次动员会，告诉大家请看很严重，要强制大家加班了，按时上线奖金大大的，胡萝卜加大棒那套。讲话的时候自带洗脑光环，跟之前公司的CTO学的，能影响到几个算几个。谈话加大会的效果还不错，开始有一大半的人在加班了。初步解决了大家工作积极性的问题，开始解决技术性的问题了。试着和大家沟通自己的技术想法，但是发现大家完全不能理解，而且对你报以怀疑的目光，唉，不在一个频道的感觉。只能自己亲自动手了，趁着周末，搭建gitlab，把项目从gradle迁移回maven(实在没精力再去研究gradle了)，搭建测试环境，还是做技术的活顺手点。有点孤独感，安慰自己，在把整个团队在往自己设想的方向上给掰了。</p>
 
-<ul>
-<li><a href="http://gee.cs.oswego.edu/dl/papers/fj.pdf"> fork/join framework article </a></li>
-</ul>
+<p>又是一周，整个团队在我指引的方向上终于有了点感觉，这周计划的任务，大家基本都完成了。刚有点感觉的时候，不确定因素开始出现了，之前本来说好要加入团队的几个核心开发人员，突然各种原因都来不了了，当时顿时有点手足无措的感觉。一心想走捷径，指望这些人之前的经验短时间复制一套他们之前做过的系统，现在都只能靠自己了，那个时候深深的感觉到靠什么都不如靠自己来得踏实，所谓的捷径都是自己一点一滴干出来的。于是重新梳理产品需求，重新设计，给大家做了简单地培训，发现团队里几个成员稍微培养下还挺不错，两周，自己和这个团队都找到了感觉，心情开始不那么焦虑了。</p>
 
+<p>大方向定了，剩下的就是执行了，加班成了家常便饭，每天都觉得过得很漫长，一个月下来，感觉跟过了一年似得。期间还经历了公司搬家，还有各种其他事件的干扰，不过最后大家都撑过来了。当系统完成上线的那一刻，大大了送了一口气，不过更大的挑战紧接着就又来临了。</p>
 </div>
 
 
@@ -121,12 +120,12 @@
   
 
 
-<time datetime="2012-09-01T23:10:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2012</time>
+<time datetime="2014-08-24T22:10:00+08:00" pubdate data-updated="true">Aug 24<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/java/'>Java</a>
+    <a class='category' href='/blog/categories/startup/'>startup</a>
   
 </span>
 
@@ -142,12 +141,12 @@
     height="16" 
     frameborder="0" 
     src=
-      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2012/09/01/jdk7-fork-join/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
+      "http://hits.sinajs.cn/A1/weiboshare.html?url=http://ellios.github.com//blog/2014/08/24/startup2/&amp;type=6&amp;ralateUid=1778777231&amp;language=zh_cn" allowtransparency="true">
   </iframe>
   </span>
   
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2012/09/01/jdk7-fork-join/" data-via="" data-counturl="http://ellios.github.com//blog/2012/09/01/jdk7-fork-join/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ellios.github.com//blog/2014/08/24/startup2/" data-via="" data-counturl="http://ellios.github.com//blog/2014/08/24/startup2/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -158,10 +157,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/08/23/jdk7-transferqueue/" title="Previous Post: JDK7-TransferQueue">&laquo; JDK7-TransferQueue</a>
+        <a class="basic-alignment left" href="/blog/2014/07/06/startup1/" title="Previous Post: 创业记一">&laquo; 创业记一</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/10/19/pb-tutorial/" title="Next Post: Protocol Buffer入门">Protocol Buffer入门 &raquo;</a>
       
     </p>
   </footer>
@@ -287,8 +284,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://ellios.github.com//blog/2012/09/01/jdk7-fork-join/';
-        var disqus_url = 'http://ellios.github.com//blog/2012/09/01/jdk7-fork-join/';
+        var disqus_identifier = 'http://ellios.github.com//blog/2014/08/24/startup2/';
+        var disqus_url = 'http://ellios.github.com//blog/2014/08/24/startup2/';
         var disqus_script = 'embed.js';
       
     (function () {

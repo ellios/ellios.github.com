@@ -9,7 +9,7 @@
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="折腾了半天的Review Board，终于能提交请求了。因为期间的折腾过程特别曲折，所以记录一下。 因为是全公司要推广CodeReview，所以团队进行了一次简单培训，简单说了下Review Board的安装和使用，不过是基于windows和eclipse的，用的是一个eclipse的插件tao- &hellip;">
+  <meta name="description" content="前几天介绍了下Protocol Buffer，这次研究下和PB比较类似的Thrift。这两者都定义了代码独立的数据结构描述语法，并且提供了工具将定义的数据结构转化为相应的代码（Java，C++，Python之类的）。但是从使用上来说，Thrift提供的功能要更丰富一些，简单列下对二者区别的认识 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,434 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/24/thrift-guide/">Thrift入门</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-24T21:59:00+08:00" pubdate data-updated="true">Oct 24<span>th</span>, 2012</time>
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>前几天介绍了下Protocol Buffer，这次研究下和PB比较类似的Thrift。这两者都定义了代码独立的数据结构描述语法，并且提供了工具将定义的数据结构转化为相应的代码（Java，C++，Python之类的）。但是从使用上来说，Thrift提供的功能要更丰富一些，简单列下对二者区别的认识</p>
+
+<ul>
+<li>Thrfit从语法上来说，更接近C的语法，对程序员的友好性要更好些</li>
+<li>Thrift对rpc的支持比较好，接口的描述语法更类似与通常的接口声明。PB的接口只支持单一的输入参数，如果有多个参数，需要自己定义参数的数据结构，使用起来很别扭。不仅仅是语法上，Thrift对rpc是提供了完整的支持的，用Thrift可以很方便的写出rpc的Server和Client端，PB则要自己写网络层。</li>
+<li>PB对于容器类的数据结构只提供了对list的直接支持，而Thrift还提供了set和map类型，符合通常程序员的使用习惯</li>
+<li>Thrift直接支持的语言比较多，PB只支持Java，C++，Python，不过PB有很多第三方实现的对其他语言的支持</li>
+<li>PB的文档更好些，从发布的节奏上来看PB要更活跃一些。学习Thrift一定要看看源码</li>
+<li>PB的性能要更好些，不过Thrift也不会太差，一般的生产环境下，这点性能提升可以忽略了</li>
+</ul>
+
+
+<h3>使用</h3>
+
+<p>Thrift在使用前同样需要安装，这里给个安装的<a href="http://thrift.apache.org/docs/install/">传送门</a>。Thrift的源码里有些tutorial的代码，里面有各种语言的使用示例，初学thrift的话，把tutorial里的代码看明白，基本就能入门了。</p>
+
+<h4>Types</h4>
+
+<p>先来打点基础，看下thrift支持哪些数据类型：</p>
+
+<ul>
+<li>bool        Boolean, one byte</li>
+<li>byte        Signed byte</li>
+<li>i16         Signed 16-bit integer</li>
+<li>i32         Signed 32-bit integer</li>
+<li>i64         Signed 64-bit integer</li>
+<li>double      64-bit floating point value</li>
+<li>string      String</li>
+<li>binary      Blob (byte array)</li>
+<li>map&lt;t1,t2>  Map from one type to another</li>
+<li>list<t1>    Ordered list of one type</li>
+<li>set<t1>     Set of unique elements of one type</li>
+</ul>
+
+
+<p>相对与pb，thrift多了map,list,set这些容器类型，但是基本的数值类型少了一些，不过我们需要用到的也都有了。</p>
+
+<h4>示例</h4>
+
+<p>基础的内容就介绍这么多了，下面直接上例子，估计看了例子大家对thrift的语法也了解差不多了。</p>
+
+<figure class='code'><figcaption><span>demo.thrift</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">/*</span>
+</span><span class='line'><span class="o">*</span> <span class="n">demo</span><span class="o">.</span><span class="n">thrift</span>
+</span><span class='line'><span class="o">*</span> <span class="n">thrift</span> <span class="n">usage</span> <span class="n">demo</span>
+</span><span class='line'><span class="o">*/</span>
+</span><span class='line'><span class="n">namespace</span> <span class="n">cpp</span> <span class="n">ellios</span><span class="o">.</span><span class="n">me</span>
+</span><span class='line'><span class="n">namespace</span> <span class="n">java</span> <span class="n">ellios</span><span class="o">.</span><span class="n">me</span>
+</span><span class='line'><span class="n">namespace</span> <span class="n">py</span> <span class="n">ellios</span><span class="o">.</span><span class="n">me</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">enum</span> <span class="n">Operation</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">ADD</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">SUBTRACT</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">MULTIPLY</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">DIVIDE</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">struct</span> <span class="n">Work</span> <span class="p">{</span>
+</span><span class='line'>  <span class="mi">1</span><span class="p">:</span> <span class="n">i32</span> <span class="n">num1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="mi">2</span><span class="p">:</span> <span class="n">i32</span> <span class="n">num2</span><span class="p">,</span>
+</span><span class='line'>  <span class="mi">3</span><span class="p">:</span> <span class="n">Operation</span> <span class="n">op</span><span class="p">,</span>
+</span><span class='line'>  <span class="mi">4</span><span class="p">:</span> <span class="n">optional</span> <span class="n">string</span> <span class="n">comment</span><span class="p">,</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">exception</span> <span class="n">InvalidOperation</span> <span class="p">{</span>
+</span><span class='line'>  <span class="mi">1</span><span class="p">:</span> <span class="n">i32</span> <span class="n">what</span><span class="p">,</span>
+</span><span class='line'>  <span class="mi">2</span><span class="p">:</span> <span class="n">string</span> <span class="n">why</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">service</span> <span class="n">Calculator</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">i32</span> <span class="n">calculate</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">i32</span> <span class="n">logid</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="n">Work</span> <span class="n">w</span><span class="p">)</span> <span class="n">throws</span> <span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">InvalidOperation</span> <span class="n">ouch</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>java的例子</h4>
+
+<p>执行下面的命令，会生成相应的java代码。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'> thrift --gen java --out . demo.thrift
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Java Server</h5>
+
+<p>首先实现接口</p>
+
+<figure class='code'><figcaption><span>CaloculatorServiceImpl.java</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CaloculatorServiceImpl</span>  <span class="kd">implements</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">Iface</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">calculate</span><span class="o">(</span><span class="kt">int</span> <span class="n">logid</span><span class="o">,</span> <span class="n">Work</span> <span class="n">work</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InvalidOperation</span><span class="o">,</span> <span class="n">TException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;calculate(&quot;</span> <span class="o">+</span> <span class="n">logid</span> <span class="o">+</span> <span class="s">&quot;, {&quot;</span> <span class="o">+</span> <span class="n">work</span><span class="o">.</span><span class="na">op</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">work</span><span class="o">.</span><span class="na">num2</span> <span class="o">+</span> <span class="s">&quot;})&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">val</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">switch</span> <span class="o">(</span><span class="n">work</span><span class="o">.</span><span class="na">op</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">ADD:</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">+</span> <span class="n">work</span><span class="o">.</span><span class="na">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">SUBTRACT:</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">-</span> <span class="n">work</span><span class="o">.</span><span class="na">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">MULTIPLY:</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">*</span> <span class="n">work</span><span class="o">.</span><span class="na">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="nl">DIVIDE:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">work</span><span class="o">.</span><span class="na">num2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                    <span class="n">InvalidOperation</span> <span class="n">io</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InvalidOperation</span><span class="o">();</span>
+</span><span class='line'>                    <span class="n">io</span><span class="o">.</span><span class="na">what</span> <span class="o">=</span> <span class="n">work</span><span class="o">.</span><span class="na">op</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+</span><span class='line'>                    <span class="n">io</span><span class="o">.</span><span class="na">why</span> <span class="o">=</span> <span class="s">&quot;Cannot divide by 0&quot;</span><span class="o">;</span>
+</span><span class='line'>                    <span class="k">throw</span> <span class="n">io</span><span class="o">;</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>                <span class="n">val</span> <span class="o">=</span> <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">/</span> <span class="n">work</span><span class="o">.</span><span class="na">num2</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>            <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>                <span class="n">InvalidOperation</span> <span class="n">io</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InvalidOperation</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">io</span><span class="o">.</span><span class="na">what</span> <span class="o">=</span> <span class="n">work</span><span class="o">.</span><span class="na">op</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">io</span><span class="o">.</span><span class="na">why</span> <span class="o">=</span> <span class="s">&quot;Unknown operation&quot;</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">throw</span> <span class="n">io</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">val</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面实现一个Server，让人们可以调用服务</p>
+
+<figure class='code'><figcaption><span>DemoServer.java  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoServer</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">TTransportException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Calculator</span><span class="o">.</span><span class="na">Iface</span> <span class="n">calculatorService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CaloculatorServiceImpl</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">Calculator</span><span class="o">.</span><span class="na">Processor</span> <span class="n">processor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">Processor</span><span class="o">(</span><span class="n">calculatorService</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">TServerTransport</span> <span class="n">serverTransport</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TServerSocket</span><span class="o">(</span><span class="mi">8000</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">TServer</span> <span class="n">server</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TThreadPoolServer</span><span class="o">(</span><span class="k">new</span> <span class="n">TThreadPoolServer</span><span class="o">.</span><span class="na">Args</span><span class="o">(</span><span class="n">serverTransport</span><span class="o">).</span><span class="na">processor</span><span class="o">(</span><span class="n">processor</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Starting the simple server...&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">server</span><span class="o">.</span><span class="na">serve</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Java Client</h5>
+
+<p>接下来实现一个客户端，调用服务。</p>
+
+<figure class='code'><figcaption><span>DemoClient.java  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoClient</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">TTransport</span> <span class="n">transport</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TSocket</span><span class="o">(</span><span class="s">&quot;localhost&quot;</span><span class="o">,</span> <span class="mi">8000</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">transport</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">TProtocol</span> <span class="n">protocol</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TBinaryProtocol</span><span class="o">(</span><span class="n">transport</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">Calculator</span><span class="o">.</span><span class="na">Iface</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Calculator</span><span class="o">.</span><span class="na">Client</span><span class="o">(</span><span class="n">protocol</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Work</span> <span class="n">work</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Work</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">work</span><span class="o">.</span><span class="na">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="na">DIVIDE</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">work</span><span class="o">.</span><span class="na">num2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">quotient</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">calculate</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Whoa we can divide by 0&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidOperation</span> <span class="n">io</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Invalid operation: &quot;</span> <span class="o">+</span> <span class="n">io</span><span class="o">.</span><span class="na">why</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">work</span><span class="o">.</span><span class="na">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="na">SUBTRACT</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">work</span><span class="o">.</span><span class="na">num1</span> <span class="o">=</span> <span class="mi">15</span><span class="o">;</span>
+</span><span class='line'>        <span class="n">work</span><span class="o">.</span><span class="na">num2</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">diff</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">calculate</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">work</span><span class="o">);</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;15-10=&quot;</span> <span class="o">+</span> <span class="n">diff</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidOperation</span> <span class="n">io</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Invalid operation: &quot;</span> <span class="o">+</span> <span class="n">io</span><span class="o">.</span><span class="na">why</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">transport</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>python示例</h4>
+
+<p>由于前面已经实现了一个Java的Server，这里就只实现一个client了。</p>
+
+<figure class='code'><figcaption><span>demo_client.py  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">from</span> <span class="nn">me.ellios.demo</span> <span class="kn">import</span> <span class="n">Calculator</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">me.ellios.demo.ttypes</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">from</span> <span class="nn">thrift</span> <span class="kn">import</span> <span class="n">Thrift</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">thrift.transport</span> <span class="kn">import</span> <span class="n">TSocket</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">thrift.transport</span> <span class="kn">import</span> <span class="n">TTransport</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">thrift.protocol</span> <span class="kn">import</span> <span class="n">TBinaryProtocol</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span><span class="p">:</span>
+</span><span class='line'>  <span class="c"># Make socket</span>
+</span><span class='line'>  <span class="n">transport</span> <span class="o">=</span> <span class="n">TSocket</span><span class="o">.</span><span class="n">TSocket</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Buffering is critical. Raw sockets are very slow</span>
+</span><span class='line'>  <span class="n">transport</span> <span class="o">=</span> <span class="n">TTransport</span><span class="o">.</span><span class="n">TBufferedTransport</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Wrap in a protocol</span>
+</span><span class='line'>  <span class="n">protocol</span> <span class="o">=</span> <span class="n">TBinaryProtocol</span><span class="o">.</span><span class="n">TBinaryProtocol</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Create a client to use the protocol encoder</span>
+</span><span class='line'>  <span class="n">client</span> <span class="o">=</span> <span class="n">Calculator</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Connect!</span>
+</span><span class='line'>  <span class="n">transport</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">work</span> <span class="o">=</span> <span class="n">Work</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="n">DIVIDE</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num1</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num2</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">quotient</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;Whoa? You know how to divide by zero?&#39;</span>
+</span><span class='line'>  <span class="k">except</span> <span class="n">InvalidOperation</span><span class="p">,</span> <span class="n">io</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;InvalidOperation: </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">io</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">Operation</span><span class="o">.</span><span class="n">SUBTRACT</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num1</span> <span class="o">=</span> <span class="mi">15</span>
+</span><span class='line'>  <span class="n">work</span><span class="o">.</span><span class="n">num2</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="n">diff</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&#39;15-10=</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Close!</span>
+</span><span class='line'>  <span class="n">transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'><span class="k">except</span> <span class="n">Thrift</span><span class="o">.</span><span class="n">TException</span><span class="p">,</span> <span class="n">tx</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tx</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://diwakergupta.github.com/thrift-missing-guide/">http://diwakergupta.github.com/thrift-missing-guide/</a></li>
+<li><a href="http://wiki.apache.org/thrift/FrontPage">http://wiki.apache.org/thrift/FrontPage</a></li>
+<li><a href="http://thrift.apache.org">http://thrift.apache.org</a></li>
+<li><a href="http://jnb.ociweb.com/jnb/jnbJun2009.html">http://jnb.ociweb.com/jnb/jnbJun2009.html</a></li>
+<li><a href="http://stackoverflow.com/questions/69316/biggest-differences-of-thrift-vs-protocol-buffers">http://stackoverflow.com/questions/69316/biggest-differences-of-thrift-vs-protocol-buffers</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1659,250 +2087,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/08/03/java-singleton/">Java常用单例</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-03T23:55:00+08:00" pubdate data-updated="true">Aug 3<span>rd</span>, 2012</time>
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>单例是最常用到的一个设计模式，java的单例实现方式还是挺多的，总结下遇到的一些单例的实现</p>
-
-<p>一. 最简单的单例</p>
-
-<figure class='code'><figcaption><span>最简单的单例  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这种有并发问题，为了避免并发问题需要在判断的时候加锁。于是有了下面的实现。</p>
-
-<p>二. 加同步的单例</p>
-
-<figure class='code'><figcaption><span>加同步的单例  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>  
-</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  
-</span><span class='line'>      <span class="kd">public</span> <span class="kd">synchronized</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这种方式在每次获取对象的时候都要先获取锁，如果多次获取对象的话，会造成一些性能开销。考虑到只有在第一次创建对象时才存在并发问题，于是便有了双重判断的实现方式。</p>
-
-<p>三. 双重判断的同步的单例</p>
-
-<figure class='code'><figcaption><span>双重判断的同步的单例  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>              <span class="kd">synchronized</span><span class="o">(</span><span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">){</span>
-</span><span class='line'>                  <span class="k">if</span><span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
-</span><span class='line'>                      <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
-</span><span class='line'>              <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>          <span class="o">}</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>java的同步有很多陷阱，考虑到JMM的指令重排问题，instance被声明为volatile，这能够避免一部分问题，但是仍然会有一些并发的陷阱，比如CPU内部流水线也会做些指令的重排，这可不是受JVM指令控制的。如果我们创建一个非常大的单例对象，有可能会出现这种小概率事件。于是，干脆将同步问题扼杀在摇篮里。</p>
-
-<p>四. 典型饥饿模式的单例</p>
-
-<figure class='code'><figcaption><span>典型饥饿模式的单例  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>JVM在对类做初始化时，会做同步处理，以保证一个类只被初始化一次。一般，饥饿模式的单例已经能满足大多数的需求，如果你非常渴望延迟加载，而又不想自己去做同步的话。可以试试第5种方式。</p>
-
-<p>五. 非同步延迟单例</p>
-
-<figure class='code'><figcaption><span>非同步延迟单例  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">SingletonHolder</span><span class="o">{</span>
-</span><span class='line'>          <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="n">SingletonHolder</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
-</span><span class='line'>      <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这种方式利用JVM初始化的机制来达到延迟加载的目的，个人比较喜欢这种单例实现。不过具体实现的时候还是可能会有各种问题。比如构造类的时候可能出现异常，或者在初始化的时候出现死锁等问题。
-最近看到有人用枚举来实现单例，也挺巧妙的。</p>
-
-<p>六. 枚举单例</p>
-
-<figure class='code'><figcaption><span>枚举单例  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="kd">enum</span> <span class="n">Singleton</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">INSTANCE</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">(){</span>
-</span><span class='line'>            <span class="k">return</span> <span class="n">INSTANCE</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>觉得这种方式比较容易引起歧义，没太想好它的应用场景。不过保证单例是没啥问题。</p>
-
-<p>最近看python的一些设计模式，看到一些观点，认为其实各种单例的实现方式或多或少都有些问题，主张大家少用单例。如果要达到单例的效果，可以把对象提前构造出来，弄成一个类似全局变量的东东来用。个人还是比较赞同的，纯天然的总比再加工的更让人放心点。</p>
-
-<h3>参考资料</h3>
-
-<p><a href="http://www.blogjava.net/xylz/archive/2009/12/18/306622.html">http://www.blogjava.net/xylz/archive/2009/12/18/306622.html</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1920,6 +2104,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/24/startup2/">创业记二</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/07/06/startup1/">创业记一</a>
       </li>
     
@@ -1935,15 +2123,11 @@
         <a href="/blog/2013/12/06/random-thoughts/">随想</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/04/16/ganglia-python/">ganglia python</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/devops'>devops (1)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (3)</a></li><li><a href='/blog/categories/java'>Java (12)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (3)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/startup'>startup (1)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/coffeescript'>CoffeeScript (2)</a></li><li><a href='/blog/categories/devops'>devops (1)</a></li><li><a href='/blog/categories/ganglia'>Ganglia (3)</a></li><li><a href='/blog/categories/java'>Java (12)</a></li><li><a href='/blog/categories/javascript'>JavaScript (2)</a></li><li><a href='/blog/categories/python'>Python (3)</a></li><li><a href='/blog/categories/rpc'>RPC (3)</a></li><li><a href='/blog/categories/startup'>startup (2)</a></li><li><a href='/blog/categories/tools'>tools (1)</a></li><li><a href='/blog/categories/ubuntu'>Ubuntu (3)</a></li></ul>
 </section>
 
 <section>
