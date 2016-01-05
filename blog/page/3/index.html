@@ -9,7 +9,7 @@
   <meta name="author" content="ellios">
 
   
-  <meta name="description" content="单例是最常用到的一个设计模式，java的单例实现方式还是挺多的，总结下遇到的一些单例的实现 一. 最简单的单例 最简单的单例 1
+  <meta name="description" content="闲着无事体验下jdk7的一些新特性，先体验下G1，顺手把其他的GC方式也复习下。 用来测试的程序 测试程序 1
 2
 3
 4
@@ -22,7 +22,8 @@
 11
 12
 13
-14 public class Singleton { private static Singleton &hellip;">
+14
+package gc; public class HeapOOM { static class OOMObject { } &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -34,10 +35,11 @@
   <link rel="canonical" href="http://ellios.github.com//blog/page/3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="ellios's blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -69,9 +71,7 @@
   
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
-  <li><a href="http://ellios-note.readthedocs.org/">Wiki</a></li>
-  <li><a href="/slide">Slide</a></li>
-  <li><a href="/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
 </nav>
@@ -79,6 +79,196 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/06/java-gc-output/">HotSpot各种GC的输出</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-06T18:50:00+08:00" pubdate data-updated="true">Aug 6<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/08/06/java-gc-output/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>闲着无事体验下jdk7的一些新特性，先体验下G1，顺手把其他的GC方式也复习下。</p>
+
+<p>用来测试的程序</p>
+
+<figure class='code'><figcaption><span>测试程序  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">gc</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HeapOOM</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">OOMObject</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">OOMObject</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">OOMObject</span><span class="o">&gt;();</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">OOMObject</span><span class="o">());</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>SerialGC</h3>
+
+<p>执行命令如下：</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseSerialGC gc.HeapOOM
+</code></pre>
+
+<p>输出如下</p>
+
+<pre><code>[GC [DefNew: 6919K-&gt;1023K(9216K), 0.0184790 secs] 6919K-&gt;4907K(19456K), 0.0185330 secs] [Times: user=0.02 sys=0.00, real=0.01 secs] 
+[GC [DefNew: 9215K-&gt;1024K(9216K), 0.0220750 secs] 13099K-&gt;10753K(19456K), 0.0221190 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
+[GC [DefNew: 8510K-&gt;8510K(9216K), 0.0000280 secs][Tenured: 9729K-&gt;7736K(10240K), 0.0590890 secs] 18240K-&gt;16044K(19456K), [Perm : 2364K-&gt;2364K(21248K)], 0.0592060 secs] [Times: user=0.05 sys=0.00, real=0.05 secs] 
+[Full GC [Tenured: 7736K-&gt;7730K(10240K), 0.0548170 secs] 16044K-&gt;16038K(19456K), [Perm : 2364K-&gt;2362K(21248K)], 0.0548950 secs] [Times: user=0.06 sys=0.00, real=0.06 secs]
+</code></pre>
+
+<h3>Parallel GC</h3>
+
+<p>执行命令如下：</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseParallelGC gc.HeapOOM
+</code></pre>
+
+<p>输出如下：</p>
+
+<pre><code>[GC [PSYoungGen: 6893K-&gt;1017K(9216K)] 6893K-&gt;4937K(19456K), 0.0185000 secs] [Times: user=0.03 sys=0.00, real=0.02 secs] 
+[GC [PSYoungGen: 9209K-&gt;1008K(9216K)] 13129K-&gt;10470K(19456K), 0.0256190 secs] [Times: user=0.03 sys=0.01, real=0.02 secs] 
+[Full GC [PSYoungGen: 1008K-&gt;187K(9216K)] [ParOldGen: 9462K-&gt;10237K(10240K)] 10470K-&gt;10425K(19456K) [PSPermGen: 2367K-&gt;2365K(21248K)], 0.2739010 secs] [Times: user=0.34 sys=0.00, real=0.28 secs] 
+</code></pre>
+
+<h3>Concurrent Mark Sweep</h3>
+
+<p>执行命令如下:</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC gc.HeapOOM
+</code></pre>
+
+<p>输出如下：</p>
+
+<pre><code>[GC [ParNew: 6904K-&gt;1024K(9216K), 0.1083590 secs] 6904K-&gt;6785K(19456K), 0.1084710 secs] [Times: user=0.15 sys=0.01, real=0.11 secs] 
+[GC [ParNew: 9216K-&gt;9216K(9216K), 0.0000500 secs][CMS: 5761K-&gt;8649K(10240K), 0.0645400 secs] 14977K-&gt;13591K(19456K), [CMS Perm : 2365K-&gt;2363K(21248K)], 0.0647080 secs] [Times: user=0.06 sys=0.00, real=0.06 secs] 
+[GC [1 CMS-initial-mark: 8649K(10240K)] 13708K(19456K), 0.0081840 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
+[Full GC [CMS[CMS-concurrent-mark: 0.023/0.023 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
+ (concurrent mode failure): 8649K-&gt;8649K(10240K), 0.0681890 secs] 13708K-&gt;13606K(19456K), [CMS Perm : 2363K-&gt;2363K(21248K)], 0.0682770 secs] [Times: user=0.07 sys=0.00, real=0.07 secs] 
+[Full GC [CMS: 10239K-&gt;10240K(10240K), 0.0688260 secs] 19455K-&gt;17275K(19456K), [CMS Perm : 2366K-&gt;2366K(21248K)], 0.0689230 secs] [Times: user=0.07 sys=0.00, real=0.07 secs] 
+[GC [1 CMS-initial-mark: 10240K(10240K)] 17430K(19456K), 0.0111890 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
+[CMS-concurrent-mark: 0.027/0.027 secs] [Times: user=0.05 sys=0.00, real=0.03 secs] 
+[Full GC [CMS[CMS-concurrent-preclean: 0.025/0.025 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
+ (concurrent mode failure): 10240K-&gt;10240K(10240K), 0.0884470 secs] 19412K-&gt;19412K(19456K), [CMS Perm : 2366K-&gt;2366K(21248K)], 0.0885610 secs] [Times: user=0.09 sys=0.00, real=0.09 secs]
+</code></pre>
+
+<h3>G1</h3>
+
+<p>执行命令如下：</p>
+
+<pre><code>java -verbose:gc -Xms20M -Xmx20M -XX:+PrintGCDetails -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC gc.HeapOOM
+</code></pre>
+
+<p>G1的输出好大一坨,这里就主要描述它的各个阶段，详细的内容就略过了,有兴趣的话，自己测把。</p>
+
+<pre><code>[GC pause (young), 0.07679200 secs]
+   [Parallel Time:  76.4 ms]
+      [GC Worker Start (ms):  126.0  126.1
+       Avg: 126.1, Min: 126.0, Max: 126.1, Diff:   0.1]
+      [Ext Root Scanning (ms):  0.8  0.7
+       Avg:   0.8, Min:   0.7, Max:   0.8, Diff:   0.1]
+      [Update RS (ms):  7.6  8.0
+       Avg:   7.8, Min:   7.6, Max:   8.0, Diff:   0.4]
+         [Processed Buffers : 3 10
+          Sum: 13, Avg: 6, Min: 3, Max: 10, Diff: 7]
+      [Scan RS (ms):  18.0  11.1
+       Avg:  14.5, Min:  11.1, Max:  18.0, Diff:   6.9]
+      [Object Copy (ms):  49.9  56.5
+       Avg:  53.2, Min:  49.9, Max:  56.5, Diff:   6.6]
+      [Termination (ms):  0.0  0.0
+       Avg:   0.0, Min:   0.0, Max:   0.0, Diff:   0.0]
+         [Termination Attempts : 1 1
+          Sum: 2, Avg: 1, Min: 1, Max: 1, Diff: 0]
+      [GC Worker End (ms):  202.4  202.4
+       Avg: 202.4, Min: 202.4, Max: 202.4, Diff:   0.0]
+      [GC Worker (ms):  76.3  76.2
+       Avg:  76.3, Min:  76.2, Max:  76.3, Diff:   0.1]
+      [GC Worker Other (ms):  0.1  0.2
+       Avg:   0.1, Min:   0.1, Max:   0.2, Diff:   0.1]
+   [Clear CT:   0.1 ms]
+   [Other:   0.3 ms]
+      [Choose CSet:   0.0 ms]
+      [Ref Proc:   0.1 ms]
+      [Ref Enq:   0.0 ms]
+      [Free CSet:   0.0 ms]
+   [Eden: 7168K(7168K)-&gt;0B(3072K) Survivors: 0B-&gt;1024K Heap: 10138K(20M)-&gt;8858K(20M)]
+ [Times: user=0.11 sys=0.00, real=0.08 secs] 
+[GC pause (young) (initial-mark), 0.05340800 secs] 
+[GC concurrent-root-region-scan-start]
+[GC concurrent-root-region-scan-end, 0.0015220]
+[GC concurrent-mark-start]
+[GC pause (young), 0.04182800 secs]
+[Full GC 13M-&gt;10M(20M), 0.0579320 secs]
+ [Times: user=0.07 sys=0.00, real=0.06 secs] 
+[GC concurrent-mark-abort]
+[GC pause (young) (to-space overflow), 0.18594400 secs]
+[GC pause (young) (initial-mark), 0.02209700 secs]
+[GC concurrent-root-region-scan-start]
+[GC concurrent-root-region-scan-end, 0.0000130]
+[GC concurrent-mark-start]
+[Full GC 17M-&gt;15M(20M), 0.0831100 secs]
+ [Times: user=0.09 sys=0.01, real=0.08 secs] 
+[GC pause (young), 0.00407500 secs]
+[GC concurrent-mark-abort]
+[Full GC 15M-&gt;15M(20M), 0.0741120 secs]
+ [Times: user=0.08 sys=0.00, real=0.07 secs] 
+[Full GC 15M-&gt;15M(20M), 0.0801960 secs]
+ [Times: user=0.08 sys=0.00, real=0.08 secs] 
+</code></pre>
+
+<h3>参考资料</h3>
+
+<p><a href="http://blog.csdn.net/firecoder/article/details/7225654">http://blog.csdn.net/firecoder/article/details/7225654</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -102,6 +292,9 @@
 
 
 <time datetime="2012-08-03T23:55:00+08:00" pubdate data-updated="true">Aug 3<span>rd</span>, 2012</time>
+        
+         | <a href="/blog/2012/08/03/java-singleton/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -346,6 +539,9 @@
 
 
 <time datetime="2012-07-23T11:39:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2012</time>
+        
+         | <a href="/blog/2012/07/23/dbcp-source/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -445,6 +641,9 @@
 
 
 <time datetime="2012-06-08T22:14:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/08/py2exe/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -527,6 +726,9 @@
 
 
 <time datetime="2012-06-08T22:10:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/08/bdb-install/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -596,6 +798,9 @@ ldconfig
 
 
 <time datetime="2012-06-08T11:38:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/08/jnotify/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -653,6 +858,9 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
 
 
 <time datetime="2012-06-08T11:19:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/08/ying-pan-an-zhuang-ubuntu11-dot-04/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -697,6 +905,9 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
 
 
 <time datetime="2012-05-02T19:15:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2012</time>
+        
+         | <a href="/blog/2012/05/02/octopress/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -737,6 +948,9 @@ echo 32000 &gt; /proc/sys/fs/inotify/max_user_watches
 
 
 <time datetime="2011-10-26T22:22:00+08:00" pubdate data-updated="true">Oct 26<span>th</span>, 2011</time>
+        
+         | <a href="/blog/2011/10/26/ubuntu-install/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -823,6 +1037,10 @@ synergy可以使用一套键盘鼠标来控制多台机器。
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/01/02/2015-summary/">2015个人总结</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/08/24/startup2/">创业记二</a>
       </li>
     
@@ -836,10 +1054,6 @@ synergy可以使用一套键盘鼠标来控制多台机器。
     
       <li class="post">
         <a href="/blog/2014/02/10/reviewboard2/">reviewboard折腾二</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/06/random-thoughts/">随想</a>
       </li>
     
   </ul>
@@ -858,7 +1072,7 @@ synergy可以使用一套键盘鼠标来控制多台机器。
   <a href="https://github.com/ellios">@ellios</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -915,7 +1129,7 @@ synergy可以使用一套键盘鼠标来控制多台机器。
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - ellios -
+  Copyright &copy; 2016 - ellios -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

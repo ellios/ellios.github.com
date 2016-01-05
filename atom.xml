@@ -4,7 +4,7 @@
   <title><![CDATA[ellios's blog]]></title>
   <link href="http://ellios.github.com//atom.xml" rel="self"/>
   <link href="http://ellios.github.com//"/>
-  <updated>2015-04-23T14:53:25+08:00</updated>
+  <updated>2016-01-05T17:15:10+08:00</updated>
   <id>http://ellios.github.com//</id>
   <author>
     <name><![CDATA[ellios]]></name>
@@ -12,6 +12,36 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[2015个人总结]]></title>
+    <link href="http://ellios.github.com//blog/2016/01/02/2015-summary/"/>
+    <updated>2016-01-02T19:43:00+08:00</updated>
+    <id>http://ellios.github.com//blog/2016/01/02/2015-summary</id>
+    <content type="html"><![CDATA[<p>刚把部门总结写完，顺带着想起2015这一整年的经历，对个人的影响还是挺大的，于是决定把我的2015给记个流水出来。</p>
+
+<p>年初，力扑默而不宣地散了，到最后李有兵也没站出来给大家个说法，灰溜溜的跑了，好像世上再也不存在这个人。拼命加班一个多月的工资没了，之前拼命干了大半年的产品还没正式出世就死了，内心难过和自责了好久。和大家一起去仲裁，但是最终发现也只是走个形式而已，面对一个存心耍无赖的人，法律也只会呵呵。结局虽然不是很好，但是对于自己确实是一段宝贵的经历,经历了一个公司从出生到死亡的过程，经历了带领40人团队的巨大跳跃，经历了一个团队打了鸡血拼命工作到最后不欢而散的过程，经历了一个号称身家10多亿的老板从极度虚幻到跌落尘埃的过程，经历了半夜12点警察叔叔的狠狠呵斥，经历了。。。，真正参与过了这么一段创业，才明白创业的各种辛酸和困难。</p>
+
+<p>年初除了力扑的事情收尾，然后就是面试，找工作。面了3，4家公司，最终到了乐视体育。3月底正式入职，然后就开始各种忙，持续了半年多的996的状态，不过忙下来，收获还可以。</p>
+
+<ul>
+<li>从0开始组建了服务端团队。(招人特别辛酸,这边招人挑学校和公司,工资给的在业内也不算高,流程还长正常要1个月才能下offer,好多不错的人到人力环节就被卡了,没办法,只能去前东家挖人了,挖了3个人过来,前领导知道了,现在还不和说话)。</li>
+<li>团队在高强度的工作状态中坚持了下来,提高很快,目前逐步步入了正规,我也能从大量的coding中解放出来了。</li>
+<li>团队参与的多个重要项目基本都完成了,而且公司这些产品的发展趋势和关注度都还不错,作为核心的服务端团队负责人,内心成就感也还不错。</li>
+<li>入职前说的股权协议终于签了,一块石头落了地，杂七杂八的念头也少了,希望最终能有所收获吧。</li>
+<li>技术管理的路走得越来越稳了,个人觉得现在算是一个合适的技术管理者了。</li>
+</ul>
+
+
+<p>这一年工作主要的收获还是偏管理方向，技术方向的收获不大，专注研究一些技术的时间越来越少，一些新的技术基本都只能大概了解，处于吃老本的阶段，不过吃老本的过程中，对技术的理解想相对深刻了些。新的一年计划带领团队做些更技术含量的事情，实时推送，搜索，推荐，大数据，知识图谱大概这些，希望各个方向都能有初步的进展。</p>
+
+<p>今年大部头的技术书籍基本没看过，目前在看《R语言实战》，其他粗略地看了《创业维艰》，《从0到1》，《企业估值就是讲故事》，《经济学原理》，《聪明的投资者》，《怎样选择成长股》新一年计划还是这些方向吧，创业和投资，为若干年后的个人规划做些准备。</p>
+
+<p>今年终于在北京把房买了，了却了一桩大心愿。买房的过程还是挺戏剧的，十一放假爸妈突然说可以提供一部分资金让我们买房，本来没有买房计划的我和老婆一合计，决定今年就把房买了。于是第二天就杀北京看房，第三天就交了定金，一个月后办完了各种手续。事后想想，我和老婆在人生几件大事上基本都是跟着感觉走，不过最终结果都还可以。</p>
+
+<p>家庭生活越来越和谐了，和老婆基本没有7年之痒的问题。晶晶4岁了，喜欢臭美，喜欢画画，喜欢哭，性格善良(除了爱欺负我)，长大的梦想是当画家。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[创业记二]]></title>
@@ -3024,167 +3054,6 @@ Gmond是真正干活的，由于没弄明白它的配置，期间犯了好多低
 <li><a href="http://zaach.github.com/jison/">http://zaach.github.com/jison/</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[HotSpot各种GC的输出]]></title>
-    <link href="http://ellios.github.com//blog/2012/08/06/java-gc-output/"/>
-    <updated>2012-08-06T18:50:00+08:00</updated>
-    <id>http://ellios.github.com//blog/2012/08/06/java-gc-output</id>
-    <content type="html"><![CDATA[<p>闲着无事体验下jdk7的一些新特性，先体验下G1，顺手把其他的GC方式也复习下。</p>
-
-<p>用来测试的程序</p>
-
-<figure class='code'><figcaption><span>测试程序  </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">gc</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HeapOOM</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">OOMObject</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">List</span><span class="o">&lt;</span><span class="n">OOMObject</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">OOMObject</span><span class="o">&gt;();</span>
-</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">OOMObject</span><span class="o">());</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>SerialGC</h3>
-
-<p>执行命令如下：</p>
-
-<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseSerialGC gc.HeapOOM
-</code></pre>
-
-<p>输出如下</p>
-
-<pre><code>[GC [DefNew: 6919K-&gt;1023K(9216K), 0.0184790 secs] 6919K-&gt;4907K(19456K), 0.0185330 secs] [Times: user=0.02 sys=0.00, real=0.01 secs] 
-[GC [DefNew: 9215K-&gt;1024K(9216K), 0.0220750 secs] 13099K-&gt;10753K(19456K), 0.0221190 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
-[GC [DefNew: 8510K-&gt;8510K(9216K), 0.0000280 secs][Tenured: 9729K-&gt;7736K(10240K), 0.0590890 secs] 18240K-&gt;16044K(19456K), [Perm : 2364K-&gt;2364K(21248K)], 0.0592060 secs] [Times: user=0.05 sys=0.00, real=0.05 secs] 
-[Full GC [Tenured: 7736K-&gt;7730K(10240K), 0.0548170 secs] 16044K-&gt;16038K(19456K), [Perm : 2364K-&gt;2362K(21248K)], 0.0548950 secs] [Times: user=0.06 sys=0.00, real=0.06 secs]
-</code></pre>
-
-<h3>Parallel GC</h3>
-
-<p>执行命令如下：</p>
-
-<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseParallelGC gc.HeapOOM
-</code></pre>
-
-<p>输出如下：</p>
-
-<pre><code>[GC [PSYoungGen: 6893K-&gt;1017K(9216K)] 6893K-&gt;4937K(19456K), 0.0185000 secs] [Times: user=0.03 sys=0.00, real=0.02 secs] 
-[GC [PSYoungGen: 9209K-&gt;1008K(9216K)] 13129K-&gt;10470K(19456K), 0.0256190 secs] [Times: user=0.03 sys=0.01, real=0.02 secs] 
-[Full GC [PSYoungGen: 1008K-&gt;187K(9216K)] [ParOldGen: 9462K-&gt;10237K(10240K)] 10470K-&gt;10425K(19456K) [PSPermGen: 2367K-&gt;2365K(21248K)], 0.2739010 secs] [Times: user=0.34 sys=0.00, real=0.28 secs] 
-</code></pre>
-
-<h3>Concurrent Mark Sweep</h3>
-
-<p>执行命令如下:</p>
-
-<pre><code>java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC gc.HeapOOM
-</code></pre>
-
-<p>输出如下：</p>
-
-<pre><code>[GC [ParNew: 6904K-&gt;1024K(9216K), 0.1083590 secs] 6904K-&gt;6785K(19456K), 0.1084710 secs] [Times: user=0.15 sys=0.01, real=0.11 secs] 
-[GC [ParNew: 9216K-&gt;9216K(9216K), 0.0000500 secs][CMS: 5761K-&gt;8649K(10240K), 0.0645400 secs] 14977K-&gt;13591K(19456K), [CMS Perm : 2365K-&gt;2363K(21248K)], 0.0647080 secs] [Times: user=0.06 sys=0.00, real=0.06 secs] 
-[GC [1 CMS-initial-mark: 8649K(10240K)] 13708K(19456K), 0.0081840 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
-[Full GC [CMS[CMS-concurrent-mark: 0.023/0.023 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
- (concurrent mode failure): 8649K-&gt;8649K(10240K), 0.0681890 secs] 13708K-&gt;13606K(19456K), [CMS Perm : 2363K-&gt;2363K(21248K)], 0.0682770 secs] [Times: user=0.07 sys=0.00, real=0.07 secs] 
-[Full GC [CMS: 10239K-&gt;10240K(10240K), 0.0688260 secs] 19455K-&gt;17275K(19456K), [CMS Perm : 2366K-&gt;2366K(21248K)], 0.0689230 secs] [Times: user=0.07 sys=0.00, real=0.07 secs] 
-[GC [1 CMS-initial-mark: 10240K(10240K)] 17430K(19456K), 0.0111890 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
-[CMS-concurrent-mark: 0.027/0.027 secs] [Times: user=0.05 sys=0.00, real=0.03 secs] 
-[Full GC [CMS[CMS-concurrent-preclean: 0.025/0.025 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
- (concurrent mode failure): 10240K-&gt;10240K(10240K), 0.0884470 secs] 19412K-&gt;19412K(19456K), [CMS Perm : 2366K-&gt;2366K(21248K)], 0.0885610 secs] [Times: user=0.09 sys=0.00, real=0.09 secs]
-</code></pre>
-
-<h3>G1</h3>
-
-<p>执行命令如下：</p>
-
-<pre><code>java -verbose:gc -Xms20M -Xmx20M -XX:+PrintGCDetails -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC gc.HeapOOM
-</code></pre>
-
-<p>G1的输出好大一坨,这里就主要描述它的各个阶段，详细的内容就略过了,有兴趣的话，自己测把。</p>
-
-<pre><code>[GC pause (young), 0.07679200 secs]
-   [Parallel Time:  76.4 ms]
-      [GC Worker Start (ms):  126.0  126.1
-       Avg: 126.1, Min: 126.0, Max: 126.1, Diff:   0.1]
-      [Ext Root Scanning (ms):  0.8  0.7
-       Avg:   0.8, Min:   0.7, Max:   0.8, Diff:   0.1]
-      [Update RS (ms):  7.6  8.0
-       Avg:   7.8, Min:   7.6, Max:   8.0, Diff:   0.4]
-         [Processed Buffers : 3 10
-          Sum: 13, Avg: 6, Min: 3, Max: 10, Diff: 7]
-      [Scan RS (ms):  18.0  11.1
-       Avg:  14.5, Min:  11.1, Max:  18.0, Diff:   6.9]
-      [Object Copy (ms):  49.9  56.5
-       Avg:  53.2, Min:  49.9, Max:  56.5, Diff:   6.6]
-      [Termination (ms):  0.0  0.0
-       Avg:   0.0, Min:   0.0, Max:   0.0, Diff:   0.0]
-         [Termination Attempts : 1 1
-          Sum: 2, Avg: 1, Min: 1, Max: 1, Diff: 0]
-      [GC Worker End (ms):  202.4  202.4
-       Avg: 202.4, Min: 202.4, Max: 202.4, Diff:   0.0]
-      [GC Worker (ms):  76.3  76.2
-       Avg:  76.3, Min:  76.2, Max:  76.3, Diff:   0.1]
-      [GC Worker Other (ms):  0.1  0.2
-       Avg:   0.1, Min:   0.1, Max:   0.2, Diff:   0.1]
-   [Clear CT:   0.1 ms]
-   [Other:   0.3 ms]
-      [Choose CSet:   0.0 ms]
-      [Ref Proc:   0.1 ms]
-      [Ref Enq:   0.0 ms]
-      [Free CSet:   0.0 ms]
-   [Eden: 7168K(7168K)-&gt;0B(3072K) Survivors: 0B-&gt;1024K Heap: 10138K(20M)-&gt;8858K(20M)]
- [Times: user=0.11 sys=0.00, real=0.08 secs] 
-[GC pause (young) (initial-mark), 0.05340800 secs] 
-[GC concurrent-root-region-scan-start]
-[GC concurrent-root-region-scan-end, 0.0015220]
-[GC concurrent-mark-start]
-[GC pause (young), 0.04182800 secs]
-[Full GC 13M-&gt;10M(20M), 0.0579320 secs]
- [Times: user=0.07 sys=0.00, real=0.06 secs] 
-[GC concurrent-mark-abort]
-[GC pause (young) (to-space overflow), 0.18594400 secs]
-[GC pause (young) (initial-mark), 0.02209700 secs]
-[GC concurrent-root-region-scan-start]
-[GC concurrent-root-region-scan-end, 0.0000130]
-[GC concurrent-mark-start]
-[Full GC 17M-&gt;15M(20M), 0.0831100 secs]
- [Times: user=0.09 sys=0.01, real=0.08 secs] 
-[GC pause (young), 0.00407500 secs]
-[GC concurrent-mark-abort]
-[Full GC 15M-&gt;15M(20M), 0.0741120 secs]
- [Times: user=0.08 sys=0.00, real=0.07 secs] 
-[Full GC 15M-&gt;15M(20M), 0.0801960 secs]
- [Times: user=0.08 sys=0.00, real=0.08 secs] 
-</code></pre>
-
-<h3>参考资料</h3>
-
-<p><a href="http://blog.csdn.net/firecoder/article/details/7225654">http://blog.csdn.net/firecoder/article/details/7225654</a></p>
 ]]></content>
   </entry>
   
